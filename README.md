@@ -1,4 +1,4 @@
-# SteamOS Waydroid Installer
+# SteamOS Android Waydroid Installer
 
 A shell script to easily install / uninstall Android ([via Waydroid](https://waydro.id/)) on the Steam Deck running on SteamOS. \
 
