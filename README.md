@@ -32,6 +32,11 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 <a href="https://youtu.be/ZKROup0Jnjg?si=DYmFFOeXmlNVUv_a"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
 </p>
 
+## What's New (as of November 26 2023)
+1. cleanup and removed support for SteamOS 3.4.x due to SteamOS 3.5.x already went to stable
+2. removed PlasmaNested.sh as this is already included in SteamOS 3.5.x
+3. removed the bundled weston binary (only useful when on SteamOS 3.4.x)
+
 ## What's New (as of November 15 2023)
 1. initial release
 
