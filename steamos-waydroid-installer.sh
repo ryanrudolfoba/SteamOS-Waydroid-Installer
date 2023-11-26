@@ -6,6 +6,16 @@ echo SteamOS Waydroid Installer Script by ryanrudolf
 echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 sleep 2
 
+# check SteamOS version. exit immediately if not on SteamOS 3.5.x
+cat /etc/os-release | grep VERSION_ID | grep 3.5
+if [ $? -eq 0 ]
+then
+	echo SteamOS 3.5.x detected. Proceed with the script.
+else
+	echo SteamOS 3.4.x detected. Exit immediately. Good bye!
+	exit
+fi
+
 # check if sudo password is already set
 if [ "$(passwd --status $(whoami) | tr -s " " | cut -d " " -f 2)" == "P" ]
 then
@@ -86,7 +96,7 @@ else
 fi
 
 # ok so far so good lets install the dependecies
-echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot base-devel glibc glib2 linux-api-headers python3 lxc dnsmasq --overwrite "*" && echo -e "$current_password\n" | sudo -S pacman -U --noconfirm weston-12.0.1-1-x86_64.pkg.tar.zst --overwrite "*"
+echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot base-devel glibc glib2 linux-api-headers linux-neptune-61-headers python3 lxc dnsmasq weston --overwrite "*" 
 
 if [ $? -eq 0 ]
 then
@@ -97,35 +107,8 @@ else
 	exit
 fi
 
-# check kernel version and install the appropriate header
-uname -r | grep neptune-61
-if [ $? -eq 0 ]
-then
-	echo SteamOS 3.5 detected.
-	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm linux-neptune-61-headers --overwrite "*"
-	if [ $? -eq 0 ]
-	then
-		echo Kernel header for SteamOS 3.5.x has been installed!
-	else
-		echo Error installing kernel header. good bye!
-		echo -e "$current_password\n" | sudo -S steamos-readonly enable
-		exit
-	fi
-else
-	echo SteamOS 3.4 detected.
-	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm linux-neptune-headers --overwrite "*"
-	if [ $? -eq 0 ]
-	then
-		echo Kernel header for SteamOS 3.4.x has been installed!
-	else
-		echo Error installing kernel header. good bye!
-		echo -e "$current_password\n" | sudo -S steamos-readonly enable
-		exit
-	fi
-fi
-
 # if this is a reinstall need to delete this file or else waydroid wont install
-echo -e "$current_password\n" | sudo -S rm /etc/xdg/menus/applications-merged/waydroid.menu
+echo -e "$current_password\n" | sudo -S rm /etc/xdg/menus/applications-merged/waydroid.menu 2> /dev/null
 
 # ok lets build and install waydroid
 (cd $DIR_BINDER && makepkg --noconfirm -si -f && \
@@ -159,7 +142,7 @@ cat > ~/Android_Waydroid/waydroid-container-start << EOF
 #!/bin/bash
 systemctl start waydroid-container.service
 sleep 5
-ln -s /dev/binderfs/binder /dev/anbox-binder
+ln -s /dev/binderfs/binder /dev/anbox-binder 2> /dev/null
 chmod o=rw /dev/anbox-binder
 EOF
 
@@ -199,10 +182,6 @@ EOF
 cat > ~/Android_Waydroid/Android_Waydroid.sh << EOF
 #!/bin/bash
 
-WAYDROID_WIDTH=1280
-WAYDROID_HEIGHT=800
-
-
 # Kill any previous remnants
 if [ "\$(systemctl is-active waydroid-container.service)" == 'active' ]; then
 	sudo /usr/bin/waydroid-container-stop
@@ -213,7 +192,7 @@ killall -9 weston
 sudo /usr/bin/waydroid-container-start
 
 if [ -z "\$(pgrep weston)" ]; then
-	/usr/bin/weston --socket=weston-waydroid --width=\${WAYDROID_WIDTH:-1280} --height=\${WAYDROID_HEIGHT:-800} &> /dev/null &
+	/usr/bin/weston --socket=weston-waydroid --width=1280 --height=800 &> /dev/null &
 fi
 
 # Launch Waydroid
@@ -255,7 +234,6 @@ sudo steamos-readonly enable
 EOF
 
 # custom configs done. lets move them to the correct location
-chmod +x PlasmaNested.sh
 chmod +x ~/Android_Waydroid/uninstall.sh
 chmod +x ~/Android_Waydroid/waydroid-*
 chmod +x ~/Android_Waydroid/Android_Waydroid.sh
@@ -266,7 +244,6 @@ echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-container
 echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-container-stop /usr/bin/waydroid-container-stop
 echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-fix-controllers /usr/bin/waydroid-fix-controllers
 cp android.jpg ~/Android_Waydroid/android.jpg
-cp PlasmaNested.sh ~/Android_Waydroid/PlasmaNested.sh
 mv ~/Android_Waydroid/weston.ini ~/.config/weston.ini
 
 # lets initialize waydroid
@@ -287,37 +264,11 @@ else
 fi
 
 # firewall config for waydroid0 interface to forward packets for internet to work
-# only do this on SteamOS 3.5.x
-uname -r | grep neptune-61
-if [ $? -eq 0 ]
-then
-	echo SteamOS 3.5 detected.
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward
-	echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent
-else
-	echo SteamOS 3.4 detected. No need for firewall rules.
-fi
-
-# casualsnek libndk install. currently the script only works on 3.4.x
-# perform a sanity check if on 3.4.x
-uname -r | grep neptune-61
-if [ $? -eq 0 ]
-then
-	echo SteamOS 3.5 detected.
-	echo Cant use casualsnek script.
-else
-	echo SteamOS 3.4 detected.
-	mkdir -p ~/AUR/waydroid_script 2> /dev/null
-	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm lzip --overwrite "*"
-	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid_script
-	git clone https://github.com/casualsnek/waydroid_script ~/AUR/waydroid_script
-	cd ~/AUR/waydroid_script
-	python3 -m venv venv
-	venv/bin/pip install -r requirements.txt
-fi
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward
+echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent
 
 # lets enable the binder module so we can start waydroid right away
 echo -e "$current_password\n" | sudo -S modprobe binder_linux
@@ -332,4 +283,4 @@ steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid.sh
 sleep 10
 echo Press ENTER as this seems to get stuck......
 echo Press ENTER as this seems to get stuck......
-steamos-add-to-steam /home/deck/Android_Waydroid/PlasmaNested.sh
+steamos-add-to-steam /usr/bin/steamos-nested-desktop
