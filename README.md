@@ -25,8 +25,8 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 1. Do this at your own risk!
 2. This is for educational and research purposes only!
 
-## [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/ZKROup0Jnjg?si=DYmFFOeXmlNVUv_a)
-[Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/ZKROup0Jnjg?si=DYmFFOeXmlNVUv_a)
+## [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
+[Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
 </b>
 <p align="center">
 <a href="https://youtu.be/ZKROup0Jnjg?si=DYmFFOeXmlNVUv_a"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
