@@ -52,6 +52,7 @@ AUR_BINDER=https://aur.archlinux.org/binder_linux-dkms.git
 AUR_PYTHON_GBINDER=https://aur.archlinux.org/python-gbinder.git
 AUR_LIBGBINDER=https://aur.archlinux.org/libgbinder.git
 AUR_LIBGLIBUTIL=https://aur.archlinux.org/libglibutil.git
+AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 
 # AUR directories for the git clone command
 DIR_WAYDROID=~/AUR/waydroid/waydroid
@@ -59,7 +60,7 @@ DIR_BINDER=~/AUR/waydroid/binder_linux-dkms
 DIR_PYTHON_GBINDER=~/AUR/waydroid/python-gbinder
 DIR_LIBGBINDER=~/AUR/waydroid/libgbinder
 DIR_LIBGLIBUTIL=~/AUR/waydroid/libglibutil
-
+DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 
 # disable the SteamOS readonly
 echo -e "$current_password\n" | sudo -S steamos-readonly disable
@@ -80,9 +81,9 @@ fi
 mkdir -p ~/AUR/waydroid 2> /dev/null
 
 # download waydroid but lets cleanup the directory first in case its not empty
-rm -rf ~/AUR/waydroid/*
+echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*
 
-git clone $AUR_WAYDROID $DIR_WAYDROID && git clone $AUR_BINDER $DIR_BINDER && git clone $AUR_PYTHON_GBINDER $DIR_PYTHON_GBINDER && git clone $AUR_LIBGBINDER $DIR_LIBGBINDER && git clone $AUR_LIBGLIBUTIL $DIR_LIBGLIBUTIL
+git clone $AUR_WAYDROID $DIR_WAYDROID && git clone $AUR_BINDER $DIR_BINDER && git clone $AUR_PYTHON_GBINDER $DIR_PYTHON_GBINDER && git clone $AUR_LIBGBINDER $DIR_LIBGBINDER && git clone $AUR_LIBGLIBUTIL $DIR_LIBGLIBUTIL && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
 
 if [ $? -eq 0 ]
 then
@@ -155,7 +156,8 @@ EOF
 # waydroid fix controllers
 cat > ~/Android_Waydroid/waydroid-fix-controllers << EOF
 #!/bin/bash
-sh -c 'for i in \$(seq 7 9); do echo add > /sys/class/input/event\$i/uevent; done'
+#sh -c 'for i in \$(seq 7 9); do echo add > /sys/class/input/event\$i/uevent; done'
+echo add > /sys/devices/virtual/input/input*/event*/uevent
 EOF
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
@@ -233,54 +235,101 @@ sudo rm -rf ~/Android_Waydroid
 sudo steamos-readonly enable
 EOF
 
+# lets enable the binder module so we can start waydroid right away
+echo -e "$current_password\n" | sudo -S modprobe binder_linux
+
 # custom configs done. lets move them to the correct location
 chmod +x ~/Android_Waydroid/uninstall.sh
 chmod +x ~/Android_Waydroid/waydroid-*
 chmod +x ~/Android_Waydroid/Android_Waydroid.sh
 sudo mv ~/Android_Waydroid/waydroid.conf /etc/modules-load.d/waydroid.conf
 echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
-echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
+echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid &> /dev/null
 echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-container-start /usr/bin/waydroid-container-start
 echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-container-stop /usr/bin/waydroid-container-stop
 echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-fix-controllers /usr/bin/waydroid-fix-controllers
 cp android.jpg ~/Android_Waydroid/android.jpg
 mv ~/Android_Waydroid/weston.ini ~/.config/weston.ini
 
-# lets initialize waydroid
-mkdir -p ~/waydroid/lib
-echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/lib /var/lib/waydroid
-echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
-
-# controller config for udev events
-# check if the udev event is already in the prop file
-grep udev ~/waydroid/lib/waydroid_base.prop
+# lets check if this is a reinstall
+grep redfin /var/lib/waydroid/waydroid_base.prop > /dev/null
 if [ $? -eq 0 ]
 then
-	echo udev uevent config already exists
+	echo This seems to be a reinstall. No further config needed.
+	
+	# all done lets re-enable the readonly
+	echo -e "$current_password\n" | sudo -S steamos-readonly enable
+	echo Waydroid has been successfully installed!
 else
-	echo udev uevent config not detected. adding them to waydroid_base.prop
-	echo -e "$current_password\n" | sudo -S sh -c 'echo "persist.waydroid.udev=true" >> /var/lib/waydroid/waydroid_base.prop'
-	echo -e "$current_password\n" | sudo -S sh -c 'echo "persist.waydroid.uevent=true" >> /var/lib/waydroid/waydroid_base.prop'
+	echo Config file missing. Lets configure waydroid.
+	
+	# lets initialize waydroid
+	mkdir -p ~/waydroid/{images,cache_http}
+	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid
+	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images
+	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http
+	echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
+	
+	# firewall config for waydroid0 interface to forward packets for internet to work
+	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0 &> /dev/null
+	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp &> /dev/null
+	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp &> /dev/null
+	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward &> /dev/null
+	echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /dev/null
+	
+	# casualsnek script
+	cd ~/AUR/waydroid/waydroid_script	
+	python3 -m venv venv
+	venv/bin/pip install -r requirements.txt
+	echo -e "$current_password\n" | sudo -S venv/bin/python3 main.py install {libndk,widevine}
+	if [ $? -eq 0 ]
+	then
+		echo Casualsnek script done.
+	else
+		echo Error with casualsnek script.
+	fi
+	
+	# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
+	echo -e "$current_password\n" | sudo -S tee -a  /var/lib/waydroid/waydroid_base.prop > /dev/null <<'EOF'
+
+##########################################################################
+# controller config for udev events
+persist.waydroid.udev=true
+persist.waydroid.uevent=true
+
+##########################################################################
+### start of custom build prop - you can safely delete if this causes issue
+
+ro.product.brand=google
+ro.product.manufacturer=Google
+ro.system.build.product=redfin
+ro.product.name=redfin
+ro.product.device=redfin
+ro.product.model=Pixel 5
+ro.system.build.flavor=redfin-user
+ro.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
+ro.system.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
+ro.bootimage.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
+ro.build.display.id=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
+ro.build.tags=release-keys
+ro.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
+ro.vendor.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
+ro.vendor.build.id=RQ3A.211001.001
+ro.vendor.build.tags=release-keys
+ro.vendor.build.type=user
+ro.odm.build.tags=release-keys
+
+### end of custom build prop - you can safely delete if this causes issue
+##########################################################################
+EOF
+	
+	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid.sh
+	sleep 10
+	echo Press ENTER as this seems to get stuck......
+	echo Press ENTER as this seems to get stuck......
+	steamos-add-to-steam /usr/bin/steamos-nested-desktop
+	
+	# all done lets re-enable the readonly
+	echo -e "$current_password\n" | sudo -S steamos-readonly enable
+	echo Waydroid has been successfully installed!
 fi
-
-# firewall config for waydroid0 interface to forward packets for internet to work
-echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0
-echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp
-echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp
-echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward
-echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent
-
-# lets enable the binder module so we can start waydroid right away
-echo -e "$current_password\n" | sudo -S modprobe binder_linux
-
-# lets temporarily enable ssh to be able to setup the playstore certification
-echo -e "$current_password\n" | sudo -S systemctl start sshd
-
-# all done lets re-enable the readonly
-echo -e "$current_password\n" | sudo -S steamos-readonly enable
-
-steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid.sh
-sleep 10
-echo Press ENTER as this seems to get stuck......
-echo Press ENTER as this seems to get stuck......
-steamos-add-to-steam /usr/bin/steamos-nested-desktop
