@@ -32,6 +32,11 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 <a href="https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
 </p>
 
+## What's New (as of February 02 2024)
+1. added cage launcher for multi-touch support
+2. rewrite the script - instead of building from source this now installs prebuilt binaries
+3. easier and quicker to install
+
 ## What's New (as of December 07 2023)
 1. this now works with [casualsnek script!](https://github.com/casualsnek/waydroid_script)
 2. added libndk arm translation layer (via casualsnek script)
@@ -65,7 +70,7 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 4. Script will automatically install Waydroid together with the custom config. Install will roughly take around 5mins depending on the internet connection speed.
 5. Once done exit the script and go back to Game Mode.
 
-## Initial Config
+## Initial Config (if you are using my script from Feb 02 2024 then no need for this steps!)
 1. Go to Game Mode and open SteamOS Nested Desktop launcher.
 2. Once inside the nested desktop environment, open konsole terminal and enter the commands - \
    sudo /usr/bin/waydroid-container-start \
