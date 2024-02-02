@@ -26,10 +26,10 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 2. This is for educational and research purposes only!
 
 ## [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
-[Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
+[Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38)
 </b>
 <p align="center">
-<a href="https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
+<a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
 </p>
 
 ## What's New (as of February 02 2024)
@@ -70,7 +70,7 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 4. Script will automatically install Waydroid together with the custom config. Install will roughly take around 5mins depending on the internet connection speed.
 5. Once done exit the script and go back to Game Mode.
 
-## Initial Config (if you are using my script from Feb 02 2024 then no need for this steps!)
+## Initial Config (if you are using my script from Feb 02 2024 onwards then no need for this steps!)
 1. Go to Game Mode and open SteamOS Nested Desktop launcher.
 2. Once inside the nested desktop environment, open konsole terminal and enter the commands - \
    sudo /usr/bin/waydroid-container-start \
@@ -101,3 +101,8 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
    ./uninstall.sh
 3. Enter the sudo password when prompted.
 4. Waydroid and the custom configs will be uninstalled.
+
+## A Note on SteamOS Updates
+When there is a SteamOS update the waydroid will be wiped. This is normal behavior due to how SteamOS applies updates. \
+Re-run the script again but if the SteamOS update contains a new kernel version the script will exit immediately. \
+Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
