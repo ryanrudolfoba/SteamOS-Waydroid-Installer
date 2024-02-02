@@ -10,8 +10,7 @@ kernel_version=$(uname -r)
 
 # check kernel version. exit immediately if not 6.1.52-valve9-1-neptune-61
 echo Checking if kernel is supported.
-echo $kernel_version | grep 6.1.52-valve9-1-neptune-61 &> /dev/null
-if [ $? -eq 0 ]
+if [ $kernel_version = 6.1.52-valve9-1-neptune-61 ] || [ $kernel_version = 6.1.52-valve14-1-neptune-61 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
@@ -69,7 +68,7 @@ else
 fi
 
 # lets install binder
-echo -e "$current_password\n" | sudo -S cp $kernel_version/binder/binder_linux.ko.zst /lib/modules/$kernel_version && sudo depmod -a && sudo modprobe binder_linux
+echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$kernel_version && sudo depmod -a && sudo modprobe binder_linux
 
 if [ $? -eq 0 ]
 then
@@ -238,9 +237,8 @@ chmod +x ~/Android_Waydroid/*.sh
 cp android.jpg ~/Android_Waydroid/android.jpg
 
 # lets copy cage and wlr-randr to the correct folder
-sudo cp cage/cage cage/wlr-randr /usr/bin
-sudo chmod +x /usr/bin/cage
-sudo chmod +x /usr/bin/wlr-randr
+echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-randr
 
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
