@@ -56,6 +56,18 @@ git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
 # disable the SteamOS readonly
 echo -e "$current_password\n" | sudo -S steamos-readonly disable
 
+# initialize the keyring
+echo -e "$current_password\n" | sudo -S pacman-key --init && echo -e "$current_password\n" | sudo -S pacman-key --populate
+
+if [ $? -eq 0 ]
+then
+	echo pacman keyring has been initialized!
+else
+	echo Error initializing keyring! Goodbye!
+	echo -e "$current_password\n" | sudo -S steamos-readonly enable
+	exit
+fi
+
 # lets install binder
 echo -e "$current_password\n" | sudo -S cp $kernel_version/binder/binder_linux.ko.zst /lib/modules/$kernel_version && sudo depmod -a && sudo modprobe binder_linux
 
