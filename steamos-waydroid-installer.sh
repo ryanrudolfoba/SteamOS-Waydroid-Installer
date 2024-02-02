@@ -176,7 +176,7 @@ cat > ~/Android_Waydroid/cage_helper.sh << EOF
 
 # Launch Waydroid via cage
 wlr-randr --output X11-1 --custom-mode 1280x800@60Hz 
-/usr/bin/waydroid show-full-ui $@ &
+/usr/bin/waydroid show-full-ui \$@ &
 
 sleep 15
 sudo /usr/bin/waydroid-fix-controllers
@@ -234,6 +234,8 @@ mv ~/Android_Waydroid/weston.ini ~/.config/weston.ini
 
 # lets copy cage and wlr-randr to the correct folder
 sudo cp cage/cage cage/wlr-randr /usr/bin
+sudo chmod +x /usr/bin/cage
+sudo chmod +x /usr/bin/wlr-randr
 
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
