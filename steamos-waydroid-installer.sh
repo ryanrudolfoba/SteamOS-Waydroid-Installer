@@ -39,16 +39,16 @@ else
 	exit
 fi
 
-# this are the AUR git urls we need to build waydroid
+# github URL for casualsnek
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 
-# AUR directories for the git clone command
+# target directory for the git command
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 
-# create AUR directory where waydroid and binder module will be downloaded
+# create AUR directorry where casualsnek script will be saved
 mkdir -p ~/AUR/waydroid 2> /dev/null
 
-# download waydroid but lets cleanup the directory first in case its not empty
+# perform git clone but lets cleanup first in case the directory is not empty
 echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*
 
 git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
@@ -77,7 +77,7 @@ echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.p
 
 if [ $? -eq 0 ]
 then
-	echo binder kernel module has been installed!
+	echo waydroid and cage has been installed!
 else
 	echo Error installing waydroid and cage. Goodbye!
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
@@ -91,40 +91,44 @@ echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.ser
 mkdir ~/Android_Waydroid 2> /dev/null
 
 # waydroid kernel module
-cat > ~/Android_Waydroid/waydroid.conf << EOF
+echo -e "$current_password\n" | sudo -S tee -a  /etc/modules-load.d/waydroid.conf > /dev/null <<'EOF'
 binder_linux
 EOF
 
 # waydroid start service
-cat > ~/Android_Waydroid/waydroid-container-start << EOF
+echo -e "$current_password\n" | sudo -S tee -a  /usr/bin/waydroid-container-start > /dev/null <<'EOF'
 #!/bin/bash
 systemctl start waydroid-container.service
 sleep 5
 ln -s /dev/binderfs/binder /dev/anbox-binder 2> /dev/null
 chmod o=rw /dev/anbox-binder
 EOF
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
 
 # waydroid stop service
-cat > ~/Android_Waydroid/waydroid-container-stop << EOF
+echo -e "$current_password\n" | sudo -S tee -a  /usr/bin/waydroid-container-stop > /dev/null <<'EOF'
 #!/bin/bash
 systemctl stop waydroid-container.service
 EOF
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
 
 # waydroid fix controllers
-cat > ~/Android_Waydroid/waydroid-fix-controllers << EOF
+echo -e "$current_password\n" | sudo -S tee -a  /usr/bin/waydroid-fix-controllers > /dev/null <<'EOF'
 #!/bin/bash
 echo add > /sys/devices/virtual/input/input*/event*/uevent
 EOF
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-fix-controllers
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
-cat > ~/Android_Waydroid/zzzzzzzz-waydroid << EOF
+echo -e "$current_password\n" | sudo -S tee -a  /etc/sudoers.d/zzzzzzzz-waydroid > /dev/null <<'EOF'
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-stop
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-start
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-fix-controllers
 EOF
+echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
 # weston config file
-cat > ~/Android_Waydroid/weston.ini << EOF
+cat > ~/.config/weston.ini << EOF
 [core]
 idle-time=0
 
@@ -218,19 +222,8 @@ EOF
 echo -e "$current_password\n" | sudo -S modprobe binder_linux
 
 # custom configs done. lets move them to the correct location
-chmod +x ~/Android_Waydroid/uninstall.sh
-chmod +x ~/Android_Waydroid/waydroid-*
-chmod +x ~/Android_Waydroid/Android_Waydroid_Weston.sh
-chmod +x ~/Android_Waydroid/Android_Waydroid_Cage.sh
-chmod +x ~/Android_Waydroid/cage_helper.sh
-sudo mv ~/Android_Waydroid/waydroid.conf /etc/modules-load.d/waydroid.conf
-echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
-echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid &> /dev/null
-echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-container-start /usr/bin/waydroid-container-start
-echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-container-stop /usr/bin/waydroid-container-stop
-echo -e "$current_password\n" | sudo -S mv ~/Android_Waydroid/waydroid-fix-controllers /usr/bin/waydroid-fix-controllers
+chmod +x ~/Android_Waydroid/*.sh
 cp android.jpg ~/Android_Waydroid/android.jpg
-mv ~/Android_Waydroid/weston.ini ~/.config/weston.ini
 
 # lets copy cage and wlr-randr to the correct folder
 sudo cp cage/cage cage/wlr-randr /usr/bin
