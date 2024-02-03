@@ -242,6 +242,10 @@ cp android.jpg ~/Android_Waydroid/android.jpg
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-randr
 
+# copy fixed key layout for Steam Controller
+echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
+echo -e "$current_password\n" | sudo -S cp Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
+
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
