@@ -13,7 +13,7 @@
 # limitations under the License.
 
 #
-# Steam Controller - Model 1001 - USB
+# Steam Deck Controller - USB
 #
 
 # Mapping according to https://developer.android.com/training/game-controllers/controller-input.html
@@ -25,8 +25,6 @@ key 308   BUTTON_Y
 
 key 310   BUTTON_L1
 key 311   BUTTON_R1
-key 312   BUTTON_L2
-key 313   BUTTON_R2
 
 # Triggers.
 axis 0x02 LTRIGGER
@@ -46,23 +44,6 @@ key 318   BUTTON_THUMBR
 # Hat.
 axis 0x10 HAT_X
 axis 0x11 HAT_Y
-
-# Dpad (clicks)
-key 544 DPAD_UP
-key 545 DPAD_DOWN
-key 546 DPAD_LEFT
-key 547 DPAD_RIGHT
-
-# Touching the dpad (light touch without pressing down)
-key 289 BUTTON_1
-# Touching the "right stick" / mousepad (light touch without pressing down)
-key 290 BUTTON_2
-
-# Pressing the large paddle on the back, left (linux BTN_WHEEL / BTN_GEAR_DOWN)
-key 336 BUTTON_3
-# Pressing the large paddle on the back, right (linux BTN_GEAR_UP)
-key 337 BUTTON_4
-
 
 # Mapping according to https://www.kernel.org/doc/Documentation/input/gamepad.txt
 # Left arrow
