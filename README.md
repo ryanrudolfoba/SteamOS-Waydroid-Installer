@@ -36,6 +36,7 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 1. added cage launcher for multi-touch support
 2. rewrite the script - instead of building from source this now installs prebuilt binaries
 3. easier and quicker to install
+4. added support for SteamOS 3.5.13 Preview
 
 ## What's New (as of December 07 2023)
 1. this now works with [casualsnek script!](https://github.com/casualsnek/waydroid_script)
