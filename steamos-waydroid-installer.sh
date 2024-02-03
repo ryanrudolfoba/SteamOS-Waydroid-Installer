@@ -7,10 +7,12 @@ echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 sleep 2
 
 kernel_version=$(uname -r)
+SteamOS_stable=6.1.52-valve9-1-neptune-61
+SteamOS_preview=6.1.52-valve14-1-neptune-61
 
 # check kernel version. exit immediately if not 6.1.52-valve9-1-neptune-61
 echo Checking if kernel is supported.
-if [ $kernel_version = 6.1.52-valve9-1-neptune-61 ] || [ $kernel_version = 6.1.52-valve14-1-neptune-61 ]
+if [ $kernel_version = $SteamOS_stable ] || [ $kernel_version = $SteamOS_preview ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
