@@ -65,7 +65,7 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
    cd ~/ \
    git clone https://github.com/ryanrudolfoba/steamos-waydroid-installer
 3. Execute the script! \
-   cd ~/steamOS-waydroid-installer \
+   cd ~/steamos-waydroid-installer \
    chmod +x steamos-waydroid-installer.sh \
    ./steamos-waydroid-installer.sh
 4. Script will automatically install Waydroid together with the custom config. Install will roughly take around 5mins depending on the internet connection speed.
