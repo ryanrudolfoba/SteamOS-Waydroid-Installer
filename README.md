@@ -71,26 +71,6 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 4. Script will automatically install Waydroid together with the custom config. Install will roughly take around 5mins depending on the internet connection speed.
 5. Once done exit the script and go back to Game Mode.
 
-## Initial Config (if you are using my script from Feb 02 2024 onwards then no need for this steps!)
-1. Go to Game Mode and open SteamOS Nested Desktop launcher.
-2. Once inside the nested desktop environment, open konsole terminal and enter the commands - \
-   sudo /usr/bin/waydroid-container-start \
-   waydroid session start &
-3. Once it shows Anroid user 0 is ready, press enter on the keyboard.
-4. Type the command - \
-   cd ~/AUR/waydroid/waydroid_script \
-   sudo venv/bin/python3 main.py certified
-5. Copy the result then open a browser window and go to url - https://www.google.com/android/uncertified
-6. Login with google credential as needed.
-7. Enter the item copied from step4 and press register.
-8. Once done close the browser window.
-9. On the konsole terminal type this commands - \
-   waydroid session stop \
-   sudo /usr/bin/waydroid-container-stop \
-   exit
-10. Close the nested desktop and go back to Game Mode.
-11. Initial config is done! You can now launch Waydroid!
-
 ## Launching Waydroid
 1. Go to Game Mode.
 2. Run the Waydroid launcher.
@@ -107,3 +87,6 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 When there is a SteamOS update the waydroid will be wiped. This is normal behavior due to how SteamOS applies updates. \
 Re-run the script again but if the SteamOS update contains a new kernel version the script will exit immediately. \
 Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
+
+## List of Games Tested with Demo Gameplay
+[Plants vs Zombies](https://youtu.be/rnb0z1LtDN8)
