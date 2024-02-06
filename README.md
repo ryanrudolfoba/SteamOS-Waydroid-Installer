@@ -36,7 +36,7 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 1. merged PR - [Add fixed key layout file for Steam Deck controller](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/pull/19)
 2. SteamOS 3.5.14 works. No need to recompile kernel module as it uses the same kernel from 3.5.13
 
-## [Click here to view previous CHANGELOGS](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer)
+## [Click here to view previous CHANGELOGS](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/CHANGELOG.md)
 
 # Install Steps
 Read the sections below carefuly!
