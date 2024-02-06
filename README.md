@@ -21,41 +21,25 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 <a href="https://www.paypal.com/donate/?business=VSMP49KYGADT4&no_recurring=0&item_name=Your+donation+inspires+me+to+continue+research+on+the+Steam+Deck%21%0AClover+script%2C+70Hz+mod%2C+SteamOS+microSD%2C+Secure+Boot%2C+etc.%0A%0A&currency_code=CAD"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/QRCode.png"/> </a>
 </p>
 
-## Disclaimer
+# Disclaimer
 1. Do this at your own risk!
 2. This is for educational and research purposes only!
 
-## [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
+# [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
 [Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38)
 </b>
 <p align="center">
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
 </p>
 
-## What's New (as of February 05 2024)
+# What's New (as of February 05 2024)
 1. merged PR - [Add fixed key layout file for Steam Deck controller](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/pull/19)
 2. SteamOS 3.5.14 works. No need to recompile kernel module as it uses the same kernel from 3.5.13
 
-## What's New (as of February 02 2024)
-1. added cage launcher for multi-touch support
-2. rewrite the script - instead of building from source this now installs prebuilt binaries
-3. easier and quicker to install
-4. added support for SteamOS 3.5.13 Preview
+## [Click here to view previous CHANGELOGS](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer)
 
-## What's New (as of December 07 2023)
-1. this now works with [casualsnek script!](https://github.com/casualsnek/waydroid_script)
-2. added libndk arm translation layer (via casualsnek script)
-3. added widevine (via casualsnek script). This is needed for Netflix and Disney+
-4. waydroid fingerprint identifies as a [Pixel 5 redfin.](https://github.com/Quackdoc/waydroid-scripts) This is needed for Netflix
-5. new method for detecting controller [via Saren method](https://gist.github.com/Saren-Arterius/c5bc39199552a5c244449b0ce467d6b6)
-
-## What's New (as of November 26 2023)
-1. cleanup and removed support for SteamOS 3.4.x due to SteamOS 3.5.x already went to stable
-2. removed PlasmaNested.sh as this is already included in SteamOS 3.5.x
-3. removed the bundled weston binary (only useful when on SteamOS 3.4.x)
-
-## What's New (as of November 15 2023)
-1. initial release
+# Install Steps
+Read the sections below carefuly!
 
 ## Prerequisites for SteamOS
 1. sudo password should already be set by the end user. If sudo password is not yet set, the script will ask to set it up.
@@ -77,7 +61,7 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 
 ## Launching Waydroid
 1. Go to Game Mode.
-2. Run the Waydroid launcher.
+2. Run the Android_Waydroid_Cage launcher.
 
 ## I dont want this anymore! I want to uninstall!
 1. Go to Desktop Mode.
@@ -86,11 +70,30 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
    ./uninstall.sh
 3. Enter the sudo password when prompted.
 4. Waydroid and the custom configs will be uninstalled.
+5. Delete the Android_Waydroid_Cage and Android_Waydroid_Weston shortuct in Game Mode.
+6. OPTIONAL - Delete the steamos-nested-desktop shortcut in Game Mode.
 
-## A Note on SteamOS Updates
+# Troubleshooting / Filing Bug Reports
+1. If you encounter an issue with the script, try to [uninstall](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/tree/main#i-dont-want-this-anymore-i-want-to-uninstall), clone the repo again and perform an install.\
+Reason for that - you might be using an older version of my script and a new version might have already fixed your issue.
+2. If uninstall / reinstall didn't help, open an issue and please be descriptive as possible. \
+At the minimum include this when filing an issue - \
+SteamOS version - \
+Error message encountered - \
+Screenshot of error - \
+Do you have any scripts / tweaks that might be causing issues?
+3. Downloads are slow when acquiring the waydroid image. \
+You might have connected to a slow sourceforge mirror. Press CTRL-C to cancel the download and re-run the script again.
+
+
+# A Note on SteamOS Updates
 When there is a SteamOS update the waydroid will be wiped. This is normal behavior due to how SteamOS applies updates. \
 Re-run the script again but if the SteamOS update contains a new kernel version the script will exit immediately. \
 Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
 
-## List of Games Tested Working with Demo Gameplay (Work in Progress - list will be updated accordingly)
+# List of Games Tested Working with Demo Gameplay
+This is a Work in Progress - list will be updated accordingly. \
+If you wish to contribute, please open an issue and include the game name, how it runs etc etc.
+
+## Games Tested on Android Waydroid Steam Deck
 [Plants vs Zombies](https://youtu.be/rnb0z1LtDN8)
