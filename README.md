@@ -96,4 +96,5 @@ This is a Work in Progress - list will be updated accordingly. \
 If you wish to contribute, please open an issue and include the game name, how it runs etc etc.
 
 ## Games Tested on Android Waydroid Steam Deck
-[Plants vs Zombies](https://youtu.be/rnb0z1LtDN8)
+[Plants vs Zombies](https://youtu.be/rnb0z1LtDN8) - Feb 04 2024 \
+[Honkai Star Rail](https://youtu.be/M1Y9DMG9rbM) - Feb 06 2024
