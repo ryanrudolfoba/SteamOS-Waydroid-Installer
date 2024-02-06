@@ -32,6 +32,10 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.jpg"/> </a>
 </p>
 
+## What's New (as of February 05 2024)
+1. merged PR - [Add fixed key layout file for Steam Deck controller](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/pull/19)
+2. SteamOS 3.5.14 works. No need to recompile kernel module as it uses the same kernel from 3.5.13
+
 ## What's New (as of February 02 2024)
 1. added cage launcher for multi-touch support
 2. rewrite the script - instead of building from source this now installs prebuilt binaries
@@ -88,5 +92,5 @@ When there is a SteamOS update the waydroid will be wiped. This is normal behavi
 Re-run the script again but if the SteamOS update contains a new kernel version the script will exit immediately. \
 Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
 
-## List of Games Tested with Demo Gameplay
+## List of Games Tested Working with Demo Gameplay (Work in Progress - list will be updated accordingly)
 [Plants vs Zombies](https://youtu.be/rnb0z1LtDN8)
