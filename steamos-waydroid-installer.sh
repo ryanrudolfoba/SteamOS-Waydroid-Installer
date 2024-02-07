@@ -85,14 +85,14 @@ fi
 # ok lets install waydroid and cage
 echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.pkg.tar.zst waydroid/dnsmasq-2.89-1-x86_64.pkg.tar.zst \
 	waydroid/lxc-1\:5.0.2-1-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.74-1-x86_64.pkg.tar.zst waydroid/libgbinder-1.1.35-1-x86_64.pkg.tar.zst \
-	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst waydroid/weston-12.0.1-1-x86_64.pkg.tar.zst \
-	--noconfirm --overwrite "*" 
+	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst --noconfirm --overwrite "*" 
 
 if [ $? -eq 0 ]
 then
 	echo waydroid and cage has been installed!
 else
 	echo Error installing waydroid and cage. Goodbye!
+ 	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	exit
 fi
@@ -140,41 +140,6 @@ deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-fix-controllers
 EOF
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
-# weston config file
-cat > ~/.config/weston.ini << EOF
-[core]
-idle-time=0
-
-[shell]
-locking=false
-clock-format=none
-panel-position=none
-background-image=/home/deck/Android_Waydroid/android.jpg
-background-type=scale-crop
-EOF
-
-# waydroid launcher - weston
-cat > ~/Android_Waydroid/Android_Waydroid_Weston.sh << EOF
-#!/bin/bash
-
-killall -9 weston &> /dev/null
-sudo /usr/bin/waydroid-container-stop
-sudo /usr/bin/waydroid-container-start
-
-if [ -z "\$(pgrep weston)" ]; then
-	/usr/bin/weston --socket=weston-waydroid --width=1280 --height=800 &> /dev/null &
-fi
-
-# Launch Waydroid
-sleep 10 &&
-export XDG_SESSION_TYPE='wayland'
-export WAYLAND_DISPLAY='weston-waydroid'
-/usr/bin/waydroid show-full-ui \$@ &
-
-sleep 15
-sudo /usr/bin/waydroid-fix-controllers
-EOF
-
 # waydroid launcher - cage
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
@@ -211,7 +176,7 @@ sudo steamos-readonly disable
 # remove the kernel module and packages installed
 sudo systemctl stop waydroid-container
 sudo rm /lib/modules/\$kernel_version/binder_linux.ko.zst
-sudo pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc weston
+sudo pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
 
 # delete the waydroid directories and config
 sudo rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/application/waydroid* ~/AUR
@@ -244,7 +209,11 @@ echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-rand
 
 # copy fixed key layout for Steam Controller
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
-echo -e "$current_password\n" | sudo -S cp Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
+echo -e "$current_password\n" | sudo -S cp extras/Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
+
+# copy custom hosts file from StevenBlack to block ads (adware + malware + fakenews + gambling + pr0n)
+echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
+echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overlay/system/etc
 
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
@@ -322,9 +291,6 @@ EOF
 	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh
 	sleep 15
 	echo Android_Waydroid_Cage.sh shortcut has been added to game mode.
-	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Weston.sh
-	sleep 15
-	echo Android_Waydroid_Weston.sh shortcut has been added to game mode.
 	steamos-add-to-steam /usr/bin/steamos-nested-desktop
 	sleep 15
 	echo steamos-nested-desktop shortcut has been added to game mode.
