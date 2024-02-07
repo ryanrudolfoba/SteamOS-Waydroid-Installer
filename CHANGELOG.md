@@ -1,6 +1,6 @@
 ### Changelog
 
-# What's New (as of February 07 2024)
+## What's New (as of February 07 2024)
 1. removed weston. been testing cage for several weeks now and this is way better than weston.
 2. added custom hosts file to block ads
 
