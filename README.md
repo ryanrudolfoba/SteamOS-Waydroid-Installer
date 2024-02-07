@@ -82,9 +82,10 @@ SteamOS version - \
 Error message encountered - \
 Screenshot of error - \
 Do you have any scripts / tweaks that might be causing issues?
-3. Downloads are slow when acquiring the waydroid image. \
-You might have connected to a slow sourceforge mirror. Press CTRL-C to cancel the download and re-run the script again.
-
+3. Downloads are slow when acquiring the waydroid image. This is similar to this [issue](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/26). \
+Answer - You might have connected to a slow sourceforge mirror. Press CTRL-C to cancel the download and re-run the script again.
+4. No shortcuts in Game Mode after running the script / Unsupported File Type when adding shortcuts. This is similar to this [issue](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/25). \
+Answer - This issue happens if Steam client cant be run because the script was called from an ssh or virtual tty session. Make sure to run the script on Desktop Mode via konsole.
 
 # A Note on SteamOS Updates
 When there is a SteamOS update the waydroid will be wiped. This is normal behavior due to how SteamOS applies updates. \
@@ -95,6 +96,13 @@ Please file an issue report when this happens so I can compile a binder kernel m
 This is a Work in Progress - list will be updated accordingly. \
 If you wish to contribute, please open an issue and include the game name, how it runs etc etc.
 
-## Games Tested on Android Waydroid Steam Deck
+## Games Tested By Me on Android Waydroid Steam Deck
 [Plants vs Zombies](https://youtu.be/rnb0z1LtDN8) - Feb 04 2024 \
 [Honkai Star Rail](https://youtu.be/M1Y9DMG9rbM) - Feb 06 2024
+
+## Games Tested by Other Users (thanks for testing and feedback! Once I have spare time I might do a demo gameplay on this)
+Godville - works
+Clicker Hero - works
+Pokemon Go - does not work
+Pokemon TCG Live - does not work
+Pokemonn Masters EX - does not work
