@@ -100,9 +100,10 @@ If you wish to contribute, please open an issue and include the game name, how i
 [Plants vs Zombies](https://youtu.be/rnb0z1LtDN8) - Feb 04 2024 \
 [Honkai Star Rail](https://youtu.be/M1Y9DMG9rbM) - Feb 06 2024
 
-## Games Tested by Other Users (thanks for testing and feedback! Once I have spare time I might do a demo gameplay on this)
-Godville - works
-Clicker Hero - works
-Pokemon Go - does not work
-Pokemon TCG Live - does not work
+## Games Tested by Other Users
+Thanks to [The-MAZZter](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/29) for testing and feedback! Once I have spare time I might do a demo gameplay on this. \
+Godville - works \
+Clicker Hero - works \
+Pokemon Go - does not work \
+Pokemon TCG Live - does not work \
 Pokemonn Masters EX - does not work
