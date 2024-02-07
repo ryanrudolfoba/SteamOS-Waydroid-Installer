@@ -1,5 +1,9 @@
 ### Changelog
 
+# What's New (as of February 07 2024)
+1. removed weston. been testing cage for several weeks now and this is way better than weston.
+2. added custom hosts file to block ads
+
 ## What's New (as of February 05 2024)
 1. merged PR - [Add fixed key layout file for Steam Deck controller](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/pull/19)
 2. SteamOS 3.5.14 works. No need to recompile kernel module as it uses the same kernel from 3.5.13
