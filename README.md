@@ -108,6 +108,8 @@ If you wish to contribute, please open an issue and include the game name, how i
 Thanks to [The-MAZZter](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/29) for testing and feedback! Once I have spare time I might do a demo gameplay on this. \
 Godville - works \
 Clicker Hero - works \
+One-Punch Man World - works \
 Pokemon Go - does not work \
 Pokemon TCG Live - does not work \
-Pokemonn Masters EX - does not work
+Pokemonn Masters EX - does not work \
+Ragnarok X: Next Generation - does not work
