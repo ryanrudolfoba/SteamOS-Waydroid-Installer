@@ -10,6 +10,17 @@ kernel_version=$(uname -r)
 SteamOS_stable=6.1.52-valve9-1-neptune-61
 SteamOS_preview=6.1.52-valve14-1-neptune-61
 
+# sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
+xdpyinfo &> /dev/null
+if [ $? -eq 0 ]
+then
+	echo Script is running in Desktop Mode.
+else
+ 	echo Script is NOT running in Desktop Mode.
+  	echo Please run the script in Desktop Mode as mentioned in the README. Goodbye!
+	exit
+fi
+
 # check kernel version. exit immediately if not 6.1.52-valve9-1-neptune-61
 echo Checking if kernel is supported.
 if [ $kernel_version = $SteamOS_stable ] || [ $kernel_version = $SteamOS_preview ]
@@ -77,6 +88,7 @@ then
 	echo binder kernel module has been installed!
 else
 	echo Error installing binder kernel module. Goodbye!
+ 	# cleanup remove binder kernel module
 	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	exit
@@ -92,6 +104,7 @@ then
 	echo waydroid and cage has been installed!
 else
 	echo Error installing waydroid and cage. Goodbye!
+ 	# cleanup remove binder kernel module
  	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	exit
@@ -182,15 +195,10 @@ sudo pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroot
 sudo rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/application/waydroid* ~/AUR
 
 # delete waydroid config and scripts
-sudo rm /etc/sudoers.d/zzzzzzzz-waydroid
-sudo rm /etc/modules-load.d/waydroid.conf
-sudo rm /usr/bin/waydroid-fix-controllers
-sudo rm /usr/bin/waydroid-container-stop
-sudo rm /usr/bin/waydroid-container-start
+sudo rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers /usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
 
 # delete cage binaries
 sudo rm /usr/bin/cage /usr/bin/wlr-randr
-sudo rm -rf ~/Android_Waydroid &> /dev/null
 
 # re-enable the steamos readonly
 sudo steamos-readonly enable
@@ -201,7 +209,6 @@ echo -e "$current_password\n" | sudo -S modprobe binder_linux
 
 # custom configs done. lets move them to the correct location
 chmod +x ~/Android_Waydroid/*.sh
-cp android.jpg ~/Android_Waydroid/android.jpg
 
 # lets copy cage and wlr-randr to the correct folder
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
@@ -230,9 +237,36 @@ else
 	# lets initialize waydroid
 	mkdir -p ~/waydroid/{images,cache_http}
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http
+	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
+	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
 	echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
+
+ 	# check if waydroid initialization completed without errors
+	if [ $? -eq 0 ]
+	then
+    		echo Waydroid initialization completed without errors!
+	else
+ 		echo Waydroid did not initialize correctly. Performing cleanup!
+     		
+   		# remove binder kernel module
+     		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
+
+   		# remove installed packages
+   		echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
+
+		# delete the waydroid directories and config
+		echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/application/waydroid* ~/AUR
+
+		# delete waydroid config and scripts
+		echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
+  		/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
+		
+		# delete cage binaries
+		sudo rm /usr/bin/cage /usr/bin/wlr-randr
+		sudo rm -rf ~/Android_Waydroid &> /dev/null
+
+    		echo Cleanup completed! Try running the install script again! Goodbye!
+	fi
 	
 	# firewall config for waydroid0 interface to forward packets for internet to work
 	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0 &> /dev/null
