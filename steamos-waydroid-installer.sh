@@ -205,6 +205,8 @@ rm ~/Android_Waydroid/*
 
 # re-enable the steamos readonly
 sudo steamos-readonly enable
+
+echo Waydroid has been uninstalled! Goodbye!
 EOF
 
 # lets enable the binder module so we can start waydroid right away
@@ -247,15 +249,15 @@ else
  	# check if waydroid initialization completed without errors
 	if [ $? -eq 0 ]
 	then
-    		echo Waydroid initialization completed without errors!
+		echo Waydroid initialization completed without errors!
 	else
- 		echo Waydroid did not initialize correctly. Performing cleanup!
+		echo Waydroid did not initialize correctly. Performing cleanup!
      		
-   		# remove binder kernel module
-     		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
+		# remove binder kernel module
+		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
 
-   		# remove installed packages
-   		echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
+		# remove installed packages
+		echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
 
 		# delete the waydroid directories and config
 		echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/application/waydroid* ~/AUR
@@ -268,7 +270,8 @@ else
 		sudo rm /usr/bin/cage /usr/bin/wlr-randr
 		sudo rm -rf ~/Android_Waydroid &> /dev/null
 
-    		echo Cleanup completed! Try running the install script again! Goodbye!
+		echo Cleanup completed! Try running the install script again! Goodbye!
+		exit
 	fi
 	
 	# firewall config for waydroid0 interface to forward packets for internet to work
