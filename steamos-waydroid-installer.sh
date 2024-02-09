@@ -200,6 +200,9 @@ sudo rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/
 # delete cage binaries
 sudo rm /usr/bin/cage /usr/bin/wlr-randr
 
+# delete contents of ~/Android_Waydroid
+rm ~/Android_Waydroid/*
+
 # re-enable the steamos readonly
 sudo steamos-readonly enable
 EOF
