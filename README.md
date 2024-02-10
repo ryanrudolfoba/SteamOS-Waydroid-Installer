@@ -103,7 +103,8 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 ## Games Tested By Me on Android Waydroid Steam Deck
 [Plants vs Zombies](https://youtu.be/rnb0z1LtDN8) - Feb 04 2024 \
 [Honkai Star Rail](https://youtu.be/M1Y9DMG9rbM) - Feb 06 2024 \
-[Asphalt 8 Airborne](https://youtu.be/OCaatZdZR1I) - feb 08 2024
+[Asphalt 8 Airborne](https://youtu.be/OCaatZdZR1I) - Feb 08 2024 \
+[Honkai Impact 3rd](https://youtu.be/6YdNOJ0u2KM) - Feb 10 2024
 
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
