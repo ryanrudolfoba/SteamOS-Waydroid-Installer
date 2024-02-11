@@ -219,9 +219,14 @@ chmod +x ~/Android_Waydroid/*.sh
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-randr
 
+# place custom overlay files here - key layout, hosts, audio.rc etc etc
 # copy fixed key layout for Steam Controller
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
 echo -e "$current_password\n" | sudo -S cp extras/Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
+
+# copy custom audio.rc patch to lower the audio latency
+echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc/init
+echo -e "$current_password\n" | sudo -S cp extras/audio.rc /var/lib/waydroid/overlay/system/etc/init/
 
 # copy custom hosts file from StevenBlack to block ads (adware + malware + fakenews + gambling + pr0n)
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
