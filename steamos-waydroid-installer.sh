@@ -157,17 +157,17 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
-shortcut=$1
+shortcut=\$1
 
 killall -9 cage &> /dev/null
 sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 
 # If app name provided launch cage with the script for it
-if [ -z "$1" ]
+if [ -z "\$1" ]
 	then
 		# Launch Waydroid app via cage
-		cage -- ~/Android_Waydroid/$shortcut.sh
+		cage -- ~/Android_Waydroid/\$shortcut.sh
 	else
 		# Launch Waydroid full ui via cage
 		cage -- ~/Android_Waydroid/cage_helper.sh
