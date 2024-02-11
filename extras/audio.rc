@@ -1,0 +1,3 @@
+on init
+	export PULSE_LATENCY_MSEC 50
+	export PIPEWIRE_LATENCY 32/48000
