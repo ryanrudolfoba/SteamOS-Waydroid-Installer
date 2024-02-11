@@ -166,11 +166,11 @@ sudo /usr/bin/waydroid-container-start
 # If app name provided launch cage with the script for it
 if [ -z "\$1" ]
 	then
-		# Launch Waydroid app via cage
-		cage -- ~/Android_Waydroid/\$shortcut.sh
-	else
 		# Launch Waydroid full ui via cage
 		cage -- ~/Android_Waydroid/cage_helper.sh
+	else
+		# Launch Waydroid app via cage
+		cage -- ~/Android_Waydroid/\$shortcut.sh
 fi
 EOF
 
