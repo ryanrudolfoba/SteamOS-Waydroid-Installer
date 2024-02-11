@@ -7,8 +7,9 @@ echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 sleep 2
 
 kernel_version=$(uname -r)
-SteamOS_stable=6.1.52-valve9-1-neptune-61
-SteamOS_preview=6.1.52-valve14-1-neptune-61
+stable1=6.1.52-valve9-1-neptune-61
+preview1=6.1.52-valve14-1-neptune-61
+preview2=6.1.52-valve16-1-neptune-61
 
 # sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
 xdpyinfo &> /dev/null
@@ -23,7 +24,7 @@ fi
 
 # check kernel version. exit immediately if not 6.1.52-valve9-1-neptune-61
 echo Checking if kernel is supported.
-if [ $kernel_version = $SteamOS_stable ] || [ $kernel_version = $SteamOS_preview ]
+if [ $kernel_version = $stable1 ] || [ $kernel_version = $preview1 ] || [ $kernel_version = $preview2 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
