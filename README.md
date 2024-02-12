@@ -99,6 +99,9 @@ When there is a SteamOS update the waydroid will be wiped. This is normal behavi
 Re-run the script again but if the SteamOS update contains a new kernel version the script will exit immediately. \
 Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
 
+# Geekbench Benchmark Result Between OLED and LCD on SteamOS Android Waydroid
+[Geekbench Result](https://youtu.be/56YGZsU5j74) - Feb 11 2024
+
 # List of Games Tested Working with Demo Gameplay
 This is a Work in Progress - list will be updated accordingly. \
 If you wish to contribute, please check the [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) and include the game name, how it runs etc etc.
