@@ -158,12 +158,21 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
+shortcut=\$1
+
 killall -9 cage &> /dev/null
 sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 
-# Launch Waydroid via cage
-cage -- ~/Android_Waydroid/cage_helper.sh
+# If app name provided launch cage with the script for it
+if [ -z "\$1" ]
+	then
+		# Launch Waydroid full ui via cage
+		cage -- ~/Android_Waydroid/cage_helper.sh
+	else
+		# Launch Waydroid app via cage
+		cage -- ~/Android_Waydroid/\$shortcut.sh
+fi
 EOF
 
 # waydroid launcher - cage helper script
@@ -176,6 +185,21 @@ wlr-randr --output X11-1 --custom-mode 1280x800@60Hz
 
 sleep 15
 sudo /usr/bin/waydroid-fix-controllers
+EOF
+
+# template file for launching apps directly
+cat > ~/Android_Waydroid/template.sh << EOF
+#!/bin/bash
+
+# Launch Waydroid via cage, don't show UI
+wlr-randr --output X11-1 --custom-mode 1280x800@60Hz
+/usr/bin/waydroid session start \$@ &
+
+sleep 15
+sudo /usr/bin/waydroid-fix-controllers
+
+# launch the android app automatically
+/usr/bin/waydroid app launch com.netflix.mediaclient  &
 EOF
 
 # uninstall script
