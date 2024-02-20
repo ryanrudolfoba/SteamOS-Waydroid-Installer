@@ -118,3 +118,10 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
 Please feel free to add your game testing in there too! Thank you!
+
+# Mini-guides for Steam Deck Android Waydroid
+This mini guides are tailor-fitted for the Steam Deck that uses the script provided in this repo. \
+[How to Sideload APKs](https://youtu.be/LglEbSdRc0M) \
+[How to Upgrade the Android Image](https://youtu.be/lfwoZZxXh7I) \
+[How to Configure Fake Wi-Fi](https://youtu.be/lfwoZZxXh7I)
+
