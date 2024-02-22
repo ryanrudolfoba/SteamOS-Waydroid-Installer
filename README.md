@@ -113,7 +113,8 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 [Honkai Impact 3rd](https://youtu.be/6YdNOJ0u2KM) - Feb 10 2024 \
 [Mobile Legends](https://youtu.be/PlPRNn92NDI) - Feb 13 2024 \
 [T3 Arena](https://youtu.be/wq87nd3MCrQ?si=h4A7NEwEFGujF7hH) - Feb 16 2024 \
-[Warcraft Rumble](https://youtu.be/rnb0z1LtDN8) - Feb 19 2024
+[Warcraft Rumble](https://youtu.be/rnb0z1LtDN8) - Feb 19 2024 \
+[Diablo Immortal](https://youtu.be/4lJOnGnEJjw) - Feb 21 2024
 
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
