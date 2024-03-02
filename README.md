@@ -175,7 +175,7 @@ For that we gonna need to get the app `packageName`. There are two ways to getti
 6. Now we need to open the script we previously copied for editing it (You can replace `nano` with `kate` if you prefer a GUI text editor).
 
    ```
-   nano netflix.sh
+   nano firefox.sh
    ```
 
    The content will look like that:
