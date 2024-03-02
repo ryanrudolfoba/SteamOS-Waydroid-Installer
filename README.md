@@ -90,7 +90,7 @@ Read the sections below carefuly!
 
 > [!WARNING]
 > If you are using a older version of the script: \
-> [Uninstall first](#i-dont-want-this-anymore-i-want-to-uninstall)
+> [Uninstall first](#how-to-uninstall)
 
 ## How to install
 
@@ -120,7 +120,7 @@ Read the sections below carefuly!
 # Launching Waydroid
 
 1. Go to Game Mode.
-2. Run the Android_Waydroid_Cage launcher.
+2. Run the `Android_Waydroid_Cage` launcher.
 
 # How to uninstall
 
@@ -132,14 +132,14 @@ Read the sections below carefuly!
    ```
 3. Enter the sudo password when prompted.
 4. Waydroid and the custom configs will be uninstalled.
-5. Delete the Android_Waydroid_Cage and Android_Waydroid_Weston shortcuts in Game Mode.
-6. OPTIONAL - Delete the steamos-nested-desktop shortcut in Game Mode.
+5. Delete the `Android_Waydroid_Cage` and `Android_Waydroid_Weston` shortcuts in Game Mode.
+6. OPTIONAL - Delete the `steamos-nested-desktop` shortcut in Game Mode.
 
 # Tutorials
 
 ## Making a launcher that directly start a android app
 
-> [!WARNING] \
+> [!WARNING]
 > Here we gonna make one for `Firefox` so adapt for your use case.
 
 For that we gonna need to get the app `packageName`. There are two ways to getting it:
@@ -234,7 +234,7 @@ The easiest way, is to use [SteamGridDB](https://github.com/steamgriddb) to acco
 
 ## A Note on SteamOS Updates
 
-> [!WARNING] \
+> [!WARNING]
 > When there is a SteamOS update the waydroid will be wiped. This is normal behavior due to how SteamOS applies updates. \
 > Re-run the script again BUT if the SteamOS update contains a new kernel version the script will exit immediately. \
 > Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
