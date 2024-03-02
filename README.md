@@ -218,7 +218,7 @@ Don't forget to rename the shortcut/launcher (first textbox).
 
 ## How to enhance the SteamOS-Waydroid launcher or custom launchers in GameMode with images
 
-The easiest way, is to use [SteamGridDB](https://github.com/steamgriddb) to accomplish that. Depending of you need/situation, multiple version exist:
+The easiest way, is to use [SteamGridDB](https://github.com/steamgriddb) to accomplish that. Depending of you need/situation, several versions exist:
 
 - [SGDBoop](https://www.steamgriddb.com/boop) If you want to using it in desktop mod.
 - [decky-steamgriddb](https://www.steamgriddb.com/boop) To using it in game mode, require the use of [Decky loader](https://github.com/SteamDeckHomebrew/decky-loader).
