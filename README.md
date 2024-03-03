@@ -148,7 +148,9 @@ For that we gonna need to get the app `packageName`. There are two ways to getti
 
 - On android, long touch the app to make the menu appear and clic on the `!` icon. At the bottom clic on Advanced. The `packageName` is in the last line at the bottom.
 
-1. Go into Desktop Mode and open a konsole terminal.
+#
+
+1. In game mode we launch `Nested Desktop` and open a konsole terminal.
 2. Move to the `Android_Waydroid` folder.
    ```
    cd ~/steamos-waydroid-installer
@@ -157,25 +159,37 @@ For that we gonna need to get the app `packageName`. There are two ways to getti
    ```
    cp template.sh firefox.sh
    ```
-4. (You can skip this step if you have use the android method for getting the `packageName`)
+4. You can skip this step if you have use the android method for getting the `packageName`
+
+   ```
+   sudo waydroid-container-start
+   waydroid session start
+   ```
+
+   Wait until you see "Android with user 0 is ready" and clic on `New Tab` in the top left corner on Konsole. Run the following command in it:
 
    ```
    waydroid app list | grep -i "firefox" -A1
    ```
 
-   You will have a output that will look like this one:
+   You should have a similar output:
 
    ```
    Name: Firefox
    packageName: org.mozilla.firefox
    ```
 
-5. Copy the `packageName` (here its `org.mozilla.firefox`)
-
-6. Now we need to open the script we previously copied for editing it (You can replace `nano` with `kate` if you prefer a GUI text editor).
+5. Copy the `packageName` (here its `org.mozilla.firefox`) when its done, we can run the following commands:
 
    ```
-   nano firefox.sh
+   waydroid session stop
+   sudo waydroid-container-stop
+   ```
+
+6. Now we need to open the script we previously copied for editing it.
+
+   ```
+   kate firefox.sh
    ```
 
    The content will look like that:
@@ -194,21 +208,17 @@ For that we gonna need to get the app `packageName`. There are two ways to getti
    /usr/bin/waydroid app launch com.netflix.mediaclient &
    ```
 
-7. In the last line, replace `com.netflix.mediaclient` with `org.mozilla.firefox`. Save and close the file after that (With `nano`: ctrl+S then ctrl+x)
+7. In the last line, replace `com.netflix.mediaclient` with `org.mozilla.firefox`. Save and close the file after that.
 
 8. The script is done, we just need to make it executable.
    ```
    chmod +x firefox.sh
    ```
-9. Next, we need to open dolphin, move to `~/steamos-waydroid-installer` and add `Android_Waydroid_Cage.sh` in the steam library by right clicking on it and selecting `Add to Steam`.
+9. Next, we need to open dolphin, move to the folder at `/home/deck/steamos-waydroid-installer` and add `Android_Waydroid_Cage.sh` in the steam library by right clicking on it and selecting `Add to Steam`.
 
-   You can use the following command to opening it faster:
+   Optionally we can right clic on Konsole > open folder with > dolphin, to opening it faster.
 
-   ```
-   dolphin ~/steamos-waydroid-installer
-   ```
-
-10. After that, on open the steam library, right clic the new library entry then clic on `Properties` and replace the content of the `target` textbox like below.
+10. After that, on your steam library, right clic the new `Android_Waydroid_Cage.sh` entry then clic on `Properties` and replace the content of the `target` textbox like below.
 
 ```
 /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh" firefox
