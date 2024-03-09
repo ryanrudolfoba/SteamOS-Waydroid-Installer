@@ -1,5 +1,11 @@
 ### Changelog
 
+## What's New (as of March 09 2024)
+1. Updated launcher to easily run APKs in Game Mode. [demo guide here](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg)
+2. Fix minor typo in uninstall - this now removes the Waydroid application entries in the KDE menu.
+3. Added Waydroid Toolbox to easily configure some aspects of Waydroid.
+![image](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/assets/98122529/058c1321-4636-44d7-8b7d-1569f478894b)
+
 ## What's New (as of February 11 2024)
 1. Added support for latest SteamOS Preview 3.5.15 - kernel 6.1.52-valve16-1-neptune-61
 
