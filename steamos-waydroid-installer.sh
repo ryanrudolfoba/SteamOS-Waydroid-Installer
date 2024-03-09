@@ -22,7 +22,7 @@ else
 	exit
 fi
 
-# check kernel version. exit immediately if not 6.1.52-valve9-1-neptune-61
+# check kernel version. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
 if [ $kernel_version = $stable1 ] || [ $kernel_version = $preview1 ] || [ $kernel_version = $preview2 ]
 then
@@ -59,7 +59,7 @@ AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 
 # create AUR directorry where casualsnek script will be saved
-mkdir -p ~/AUR/waydroid 2> /dev/null
+mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
 echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*
@@ -115,7 +115,7 @@ fi
 echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 
 # lets install the custom config files
-mkdir ~/Android_Waydroid 2> /dev/null
+mkdir ~/Android_Waydroid &> /dev/null
 
 # waydroid kernel module
 echo -e "$current_password\n" | sudo -S tee -a  /etc/modules-load.d/waydroid.conf > /dev/null <<'EOF'
@@ -158,87 +158,40 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
-shortcut=\$1
+export shortcut=\$1
 
 killall -9 cage &> /dev/null
 sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 
-# If app name provided launch cage with the script for it
+# Check if non Steam shortcut has the game / app as the launch option
 if [ -z "\$1" ]
 	then
-		# Launch Waydroid full ui via cage
-		cage -- ~/Android_Waydroid/cage_helper.sh
+		# launch option not provided. launch Waydroid via cage and show the full ui right away
+		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ;	\\
+			/usr/bin/waydroid show-full-ui \$@ & \\
+			sleep 15 ; \\
+			sudo /usr/bin/waydroid-fix-controllers '
 	else
-		# Launch Waydroid app via cage
-		cage -- ~/Android_Waydroid/\$shortcut.sh
+		# launch option provided. launch Waydroid via cage but do not show full ui yet
+		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
+			/usr/bin/waydroid session start \$@ & \\
+			sleep 15 ; \\
+			sudo /usr/bin/waydroid-fix-controllers ; \\
+
+			# launch the android app provided from the launch option
+			sleep 10 ; \\
+			/usr/bin/waydroid app launch \$shortcut  &'
 fi
-EOF
-
-# waydroid launcher - cage helper script
-cat > ~/Android_Waydroid/cage_helper.sh << EOF
-#!/bin/bash
-
-# Launch Waydroid via cage
-wlr-randr --output X11-1 --custom-mode 1280x800@60Hz 
-/usr/bin/waydroid show-full-ui \$@ &
-
-sleep 15
-sudo /usr/bin/waydroid-fix-controllers
-EOF
-
-# template file for launching apps directly
-cat > ~/Android_Waydroid/template.sh << EOF
-#!/bin/bash
-
-# Launch Waydroid via cage, don't show UI
-wlr-randr --output X11-1 --custom-mode 1280x800@60Hz
-/usr/bin/waydroid session start \$@ &
-
-sleep 15
-sudo /usr/bin/waydroid-fix-controllers
-
-# launch the android app automatically
-/usr/bin/waydroid app launch com.netflix.mediaclient  &
-EOF
-
-# uninstall script
-cat > ~/Android_Waydroid/uninstall.sh << EOF
-#!/bin/bash
-
-kernel_version=\$(uname -r)
-
-# disable the steamos readonly
-sudo steamos-readonly disable
-
-# remove the kernel module and packages installed
-sudo systemctl stop waydroid-container
-sudo rm /lib/modules/\$kernel_version/binder_linux.ko.zst
-sudo pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
-
-# delete the waydroid directories and config
-sudo rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/application/waydroid* ~/AUR
-
-# delete waydroid config and scripts
-sudo rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers /usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
-
-# delete cage binaries
-sudo rm /usr/bin/cage /usr/bin/wlr-randr
-
-# delete contents of ~/Android_Waydroid
-rm ~/Android_Waydroid/*
-
-# re-enable the steamos readonly
-sudo steamos-readonly enable
-
-echo Waydroid has been uninstalled! Goodbye!
 EOF
 
 # lets enable the binder module so we can start waydroid right away
 echo -e "$current_password\n" | sudo -S modprobe binder_linux
 
 # custom configs done. lets move them to the correct location
+cp $PWD/extras/Waydroid-Toolbox.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
+ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox
 
 # lets copy cage and wlr-randr to the correct folder
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
