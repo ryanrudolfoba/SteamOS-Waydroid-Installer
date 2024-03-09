@@ -10,13 +10,14 @@ fi
 
 while true
 do
-Choice=$(zenity --width 850 --height 250 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
+Choice=$(zenity --width 850 --height 300 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
 	--column "Select One" \
 	--column "Option" \
 	--column="Description - Read this carefully!"\
 	FALSE ADBLOCK "Disable or update the custom adblock hosts file."\
 	FALSE AUDIO "Enable or disable the custom audio fixes."\
-	FALSE Uninstall "Choose this to uninstall Waydroid and revert any changes made."\
+	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
+	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
 
 if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -41,7 +42,7 @@ ADBLOCK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple -
 		# Disable the custom adblock hosts file
 		echo -e $PASSWORD\n | sudo -S mv /var/lib/waydroid/overlay/system/etc/hosts /var/lib/waydroid/overlay/system/etc/hosts.disable &> /dev/null
 
-		zenity --warning --title "Waydroid Toolbox" --text "Custom adblock hosts file has been disabled!" --width 450 --height 75
+		zenity --warning --title "Waydroid Toolbox" --text "Custom adblock hosts file has been disabled!" --width 350 --height 75
 
 	elif [ "$ADBLOCK_Choice" == "UPDATE" ]
 	then
@@ -50,7 +51,7 @@ ADBLOCK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple -
 		echo -e $PASSWORD\n | sudo -S wget https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts \
 		       -O /var/lib/waydroid/overlay/system/etc/hosts	
 
-		zenity --warning --title "Waydroid Toolbox" --text "Custom adblock hosts file has been updated!" --width 450 --height 75
+		zenity --warning --title "Waydroid Toolbox" --text "Custom adblock hosts file has been updated!" --width 350 --height 75
 	fi
 
 elif [ "$Choice" == "AUDIO" ]
@@ -69,7 +70,7 @@ AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--
 		echo -e $PASSWORD\n | sudo -S mv /var/lib/waydroid/overlay/system/etc/init/audio.rc \
 		       	/var/lib/waydroid/overlay/system/etc/init/audio.rc.disable &> /dev/null
 
-		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been disabled!" --width 450 --height 75
+		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been disabled!" --width 350 --height 75
 
 	elif [ "$AUDIO_Choice" == "ENABLE" ]
 	then
@@ -77,10 +78,16 @@ AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--
 		echo -e $PASSWORD\n | sudo -S mv /var/lib/waydroid/overlay/system/etc/init/audio.rc.disable \
 		       	/var/lib/waydroid/overlay/system/etc/init/audio.rc &> /dev/null
 
-		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been enabled!" --width 450 --height 75
+		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been enabled!" --width 350 --height 75
 	fi
 
-elif [ "$Choice" == "Uninstall" ]
+elif [ "$Choice" == "LAUNCHER" ]
+then
+	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh
+	sleep 5
+	zenity --warning --title "Waydroid Toolbox" --text "Android Waydroid Cage launcher has been added to Game Mode!" --width 450 --height 75
+
+elif [ "$Choice" == "UNINSTALL" ]
 then
 	# disable the steamos readonly
 	echo -e $PASSWORD\n | sudo -S steamos-readonly disable
