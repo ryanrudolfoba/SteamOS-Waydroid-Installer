@@ -36,6 +36,8 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 1. Updated launcher to easily run APKs in Game Mode. [demo guide here](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg)
 2. Fix minor typo in uninstall - this now removes the Waydroid application entries in the KDE menu.
 3. Added Waydroid Toolbox to easily configure some aspects of Waydroid.
+![image](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/assets/98122529/058c1321-4636-44d7-8b7d-1569f478894b)
+
 
 # What's New (as of February 11 2024)
 1. Added support for latest SteamOS Preview 3.5.15 - kernel 6.1.52-valve16-1-neptune-61
@@ -56,8 +58,9 @@ Read the sections below carefuly!
 ## Prerequisites for SteamOS
 1. sudo password should already be set by the end user. If sudo password is not yet set, the script will ask to set it up.
 
-## NOTE IF YOU ARE USING AN OLDER VERSION OF MY SCRIPT
-1. [Uninstall first if you are using an older version.](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/tree/main#i-dont-want-this-anymore-i-want-to-uninstall)
+## NOTE IF YOU ARE USING AN OLDER VERSION OF MY SCRIPT FROM 2023!
+1. [Uninstall first if you are using an older version from 2023.](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/tree/main#i-dont-want-this-anymore-i-want-to-uninstall)
+2. If you are using my script from 2024 onwards no need to uninstall - just clone the repo to get the latest version and install it.
 
 ## How to Use
 1. Go into Desktop Mode and open a konsole terminal.
