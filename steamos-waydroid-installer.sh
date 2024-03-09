@@ -62,9 +62,16 @@ DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
-echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*
+echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
 
-git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
+if [ $? -eq 0 ]
+then
+	echo Casualsnek repo has been successfully cloned!
+else
+	echo Error cloning Casualsnek repo! Goodbye!
+	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid* && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
+	exit
+fi
 
 # disable the SteamOS readonly
 echo -e "$current_password\n" | sudo -S steamos-readonly disable
