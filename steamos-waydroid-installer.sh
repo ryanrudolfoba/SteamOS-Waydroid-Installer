@@ -69,7 +69,7 @@ then
 	echo Casualsnek repo has been successfully cloned!
 else
 	echo Error cloning Casualsnek repo! Goodbye!
-	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid* && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
+	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*
 	exit
 fi
 
@@ -187,7 +187,7 @@ if [ -z "\$1" ]
 			sudo /usr/bin/waydroid-fix-controllers ; \\
 
 			# launch the android app provided from the launch option
-			sleep 10 ; \\
+			# sleep 10 ; \\
 			/usr/bin/waydroid app launch \$shortcut  &'
 fi
 EOF
