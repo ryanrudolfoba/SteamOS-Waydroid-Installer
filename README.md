@@ -126,7 +126,8 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 [Oceanhorn](https://youtu.be/vKPJZeyw0DI) - Feb 23 2024 \
 [Candy Crush Saga](https://youtu.be/XEcIYBDoOZk) - Mar 11 2024 \
 [BombSquad](https://youtu.be/vatf5uY_Eak) - Mar 16 2024 \
-[Project BloodStrike](https://youtu.be/pRwvZBMDpY0) - Mar 18 2024
+[Project BloodStrike](https://youtu.be/pRwvZBMDpY0) - Mar 18 2024 \
+[NBA Infinite](https://youtu.be/LLw4GnWL58I) - Mar 23 2024
 
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
