@@ -80,13 +80,10 @@ Read the sections below carefuly!
 
 ## I dont want this anymore! I want to uninstall!
 1. Go to Desktop Mode.
-2. Open konsole terminal and type the commands - \
-   cd ~/Android_Waydroid \
-   ./uninstall.sh
-3. Enter the sudo password when prompted.
-4. Waydroid and the custom configs will be uninstalled.
-5. Delete the Android_Waydroid_Cage and Android_Waydroid_Weston shortuct in Game Mode.
-6. OPTIONAL - Delete the steamos-nested-desktop shortcut in Game Mode.
+2. There will be an icon called Waydroid Toolbox on the desktop.
+3. Launch that icon and select UNINSTALL.
+![image](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/assets/98122529/afdf9e95-7ccf-4bc8-9400-4b8332c5afe9)
+
 
 # Troubleshooting / Filing Bug Reports
 1. If you encounter an issue with the script, try to [uninstall](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/tree/main#i-dont-want-this-anymore-i-want-to-uninstall), clone the repo again and perform an install.\
