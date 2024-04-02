@@ -136,5 +136,6 @@ This mini guides are tailor-fitted for the Steam Deck that uses the script provi
 [How to Upgrade the Android Image](https://youtu.be/lfwoZZxXh7I) \
 [How to Configure Fake Wi-Fi](https://youtu.be/lfwoZZxXh7I) \
 [How to Configure Fake Touchscreen / Configure Mouse Clicks as Touchscreen Input](https://youtu.be/Xt2ceq8ZUJ8) \
-[How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg)
+[How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg) \
+[Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30)
 
