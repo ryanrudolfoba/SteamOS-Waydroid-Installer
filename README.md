@@ -138,5 +138,6 @@ This mini guides are tailor-fitted for the Steam Deck that uses the script provi
 [How to Configure Fake Touchscreen / Configure Mouse Clicks as Touchscreen Input](https://youtu.be/Xt2ceq8ZUJ8) \
 [How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg) \
 [Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30) \
-[Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI)
+[Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) \
+[Activate and Configure Mantis Gamepad Pro](https://youtu.be/icVOh7IIfE0)
 
