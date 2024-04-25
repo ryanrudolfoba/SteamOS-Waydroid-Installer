@@ -32,6 +32,10 @@ A shell script to easily install / uninstall Android ([via Waydroid](https://way
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of April 25 2024)
+1. This works with latest stable SteamOS 3.5.19. There is no kernel change for SteamOS - it still uses 6.1.52-valve16-1 so this works right away no need for new kernel modules.\
+SteamOS has been stuck on 6.1.52-valve16-1 for several releases now so I think this will stay and next major bump will be on SteamOS 3.6.x.
+
 # What's New (as of March 09 2024)
 1. Updated launcher to easily run APKs in Game Mode. [demo guide here](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg)
 2. Fix minor typo in uninstall - this now removes the Waydroid application entries in the KDE menu.
