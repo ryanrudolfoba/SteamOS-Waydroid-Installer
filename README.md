@@ -134,7 +134,7 @@ Please feel free to add your game testing in there too! Thank you!
 This mini guides are tailor-fitted for the Steam Deck that uses the script provided in this repo. \
 [How to Sideload APKs](https://youtu.be/LglEbSdRc0M) \
 [How to Upgrade the Android Image](https://youtu.be/lfwoZZxXh7I) \
-[How to Configure Fake Wi-Fi](https://youtu.be/lfwoZZxXh7I) \
+[How to Configure Fake Wi-Fi](https://youtu.be/LtMGmSSB52g) \
 [How to Configure Fake Touchscreen / Configure Mouse Clicks as Touchscreen Input](https://youtu.be/Xt2ceq8ZUJ8) \
 [How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg) \
 [Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30) \
