@@ -105,7 +105,7 @@ fi
 # ok lets install waydroid and cage
 echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.pkg.tar.zst waydroid/dnsmasq-2.89-1-x86_64.pkg.tar.zst \
 	waydroid/lxc-1\:5.0.2-1-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.74-1-x86_64.pkg.tar.zst waydroid/libgbinder-1.1.35-1-x86_64.pkg.tar.zst \
-	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst --noconfirm --overwrite "*" 
+	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst --noconfirm --overwrite "*"
 
 if [ $? -eq 0 ]
 then
@@ -118,19 +118,19 @@ else
 	exit
 fi
 
-# waydroid has been installed. lets make sure the service doesnt start on startup 
+# waydroid has been installed. lets make sure the service doesnt start on startup
 echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
 
 # waydroid kernel module
-echo -e "$current_password\n" | sudo -S tee -a  /etc/modules-load.d/waydroid.conf > /dev/null <<'EOF'
+echo -e "$current_password\n" | sudo -S tee /etc/modules-load.d/waydroid.conf > /dev/null <<'EOF'
 binder_linux
 EOF
 
 # waydroid start service
-echo -e "$current_password\n" | sudo -S tee -a  /usr/bin/waydroid-container-start > /dev/null <<'EOF'
+echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-container-start > /dev/null <<'EOF'
 #!/bin/bash
 systemctl start waydroid-container.service
 sleep 5
@@ -140,21 +140,21 @@ EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
 
 # waydroid stop service
-echo -e "$current_password\n" | sudo -S tee -a  /usr/bin/waydroid-container-stop > /dev/null <<'EOF'
+echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-container-stop > /dev/null <<'EOF'
 #!/bin/bash
 systemctl stop waydroid-container.service
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
 
 # waydroid fix controllers
-echo -e "$current_password\n" | sudo -S tee -a  /usr/bin/waydroid-fix-controllers > /dev/null <<'EOF'
+echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-fix-controllers > /dev/null <<'EOF'
 #!/bin/bash
 echo add > /sys/devices/virtual/input/input*/event*/uevent
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-fix-controllers
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
-echo -e "$current_password\n" | sudo -S tee -a  /etc/sudoers.d/zzzzzzzz-waydroid > /dev/null <<'EOF'
+echo -e "$current_password\n" | sudo -S tee /etc/sudoers.d/zzzzzzzz-waydroid > /dev/null <<'EOF'
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-stop
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-start
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-fix-controllers
@@ -222,13 +222,13 @@ grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
 then
 	echo This seems to be a reinstall. No further config needed.
-	
+
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 else
 	echo Config file missing. Lets configure waydroid.
-	
+
 	# lets initialize waydroid
 	mkdir -p ~/waydroid/{images,cache_http}
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
@@ -242,7 +242,7 @@ else
 		echo Waydroid initialization completed without errors!
 	else
 		echo Waydroid did not initialize correctly. Performing cleanup!
-     		
+
 		# remove binder kernel module
 		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
 
@@ -255,7 +255,7 @@ else
 		# delete waydroid config and scripts
 		echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
   		/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
-		
+
 		# delete cage binaries
 		sudo rm /usr/bin/cage /usr/bin/wlr-randr
 		sudo rm -rf ~/Android_Waydroid &> /dev/null
@@ -263,16 +263,16 @@ else
 		echo Cleanup completed! Try running the install script again! Goodbye!
 		exit
 	fi
-	
+
 	# firewall config for waydroid0 interface to forward packets for internet to work
 	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0 &> /dev/null
 	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp &> /dev/null
 	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp &> /dev/null
 	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward &> /dev/null
 	echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /dev/null
-	
+
 	# casualsnek script
-	cd ~/AUR/waydroid/waydroid_script	
+	cd ~/AUR/waydroid/waydroid_script
 	python3 -m venv venv
 	venv/bin/pip install -r requirements.txt
 	echo -e "$current_password\n" | sudo -S venv/bin/python3 main.py install {libndk,widevine}
@@ -282,9 +282,9 @@ else
 	else
 		echo Error with casualsnek script.
 	fi
-	
+
 	# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
-	echo -e "$current_password\n" | sudo -S tee -a  /var/lib/waydroid/waydroid_base.prop > /dev/null <<'EOF'
+	echo -e "$current_password\n" | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null <<'EOF'
 
 ##########################################################################
 # controller config for udev events
@@ -316,7 +316,7 @@ ro.odm.build.tags=release-keys
 ### end of custom build prop - you can safely delete if this causes issue
 ##########################################################################
 EOF
-	
+
 	echo Adding shortcuts to game mode. Please wait.
 	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh
 	sleep 15
@@ -324,7 +324,7 @@ EOF
 	steamos-add-to-steam /usr/bin/steamos-nested-desktop
 	sleep 15
 	echo steamos-nested-desktop shortcut has been added to game mode.
-	
+
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
