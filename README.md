@@ -41,6 +41,7 @@ A collection of tools that is packaged into an easy to use script that is stream
 1. Roblox now works thanks to slappy826! [demo guide here how to configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 2. Updated the Waydroid Toolbox script
 3. code cleanup / additional logic
+4. switch from gbm to minigm_gbm_mesa
 
 # What's New (as of April 25 2024)
 1. This works with latest stable SteamOS 3.5.19. There is no kernel change for SteamOS - it still uses 6.1.52-valve16-1 so this works right away no need for new kernel modules.\
