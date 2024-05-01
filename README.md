@@ -154,5 +154,5 @@ This mini guides are tailor-fitted for the Steam Deck that uses the script provi
 [How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg) \
 [Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30) \
 [Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) \
-[Activate and Configure Mantis Gamepad Pro](https://youtu.be/icVOh7IIfE0)
+[Activate and Configure Mantis Gamepad Pro](https://youtu.be/icVOh7IIfE0) \
 [How to Configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
