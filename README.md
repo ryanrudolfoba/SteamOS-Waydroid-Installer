@@ -1,6 +1,11 @@
 # SteamOS Android Waydroid Installer
 
-A shell script to easily install / uninstall Android ([via Waydroid](https://waydro.id/)) on the Steam Deck running on SteamOS.
+A collection of tools that is packaged into an easy to use script that is streamlined and tested to work with the Steam Deck running on SteamOS.
+* The main program that does all the heavy lifting is [Waydroid - a container-based approach to boot a full Android system on a regular GNU/Linux system.](https://github.com/waydroid/waydroid)
+* Waydroid Toolbox to easily toggle some configuration settings for Waydroid.
+* [waydroid_script](https://github.com/casualsnek/waydroid_script) to easily add the libndk ARM translation layer and widevine.
+* [libndk-fixer](https://github.com/Slappy826/libndk-fixer) is a fixed / improved libndk translation layer specific for Roblox.
+
 
 > **NOTE**\
 > If you are going to use this script for a video tutorial, PLEASE reference on your video where you got the script! This will make the support process easier!
@@ -133,7 +138,8 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 [Candy Crush Saga](https://youtu.be/XEcIYBDoOZk) - Mar 11 2024 \
 [BombSquad](https://youtu.be/vatf5uY_Eak) - Mar 16 2024 \
 [Project BloodStrike](https://youtu.be/pRwvZBMDpY0) - Mar 18 2024 \
-[NBA Infinite](https://youtu.be/LLw4GnWL58I) - Mar 23 2024
+[NBA Infinite](https://youtu.be/LLw4GnWL58I) - Mar 23 2024 \
+[Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
@@ -149,4 +155,4 @@ This mini guides are tailor-fitted for the Steam Deck that uses the script provi
 [Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30) \
 [Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) \
 [Activate and Configure Mantis Gamepad Pro](https://youtu.be/icVOh7IIfE0)
-
+[How to Configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
