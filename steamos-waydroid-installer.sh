@@ -58,7 +58,7 @@ AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 # target directory for the git command
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 
-# create AUR directorry where casualsnek script will be saved
+# create AUR directory where casualsnek script will be saved
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
@@ -88,18 +88,27 @@ else
 	exit
 fi
 
-# lets install binder
-echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$kernel_version && sudo depmod -a && sudo modprobe binder_linux
-
-if [ $? -eq 0 ]
+# lets install and enable the binder module so we can start waydroid right away
+lsmod | grep binder
+if [ $? -eq 1 ]
 then
-	echo binder kernel module has been installed!
+	echo binder kernel module not found! Installing binder!
+	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$kernel_version && \
+		echo -e "$current_password\n" | sudo -S depmod -a && sudo modprobe binder_linux && \
+		echo -e "$current_password\n" | sudo -S modprobe binder_linux
+
+	if [ $? -eq 0 ]
+	then
+		echo binder kernel module has been installed!
+	else
+		echo Error installing binder kernel module. Goodbye!
+ 		# cleanup remove binder kernel module
+		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
+		echo -e "$current_password\n" | sudo -S steamos-readonly enable
+		exit
+	fi
 else
-	echo Error installing binder kernel module. Goodbye!
- 	# cleanup remove binder kernel module
-	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
-	echo -e "$current_password\n" | sudo -S steamos-readonly enable
-	exit
+	echo binder kernel module already loaded! no need to reinstall binder!
 fi
 
 # ok lets install waydroid and cage
@@ -110,6 +119,7 @@ echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.p
 if [ $? -eq 0 ]
 then
 	echo waydroid and cage has been installed!
+	echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 else
 	echo Error installing waydroid and cage. Goodbye!
  	# cleanup remove binder kernel module
@@ -117,9 +127,6 @@ else
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	exit
 fi
-
-# waydroid has been installed. lets make sure the service doesnt start on startup
-echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
@@ -134,7 +141,7 @@ echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-container-start > 
 #!/bin/bash
 systemctl start waydroid-container.service
 sleep 5
-ln -s /dev/binderfs/binder /dev/anbox-binder 2> /dev/null
+ln -s /dev/binderfs/binder /dev/anbox-binder &> /dev/null
 chmod o=rw /dev/anbox-binder
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
@@ -192,13 +199,10 @@ if [ -z "\$1" ]
 fi
 EOF
 
-# lets enable the binder module so we can start waydroid right away
-echo -e "$current_password\n" | sudo -S modprobe binder_linux
-
 # custom configs done. lets move them to the correct location
 cp $PWD/extras/Waydroid-Toolbox.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
-ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox
+ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
 
 # lets copy cage and wlr-randr to the correct folder
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
@@ -216,6 +220,13 @@ echo -e "$current_password\n" | sudo -S cp extras/audio.rc /var/lib/waydroid/ove
 # copy custom hosts file from StevenBlack to block ads (adware + malware + fakenews + gambling + pr0n)
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
 echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overlay/system/etc
+
+# copy libndk_fixer.so - this is needed to play roblox
+echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/lib64
+echo -e "$current_password\n" | sudo -S cp extras/libndk_fixer.so /var/lib/waydroid/overlay/system/lib64
+
+# change GPU rendering to use minigbm_gbm_mesa
+echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
 
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
