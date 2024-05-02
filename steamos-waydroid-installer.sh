@@ -236,7 +236,7 @@ if [ -z "\$1" ]
 			sudo /usr/bin/waydroid-fix-controllers'
 
 	else
-		# launch option provided. launch Waydroid via cage but do not show full ui, launch the from the arguments
+		# launch option provided. launch Waydroid via cage but do not show full ui, launch the package from the arguments
 		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
 			/usr/bin/waydroid session start \$@ & \\
 
