@@ -1,4 +1,5 @@
 #!/bin/bash
+
 PASSWORD=$(zenity --password --title "sudo Password Authentication")
 echo $PASSWORD | sudo -S ls &> /dev/null
 if [ $? -ne 0 ]
@@ -7,6 +8,21 @@ then
 		zenity --text-info --title "Clover Toolbox" --width 400 --height 200
 	exit
 fi
+
+# function to add or update key=value in user properties file
+set_user_property() {
+	local file="/home/deck/Android_Waydroid/.user_properties"
+	local key=$1
+	local value=$2
+
+	if grep -q "^$key=" "$file"; then
+		# replace the key with new value
+		sed -i "s/^$key=.*/$key=$value/" "$file"
+	else
+		# append the key=value
+		echo "$key=$value" >> "$file"
+	fi
+}
 
 while true
 do
@@ -50,14 +66,15 @@ ADBLOCK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple -
 		# get the latest custom adblock hosts file from steven black github
 		echo -e $PASSWORD\n | sudo -S rm /var/lib/waydroid/overlay/system/etc/hosts.disable &> /dev/null
 		echo -e $PASSWORD\n | sudo -S wget https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts \
-		       -O /var/lib/waydroid/overlay/system/etc/hosts	
+			-O /var/lib/waydroid/overlay/system/etc/hosts
 
 		zenity --warning --title "Waydroid Toolbox" --text "Custom adblock hosts file has been updated!" --width 350 --height 75
 	fi
 
 elif [ "$Choice" == "LIBNDK" ]
 then
-LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+LIBNDK_Choice=$(zenity --width 800 --height 230 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+	FALSE AUTO "Use LIBNDK-FIXER for Roblox shortcut and original LIBNDK for everything else."\
 	FALSE LIBNDK "Use the original LIBNDK."\
 	FALSE LIBNDK-FIXER "Use LIBNDK-FIXER for Roblox."\
 	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
@@ -65,21 +82,35 @@ LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	-
 	then
 		echo User pressed CANCEL. Going back to main menu.
 
+	elif [ "$LIBNDK_Choice" == "AUTO" ]
+	then
+		# Edit waydroid prop file to use the original libndk_translation.so
+		sudo /usr/bin/waydroid-set-properties libndk translation
+
+		# Set the properties file
+		set_user_property "waydroid_libndk" "auto"
+
+		zenity --warning --title "Waydroid Toolbox" --text "libndk_fixer.so will be used for Roblox shortcut.\nlibndk_translation.so will be used for everything else." --width 350 --height 75
+
 	elif [ "$LIBNDK_Choice" == "LIBNDK" ]
 	then
 		# Edit waydroid prop file to use the original libndk_translation.so
-		echo -e $PASSWORD\n | sudo -S sed -i "s/ro.dalvik.vm.native.bridge=.*/ro.dalvik.vm.native.bridge=libndk_translation.so/g" \
-			/var/lib/waydroid/waydroid_base.prop 
+		sudo /usr/bin/waydroid-set-properties libndk translation
 
-		zenity --warning --title "Waydroid Toolbox" --text "libndk_translation.so is now in use!" --width 350 --height 75
+		# Set the properties file
+		set_user_property "waydroid_libndk" "translation"
+
+		zenity --warning --title "Waydroid Toolbox" --text "libndk_translation.so will be used." --width 350 --height 75
 
 	elif [ "$LIBNDK_Choice" == "LIBNDK-FIXER" ]
 	then
 		# Edit waydroid prop file to use the libndk_fixer.so
-		echo -e $PASSWORD\n | sudo -S sed -i "s/ro.dalvik.vm.native.bridge=.*/ro.dalvik.vm.native.bridge=libndk_fixer.so/g" \
-			/var/lib/waydroid/waydroid_base.prop
+		sudo /usr/bin/waydroid-set-properties libndk fixer
 
-		zenity --warning --title "Waydroid Toolbox" --text "libndk_fixer.so is now in use! \nYou can now play Roblox!" --width 350 --height 75
+		# Set the properties file
+		set_user_property "waydroid_libndk" "fixer"
+
+		zenity --warning --title "Waydroid Toolbox" --text "libndk_fixer.so will be used." --width 350 --height 75
 	fi
 
 elif [ "$Choice" == "AUDIO" ]
@@ -96,7 +127,7 @@ AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--
 	then
 		# Disable the custom audio config
 		echo -e $PASSWORD\n | sudo -S mv /var/lib/waydroid/overlay/system/etc/init/audio.rc \
-		       	/var/lib/waydroid/overlay/system/etc/init/audio.rc.disable &> /dev/null
+			/var/lib/waydroid/overlay/system/etc/init/audio.rc.disable &> /dev/null
 
 		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been disabled!" --width 350 --height 75
 
@@ -104,7 +135,7 @@ AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--
 	then
 		# Enable the custom audio config
 		echo -e $PASSWORD\n | sudo -S mv /var/lib/waydroid/overlay/system/etc/init/audio.rc.disable \
-		       	/var/lib/waydroid/overlay/system/etc/init/audio.rc &> /dev/null
+			/var/lib/waydroid/overlay/system/etc/init/audio.rc &> /dev/null
 
 		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been enabled!" --width 350 --height 75
 	fi

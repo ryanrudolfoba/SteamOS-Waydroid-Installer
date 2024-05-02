@@ -160,11 +160,26 @@ echo add > /sys/devices/virtual/input/input*/event*/uevent
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-fix-controllers
 
+echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-set-properties > /dev/null <<'EOF'
+#!/bin/bash
+if [ "\$1" == "libndk" ]
+then
+	if [ "\$2" == "fixer" ]
+	then
+		sed -i "s/^ro.dalvik.vm.native.bridge=.*/ro.dalvik.vm.native.bridge=libndk_fixer.so/g" /var/lib/waydroid/waydroid_base.prop
+	else
+		sed -i "s/^ro.dalvik.vm.native.bridge=.*/ro.dalvik.vm.native.bridge=libndk_translation.so/g" /var/lib/waydroid/waydroid_base.prop
+	fi
+fi
+EOF
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-set-properties
+
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S tee /etc/sudoers.d/zzzzzzzz-waydroid > /dev/null <<'EOF'
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-stop
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-start
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-fix-controllers
+deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-set-properties
 EOF
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
@@ -172,10 +187,42 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
-export shortcut=\$1
+USER_PROPERTIES_FILE="/home/deck/Android_Waydroid/.user_properties"
+if [ -f "\${USER_PROPERTIES_FILE}" ]
+	source "\${USER_PROPERTIES_FILE}"
+fi
 
-killall -9 cage &> /dev/null
+set_libndk() {
+	local package="\$1"
+
+	if [ "\${waydroid_libndk}" != "fixer" ] && [ "\${waydroid_libndk}" != "translation" ] && [ "\${package}" == "com.roblox.client" ]
+	then
+		sudo /usr/bin/waydroid-set-properties libndk fixer
+	elif [ "\${waydroid_libndk}" == "fixer" ]
+	then
+		sudo /usr/bin/waydroid-set-properties libndk fixer
+	else
+		sudo /usr/bin/waydroid-set-properties libndk translation
+	fi
+}
+
+# try to kill cage gracefully using SIGTERM
+timeout 5s killall -15 cage -w &> /dev/null
+if [ \$? -eq 124 ]
+then
+	# timed out, process still active, let's force some more usin SIGINT
+	timeout 5s killall -2 cage -w &> /dev/null
+	if [ \$? -eq 124 ]
+	then
+		# timed out again, this will shut it down for good using SIGKILL
+		timeout 5s killall -9 cage -w &> /dev/null
+	fi
+fi
+
 sudo /usr/bin/waydroid-container-stop
+
+set_libndk "\$1"
+
 sudo /usr/bin/waydroid-container-start
 
 # Check if non Steam shortcut has the game / app as the launch option
@@ -184,19 +231,24 @@ if [ -z "\$1" ]
 		# launch option not provided. launch Waydroid via cage and show the full ui right away
 		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ;	\\
 			/usr/bin/waydroid show-full-ui \$@ & \\
+
 			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers '
+			sudo /usr/bin/waydroid-fix-controllers'
+
 	else
-		# launch option provided. launch Waydroid via cage but do not show full ui yet
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
+		# launch option provided. launch Waydroid via cage but do not show full ui, launch the from the arguments
+		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
 			/usr/bin/waydroid session start \$@ & \\
+
 			sleep 15 ; \\
 			sudo /usr/bin/waydroid-fix-controllers ; \\
 
-			# launch the android app provided from the launch option
-			# sleep 10 ; \\
-			/usr/bin/waydroid app launch \$shortcut  &'
+			sleep 1 ; \\
+			/usr/bin/waydroid app launch \$PACKAGE &'
 fi
+
+# reset libndk
+set_libndk ""
 EOF
 
 # custom configs done. lets move them to the correct location
