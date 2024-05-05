@@ -225,9 +225,6 @@ echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overla
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/lib64
 echo -e "$current_password\n" | sudo -S cp extras/libndk_fixer.so /var/lib/waydroid/overlay/system/lib64
 
-# change GPU rendering to use minigbm_gbm_mesa
-echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
-
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
@@ -251,8 +248,13 @@ else
 	if [ $? -eq 0 ]
 	then
 		echo Waydroid initialization completed without errors!
+
 	else
 		echo Waydroid did not initialize correctly. Performing cleanup!
+		echo Most probably this is due to python issue. Attach this screenshot when filing a bug report!
+		echo Output of whereis python - $(whereis python)
+		echo Output of which python - $(which python)
+		echo Output of python version - $(python -V)
 
 		# remove binder kernel module
 		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
@@ -340,3 +342,7 @@ EOF
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 fi
+
+# change GPU rendering to use minigbm_gbm_mesa
+echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
+
