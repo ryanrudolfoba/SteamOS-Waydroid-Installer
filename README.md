@@ -37,6 +37,11 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of May 05 2024)
+1. Minor fix - make minigbm_gbm_mesa as default. This should make [Roblox performance better.](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
+2. Waydroid Toolbox - added option to toggle between gbm or minigbm_gbm_mesa.
+3. Added verbose error message when Waydroid initialization fails during install.
+
 # What's New (as of May 01 2024)
 1. Roblox now works thanks to slappy826! [demo guide here how to configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 2. Updated the Waydroid Toolbox script
