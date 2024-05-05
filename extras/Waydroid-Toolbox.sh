@@ -10,14 +10,15 @@ fi
 
 while true
 do
-Choice=$(zenity --width 850 --height 300 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
+Choice=$(zenity --width 850 --height 320 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
 	--column "Select One" \
 	--column "Option" \
 	--column="Description - Read this carefully!"\
 	FALSE ADBLOCK "Disable or update the custom adblock hosts file."\
 	FALSE AUDIO "Enable or disable the custom audio fixes."\
+	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
+	FALSE LIBNDK "Configure the ARM translation layer to use - LIBNDK or LIBNDK-FIXER."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
-	FALSE LIBNDK "Configure the ARM translation layer to use."\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
 
@@ -80,6 +81,33 @@ LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	-
 			/var/lib/waydroid/waydroid_base.prop
 
 		zenity --warning --title "Waydroid Toolbox" --text "libndk_fixer.so is now in use! \nYou can now play Roblox!" --width 350 --height 75
+	fi
+
+elif [ "$Choice" == "GPU" ]
+then
+GPU_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+	FALSE GBM "Use gbm config for GPU."\
+	FALSE MINIGBM "Use minigbm_gbm_mesa for GPU (default)."\
+	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
+	if [ $? -eq 1 ] || [ "$GPU_Choice" == "MENU" ]
+	then
+		echo User pressed CANCEL. Going back to main menu.
+
+	elif [ "$GPU_Choice" == "GBM" ]
+	then
+		# Edit waydroid prop file to use gbm
+		echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=gbm/g" \
+			/var/lib/waydroid/waydroid_base.prop 
+
+		zenity --warning --title "Waydroid Toolbox" --text "gbm is now in use!" --width 350 --height 75
+
+	elif [ "$GPU_Choice" == "MINIGBM" ]
+	then
+		# Edit waydroid prop file to use minigbm_gbm_mesa
+		echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" \
+			/var/lib/waydroid/waydroid_base.prop
+
+		zenity --warning --title "Waydroid Toolbox" --text "minigbm_gbm_mesa is now in use!" --width 350 --height 75
 	fi
 
 elif [ "$Choice" == "AUDIO" ]
@@ -148,3 +176,4 @@ then
 	exit
 fi
 done
+echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
