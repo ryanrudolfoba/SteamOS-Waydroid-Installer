@@ -42,6 +42,10 @@ A collection of tools that is packaged into an easy to use script that is stream
 2. Waydroid Toolbox - added option to toggle between gbm or minigbm_gbm_mesa.
 3. Added verbose error message when Waydroid initialization fails during install.
 
+**Updated Waydroid Toolbox to easily configure some aspects of Waydroid**
+![image](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/assets/98122529/5e8009ec-e06e-47a6-91eb-7a7efbf43ec1)
+
+
 # What's New (as of May 01 2024)
 1. Roblox now works thanks to slappy826! [demo guide here how to configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 2. Updated the Waydroid Toolbox script
