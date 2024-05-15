@@ -4,6 +4,7 @@ clear
 
 echo SteamOS Waydroid Installer Script by ryanrudolf
 echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
+echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
 # define variables here
@@ -30,7 +31,7 @@ cleanup_exit () {
 	# delete cage binaries
 	echo -e "$current_password\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr &> /dev/null
 	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid &> /dev/null
-	echo -e "$current_password\n" | sudo -S steamos-readonly enable
+	echo -e "$current_password\n" | sudo -S steamos-readonly enable &> /dev/null
 	echo Cleanup completed. Please open an issue on the GitHub repo or leave a comment on the YT channel - 10MinuteSteamDeckGamer.
 	exit
 }
@@ -102,8 +103,7 @@ then
 	echo pacman keyring has been initialized!
 else
 	echo Error initializing keyring! Run the script again to install waydroid.
-	echo -e "$current_password\n" | sudo -S steamos-readonly enable
-	exit
+	cleanup_exit
 fi
 
 # lets install and enable the binder module so we can start waydroid right away
