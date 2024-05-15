@@ -6,10 +6,34 @@ echo SteamOS Waydroid Installer Script by ryanrudolf
 echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 sleep 2
 
+# define variables here
 kernel_version=$(uname -r)
-stable1=6.1.52-valve9-1-neptune-61
-preview1=6.1.52-valve14-1-neptune-61
-preview2=6.1.52-valve16-1-neptune-61
+kernel1=6.1.52-valve9-1-neptune-61
+kernel2=6.1.52-valve14-1-neptune-61
+kernel3=6.1.52-valve16-1-neptune-61
+kernel4=6.5.0-valve5-1-neptune-65-g6efe817cc486
+AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
+DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
+
+# define functions here
+cleanup_exit () {
+	# call this function to perform cleanup when a sanity check fails
+	# remove binder kernel module
+	echo Something went wrong! Performing cleanup. Run the script again to install waydroid.
+	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst &> /dev/null
+	# remove installed packages
+	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc &> /dev/null
+	# delete the waydroid directories
+	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/AUR &> /dev/null
+	# delete waydroid config and scripts
+	echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid* &> /dev/null
+	# delete cage binaries
+	echo -e "$current_password\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo -S steamos-readonly enable
+	echo Cleanup completed. Please open an issue on the GitHub repo or leave a comment on the YT channel - 10MinuteSteamDeckGamer.
+	exit
+}
 
 # sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
 xdpyinfo &> /dev/null
@@ -22,9 +46,9 @@ else
 	exit
 fi
 
-# check kernel version. exit immediately if not on the supported kernel
+# sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $stable1 ] || [ $kernel_version = $preview1 ] || [ $kernel_version = $preview2 ]
+if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
@@ -32,7 +56,7 @@ else
 	exit
 fi
 
-# check if sudo password is already set
+# sanity check - make sure sudo password is already set
 if [ "$(passwd --status $(whoami) | tr -s " " | cut -d " " -f 2)" == "P" ]
 then
 	read -s -p "Please enter current sudo password: " current_password ; echo
@@ -52,25 +76,19 @@ else
 	exit
 fi
 
-# github URL for casualsnek
-AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
-
-# target directory for the git command
-DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
-
+# sanity checks are all good. lets go!
 # create AUR directory where casualsnek script will be saved
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
-echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK
+echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK &> /dev/null
 
 if [ $? -eq 0 ]
 then
 	echo Casualsnek repo has been successfully cloned!
 else
-	echo Error cloning Casualsnek repo! Goodbye!
-	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*
-	exit
+	echo Error cloning Casualsnek repo! Run the script again to install waydroid.
+	cleanup_exit
 fi
 
 # disable the SteamOS readonly
@@ -83,13 +101,13 @@ if [ $? -eq 0 ]
 then
 	echo pacman keyring has been initialized!
 else
-	echo Error initializing keyring! Goodbye!
+	echo Error initializing keyring! Run the script again to install waydroid.
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	exit
 fi
 
 # lets install and enable the binder module so we can start waydroid right away
-lsmod | grep binder
+lsmod | grep binder &> /dev/null
 if [ $? -eq 1 ]
 then
 	echo binder kernel module not found! Installing binder!
@@ -101,11 +119,8 @@ then
 	then
 		echo binder kernel module has been installed!
 	else
-		echo Error installing binder kernel module. Goodbye!
- 		# cleanup remove binder kernel module
-		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
-		echo -e "$current_password\n" | sudo -S steamos-readonly enable
-		exit
+		echo Error installing binder kernel module. Run the script again to install waydroid.
+		cleanup_exit
 	fi
 else
 	echo binder kernel module already loaded! no need to reinstall binder!
@@ -114,18 +129,15 @@ fi
 # ok lets install waydroid and cage
 echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.pkg.tar.zst waydroid/dnsmasq-2.89-1-x86_64.pkg.tar.zst \
 	waydroid/lxc-1\:5.0.2-1-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.74-1-x86_64.pkg.tar.zst waydroid/libgbinder-1.1.35-1-x86_64.pkg.tar.zst \
-	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst --noconfirm --overwrite "*"
+	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst --noconfirm --overwrite "*" &> /dev/null
 
 if [ $? -eq 0 ]
 then
 	echo waydroid and cage has been installed!
 	echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 else
-	echo Error installing waydroid and cage. Goodbye!
- 	# cleanup remove binder kernel module
- 	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
-	echo -e "$current_password\n" | sudo -S steamos-readonly enable
-	exit
+	echo Error installing waydroid and cage. Run the script again to install waydroid.
+	cleanup_exit
 fi
 
 # lets install the custom config files
@@ -250,31 +262,12 @@ else
 		echo Waydroid initialization completed without errors!
 
 	else
-		echo Waydroid did not initialize correctly. Performing cleanup!
+		echo Waydroid did not initialize correctly
 		echo Most probably this is due to python issue. Attach this screenshot when filing a bug report!
 		echo Output of whereis python - $(whereis python)
 		echo Output of which python - $(which python)
 		echo Output of python version - $(python -V)
-
-		# remove binder kernel module
-		echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst
-
-		# remove installed packages
-		echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
-
-		# delete the waydroid directories and config
-		echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/application/waydroid* ~/AUR
-
-		# delete waydroid config and scripts
-		echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
-  		/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
-
-		# delete cage binaries
-		sudo rm /usr/bin/cage /usr/bin/wlr-randr
-		sudo rm -rf ~/Android_Waydroid &> /dev/null
-
-		echo Cleanup completed! Try running the install script again! Goodbye!
-		exit
+		cleanup_exit
 	fi
 
 	# firewall config for waydroid0 interface to forward packets for internet to work
@@ -287,13 +280,15 @@ else
 	# casualsnek script
 	cd ~/AUR/waydroid/waydroid_script
 	python3 -m venv venv
-	venv/bin/pip install -r requirements.txt
+	venv/bin/pip install -r requirements.txt &> /dev/null
 	echo -e "$current_password\n" | sudo -S venv/bin/python3 main.py install {libndk,widevine}
 	if [ $? -eq 0 ]
 	then
 		echo Casualsnek script done.
+		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
 	else
-		echo Error with casualsnek script.
+		echo Error with casualsnek script. Run the script again.
+		cleanup_exit
 	fi
 
 	# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
