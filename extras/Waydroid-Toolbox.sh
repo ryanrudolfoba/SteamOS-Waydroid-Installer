@@ -10,12 +10,13 @@ fi
 
 while true
 do
-Choice=$(zenity --width 850 --height 320 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
+Choice=$(zenity --width 850 --height 350 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
 	--column "Select One" \
 	--column "Option" \
 	--column="Description - Read this carefully!"\
 	FALSE ADBLOCK "Disable or update the custom adblock hosts file."\
 	FALSE AUDIO "Enable or disable the custom audio fixes."\
+	FALSE SERVICE "Start or Stop the Waydroid container service."\
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
 	FALSE LIBNDK "Configure the ARM translation layer to use - LIBNDK or LIBNDK-FIXER."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
@@ -135,6 +136,35 @@ AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--
 		       	/var/lib/waydroid/overlay/system/etc/init/audio.rc &> /dev/null
 
 		zenity --warning --title "Waydroid Toolbox" --text "Custom audio config has been enabled!" --width 350 --height 75
+	fi
+
+elif [ "$Choice" == "SERVICE" ]
+then
+SERVICE_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+	FALSE START "Start the Waydroid container service."\
+	FALSE STOP "Stop the Waydroid container service."\
+	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
+	if [ $? -eq 1 ] || [ "$SERVICE_Choice" == "MENU" ]
+	then
+		echo User pressed CANCEL. Going back to main menu.
+
+	elif [ "$SERVICE_Choice" == "START" ]
+	then
+		# start the waydroid container service
+		echo -e $PASSWORD\n | sudo -S waydroid-container-start
+		waydroid session start &
+		sleep 5
+
+		zenity --warning --title "Waydroid Toolbox" --text "Waydroid container service has been started!" --width 350 --height 75
+
+	elif [ "$SERVICE_Choice" == "STOP" ]
+	then
+		# stop the waydroid container service
+		waydroid session stop
+		echo -e $PASSWORD\n | sudo -S waydroid-container-stop
+		pkill kwallet
+
+		zenity --warning --title "Waydroid Toolbox" --text "Waydroid container service has been stopped!" --width 350 --height 75
 	fi
 
 elif [ "$Choice" == "LAUNCHER" ]
