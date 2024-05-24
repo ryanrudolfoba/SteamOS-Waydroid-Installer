@@ -14,7 +14,10 @@ kernel2=6.1.52-valve14-1-neptune-61
 kernel3=6.1.52-valve16-1-neptune-61
 kernel4=6.5.0-valve5-1-neptune-65-g6efe817cc486
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
+AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
+STEAMOS_VERSION=$(grep VERSION_ID /etc/os-release | cut -d "=" -f 2)
+
 
 # define functions here
 cleanup_exit () {
@@ -88,8 +91,16 @@ if [ $? -eq 0 ]
 then
 	echo Casualsnek repo has been successfully cloned!
 else
-	echo Error cloning Casualsnek repo! Run the script again to install waydroid.
-	cleanup_exit
+	echo Error cloning Casualsnek repo! Trying to clone again using backup repo.
+	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK2 $DIR_CASUALSNEK &> /dev/null
+
+	if [ $? -eq 0 ]
+	then
+		echo Casualsnek repo has been successfully cloned!
+	else
+		echo Error cloning Casualsnek repo! This failed twice already! Maybe your internet connection is the problem?
+		cleanup_exit
+	fi
 fi
 
 # disable the SteamOS readonly
