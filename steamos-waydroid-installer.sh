@@ -180,6 +180,9 @@ echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-sto
 echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-fix-controllers > /dev/null <<'EOF'
 #!/bin/bash
 echo add > /sys/devices/virtual/input/input*/event*/uevent
+
+# fix for scoped storage permission issue
+waydroid shell sh /system/etc/nodataperm.sh
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-fix-controllers
 
