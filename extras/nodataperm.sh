@@ -11,5 +11,3 @@ chmod 777 -R /data/media/0/Android/obb
 chmod 777 -R /data/media/0/Android/data
 chmod 777 -R /mnt/*/*/*/*/Android/obb
 chmod 777 -R /mnt/*/*/*/*/Android/data
-
-echo hello > /sdcard
