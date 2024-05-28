@@ -37,6 +37,8 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of May 28 2024)
+1. Fix for scoped storage permission issue. Apps can now write to data / obb folder. [FIFA 14 now works because of this!](https://youtu.be/_10oQK-ionY?si=bfIBvHPv_spyLPCy)
 # What's New (as of May 05 2024)
 1. Minor fix - make minigbm_gbm_mesa as default. This should make [Roblox performance better.](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 2. Waydroid Toolbox - added option to toggle between gbm or minigbm_gbm_mesa.
@@ -150,7 +152,8 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 [NBA Infinite](https://youtu.be/LLw4GnWL58I) - Mar 23 2024 \
 [Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl) - May 01 2024 \
 [Plants vs Zombies 2 - Reflourished](https://youtu.be/RurH-XTTSDQ) - May 17 2024 \
-[Wuthering Waves](https://youtu.be/KfQVCTtpiNI) - May 23 2024
+[Wuthering Waves](https://youtu.be/KfQVCTtpiNI) - May 23 2024 \
+[FIFA 14](https://youtu.be/_10oQK-ionY?si=bfIBvHPv_spyLPCy) - May 28 2024
 
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
