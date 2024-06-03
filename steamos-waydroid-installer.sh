@@ -251,6 +251,10 @@ echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overla
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/lib64
 echo -e "$current_password\n" | sudo -S cp extras/libndk_fixer.so /var/lib/waydroid/overlay/system/lib64
 
+# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
+chmod +x extras/nodataperm.sh
+echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
+
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
