@@ -153,7 +153,8 @@ If you wish to contribute, please check the [google sheets](https://docs.google.
 [Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl) - May 01 2024 \
 [Plants vs Zombies 2 - Reflourished](https://youtu.be/RurH-XTTSDQ) - May 17 2024 \
 [Wuthering Waves](https://youtu.be/KfQVCTtpiNI) - May 23 2024 \
-[FIFA 14](https://youtu.be/_10oQK-ionY?si=bfIBvHPv_spyLPCy) - May 28 2024
+[FIFA 14](https://youtu.be/_10oQK-ionY?si=bfIBvHPv_spyLPCy) - May 28 2024 \
+[KOF Arena / King of Fighters Arena](https://youtu.be/XlIB9MwyQdw?si=zLa5AAPyrAXiKct8) - June 18 2024
 
 ## Games Tested by Other Users
 Please check this [google sheets](https://docs.google.com/spreadsheets/d/1pyqQw2XKJZBtGYBV0i7C510dyjVSU2YndhaTOEDavdU/edit?usp=sharing) for games tested by other users. \
