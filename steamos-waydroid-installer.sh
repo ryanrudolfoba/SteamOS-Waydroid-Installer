@@ -199,7 +199,7 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
-export shortcut=\$1
+export shortcut=$1
 
 # Kill any running instances of cage
 killall -9 cage &> /dev/null
@@ -209,10 +209,10 @@ sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 
 # Get the current screen resolution
-resolution=$(xrandr | grep '*' | awk '{print \$1}')
+resolution=$(xrandr | grep '*' | awk '{print $1}')
 
 # Check if non Steam shortcut has the game / app as the launch option
-if [ -z "\$1" ]; then
+if [ -z "$1" ]; then
 # launch option not provided. launch Waydroid via cage and show the full ui right away
     cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${resolution}@60Hz; \
         /usr/bin/waydroid show-full-ui \$@ & \
