@@ -199,32 +199,35 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
-export shortcut=\$1
+export shortcut=$1
 
+# Kill any running instances of cage
 killall -9 cage &> /dev/null
+
+# Restart the Waydroid container
 sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 
-# Check if non Steam shortcut has the game / app as the launch option
-if [ -z "\$1" ]
-	then
-		# launch option not provided. launch Waydroid via cage and show the full ui right away
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ;	\\
-			/usr/bin/waydroid show-full-ui \$@ & \\
-			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers '
-	else
-		# launch option provided. launch Waydroid via cage but do not show full ui yet
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
-			/usr/bin/waydroid session start \$@ & \\
-			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers ; \\
+# Get the current screen resolution
+resolution=$(xrandr | grep '*' | awk '{print $1}')
 
-			# launch the android app provided from the launch option
-			# sleep 10 ; \\
-			/usr/bin/waydroid app launch \$shortcut  &'
+# Check if a non-Steam shortcut has the game/app as the launch option
+if [ -z "$1" ]; then
+    # Launch option not provided. Launch Waydroid via cage and show the full UI right away
+    cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${resolution}@60Hz; \
+        /usr/bin/waydroid show-full-ui \$@ & \
+        sleep 15; \
+        sudo /usr/bin/waydroid-fix-controllers"
+else
+    # Launch option provided. Launch Waydroid via cage but do not show full UI yet
+    cage -- bash -c "wlr-randr --output X11-1 --custom-mode ${resolution}@60Hz; \
+        /usr/bin/waydroid session start \$@ & \
+        sleep 15; \
+        sudo /usr/bin/waydroid-fix-controllers; \
+
+        # Launch the Android app provided from the launch option
+        /usr/bin/waydroid app launch \$shortcut &"
 fi
-EOF
 
 # custom configs done. lets move them to the correct location
 cp $PWD/extras/Waydroid-Toolbox.sh ~/Android_Waydroid
