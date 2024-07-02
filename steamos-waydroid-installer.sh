@@ -228,6 +228,7 @@ else
         # Launch the Android app provided from the launch option
         /usr/bin/waydroid app launch \$shortcut &"
 fi
+EOF
 
 # custom configs done. lets move them to the correct location
 cp $PWD/extras/Waydroid-Toolbox.sh ~/Android_Waydroid
