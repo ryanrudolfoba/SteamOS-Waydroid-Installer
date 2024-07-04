@@ -78,7 +78,7 @@ SteamOS has been stuck on 6.1.52-valve16-1 for several releases now so I think t
 ## [Click here to view previous CHANGELOGS](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/CHANGELOG.md)
 
 # Install Steps
-Read the sections below carefuly!
+Read the sections below carefully!
 
 ## Prerequisites for SteamOS
 1. sudo password should already be set by the end user. If sudo password is not yet set, the script will ask to set it up.
