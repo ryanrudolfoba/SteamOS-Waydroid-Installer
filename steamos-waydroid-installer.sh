@@ -124,8 +124,7 @@ if [ $? -eq 1 ]
 then
 	echo binder kernel module not found! Installing binder!
 	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$kernel_version && \
-		echo -e "$current_password\n" | sudo -S depmod -a && sudo modprobe binder_linux && \
-		echo -e "$current_password\n" | sudo -S modprobe binder_linux
+		echo -e "$current_password\n" | sudo -S depmod -a && echo -e "$current_password\n" | sudo -S modprobe binder_linux
 
 	if [ $? -eq 0 ]
 	then
