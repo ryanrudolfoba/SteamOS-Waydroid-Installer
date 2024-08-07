@@ -18,7 +18,6 @@ Choice=$(zenity --width 850 --height 350 --list --radiolist --multiple 	--title 
 	FALSE AUDIO "Enable or disable the custom audio fixes."\
 	FALSE SERVICE "Start or Stop the Waydroid container service."\
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
-	FALSE LIBNDK "Configure the ARM translation layer to use - LIBNDK or LIBNDK-FIXER."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
@@ -55,33 +54,6 @@ ADBLOCK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple -
 		       -O /var/lib/waydroid/overlay/system/etc/hosts	
 
 		zenity --warning --title "Waydroid Toolbox" --text "Custom adblock hosts file has been updated!" --width 350 --height 75
-	fi
-
-elif [ "$Choice" == "LIBNDK" ]
-then
-LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
-	FALSE LIBNDK "Use the original LIBNDK."\
-	FALSE LIBNDK-FIXER "Use LIBNDK-FIXER for Roblox."\
-	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
-	if [ $? -eq 1 ] || [ "$LIBNDK_Choice" == "MENU" ]
-	then
-		echo User pressed CANCEL. Going back to main menu.
-
-	elif [ "$LIBNDK_Choice" == "LIBNDK" ]
-	then
-		# Edit waydroid prop file to use the original libndk_translation.so
-		echo -e $PASSWORD\n | sudo -S sed -i "s/ro.dalvik.vm.native.bridge=.*/ro.dalvik.vm.native.bridge=libndk_translation.so/g" \
-			/var/lib/waydroid/waydroid_base.prop 
-
-		zenity --warning --title "Waydroid Toolbox" --text "libndk_translation.so is now in use!" --width 350 --height 75
-
-	elif [ "$LIBNDK_Choice" == "LIBNDK-FIXER" ]
-	then
-		# Edit waydroid prop file to use the libndk_fixer.so
-		echo -e $PASSWORD\n | sudo -S sed -i "s/ro.dalvik.vm.native.bridge=.*/ro.dalvik.vm.native.bridge=libndk_fixer.so/g" \
-			/var/lib/waydroid/waydroid_base.prop
-
-		zenity --warning --title "Waydroid Toolbox" --text "libndk_fixer.so is now in use! \nYou can now play Roblox!" --width 350 --height 75
 	fi
 
 elif [ "$Choice" == "GPU" ]
