@@ -239,6 +239,9 @@ if [ -z "\$1" ]
 			# sleep 10 ; \\
 			/usr/bin/waydroid app launch \$shortcut  &'
 fi
+
+# Reset cage so it doesn't nuke the display environment variable
+cage -- bash -c 'wlr-randr'
 EOF
 
 # custom configs done. lets move them to the correct location
