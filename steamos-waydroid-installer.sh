@@ -203,8 +203,8 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 #!/bin/bash
 
-# check if waydroid exists
-if ! [ -f /usr/bin/waydroid ]
+# Check if waydroid exists
+if [ ! -f /usr/bin/waydroid ]
 then
 	kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \\
 	\\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \\
@@ -214,10 +214,21 @@ then
 	exit
 fi
 
-export shortcut=\$1
+# Try to kill cage gracefully using SIGTERM
+timeout 5s killall -15 cage -w &> /dev/null
+if [ \$? -eq 124 ]
+then
+	# Timed out, process still active, let's force some more using SIGINT
+	timeout 5s killall -2 cage -w &> /dev/null
+	if [ \$? -eq 124 ]
+	then
+		# Timed out again, this will shut it down for good using SIGKILL
+		timeout 5s killall -9 cage -w &> /dev/null
+	fi
+fi
 
-killall -9 cage &> /dev/null
 sudo /usr/bin/waydroid-container-stop
+
 sudo /usr/bin/waydroid-container-start
 
 # Check if non Steam shortcut has the game / app as the launch option
@@ -226,18 +237,19 @@ if [ -z "\$1" ]
 		# launch option not provided. launch Waydroid via cage and show the full ui right away
 		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ;	\\
 			/usr/bin/waydroid show-full-ui \$@ & \\
+
 			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers '
+			sudo /usr/bin/waydroid-fix-controllers'
 	else
-		# launch option provided. launch Waydroid via cage but do not show full ui yet
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
+		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments
+		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
 			/usr/bin/waydroid session start \$@ & \\
+
 			sleep 15 ; \\
 			sudo /usr/bin/waydroid-fix-controllers ; \\
 
-			# launch the android app provided from the launch option
-			# sleep 10 ; \\
-			/usr/bin/waydroid app launch \$shortcut  &'
+			sleep 1 ; \\
+			/usr/bin/waydroid app launch \$PACKAGE &'
 fi
 
 # Reset cage so it doesn't nuke the display environment variable
