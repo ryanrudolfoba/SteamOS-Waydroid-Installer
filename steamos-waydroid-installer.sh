@@ -263,10 +263,6 @@ echo -e "$current_password\n" | sudo -S cp extras/audio.rc /var/lib/waydroid/ove
 echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
 echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overlay/system/etc
 
-# copy libndk_fixer.so - this is needed to play roblox
-echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/lib64
-echo -e "$current_password\n" | sudo -S cp extras/libndk_fixer.so /var/lib/waydroid/overlay/system/lib64
-
 # copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
 chmod +x extras/nodataperm.sh
 echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
