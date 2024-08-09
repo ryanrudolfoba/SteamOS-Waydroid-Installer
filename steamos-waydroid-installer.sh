@@ -8,12 +8,16 @@ echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
 # define variables here
-kernel_version=$(uname -r)
+kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 kernel1=6.1.52-valve9-1-neptune-61
 kernel2=6.1.52-valve14-1-neptune-61
 kernel3=6.1.52-valve16-1-neptune-61
-kernel4=6.5.0-valve5-1-neptune-65-g6efe817cc486
-kernel5=6.5.0-valve12-1-neptune-65-g1889664e19fc
+kernel4=6.5.0-valve5-1-neptune-65
+kernel5=6.5.0-valve12-1-neptune-65
+kernel6=6.5.0-valve16-1-neptune-65
+#kernel4=6.5.0-valve5-1-neptune-65-g6efe817cc486
+#kernel5=6.5.0-valve12-1-neptune-65-g1889664e19fc
+#kernel6=6.5.0-valve16-1-neptune-65-gc9ad4106624e
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -25,7 +29,7 @@ cleanup_exit () {
 	# call this function to perform cleanup when a sanity check fails
 	# remove binder kernel module
 	echo Something went wrong! Performing cleanup. Run the script again to install waydroid.
-	echo -e "$current_password\n" | sudo -S rm /lib/modules/$kernel_version/binder_linux.ko.zst &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst &> /dev/null
 	# remove installed packages
 	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc &> /dev/null
 	# delete the waydroid directories
@@ -53,7 +57,7 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ]
+if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
@@ -123,8 +127,9 @@ lsmod | grep binder &> /dev/null
 if [ $? -eq 1 ]
 then
 	echo binder kernel module not found! Installing binder!
-	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$kernel_version && \
-		echo -e "$current_password\n" | sudo -S depmod -a && echo -e "$current_password\n" | sudo -S modprobe binder_linux
+	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
+		echo -e "$current_password\n" | sudo -S depmod -a && sudo modprobe binder_linux && \
+		echo -e "$current_password\n" | sudo -S modprobe binder_linux
 
 	if [ $? -eq 0 ]
 	then
@@ -139,8 +144,8 @@ fi
 
 # ok lets install waydroid and cage
 echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.pkg.tar.zst waydroid/dnsmasq-2.89-1-x86_64.pkg.tar.zst \
-	waydroid/lxc-1\:5.0.2-1-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.74-1-x86_64.pkg.tar.zst waydroid/libgbinder-1.1.35-1-x86_64.pkg.tar.zst \
-	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.2-1-any.pkg.tar.zst --noconfirm --overwrite "*" &> /dev/null
+	waydroid/lxc-1\:5.0.3-1-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.74-1-x86_64.pkg.tar.zst waydroid/libgbinder-1.1.35-1-x86_64.pkg.tar.zst \
+	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.3-1-any.pkg.tar.zst --noconfirm --overwrite "*" &> /dev/null
 
 if [ $? -eq 0 ]
 then
@@ -201,12 +206,12 @@ cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
 # check if waydroid exists
 if ! [ -f /usr/bin/waydroid ]
 then
-        kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \\
-        \\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \\
-        \\nLaunch the Waydroid install script again to re-install Waydroid! \\
-        \\nSteamOS version: \$(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \\
-        \\nKernel version: \$(uname -r | cut -d "-" -f 1-5)"
-        exit
+	kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \\
+	\\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \\
+	\\nLaunch the Waydroid install script again to re-install Waydroid! \\
+	\\nSteamOS version: \$(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \\
+	\\nKernel version: \$(uname -r | cut -d "-" -f 1-5)"
+	exit
 fi
 
 export shortcut=\$1
@@ -369,4 +374,5 @@ fi
 
 # change GPU rendering to use minigbm_gbm_mesa
 echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
+
 
