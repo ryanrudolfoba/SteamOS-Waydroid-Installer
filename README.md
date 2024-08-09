@@ -37,8 +37,18 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of Aug 09 2024)
+1. support for SteamOS 3.6.9
+2. aydroid bump from 1.4.2 to 1.4.3
+3. lxc bump from 0.2 to 0.3
+4. binder kernel môdule re-built using latest May26 commits
+5. cleanup the binder kernel folder names so its easier to read
+6. remove libndk-fixer (not needed anymore for Roblox)
+7. Add sanity check on the waydroid launcher
+
 # What's New (as of May 28 2024)
 1. Fix for scoped storage permission issue. Apps can now write to data / obb folder. [FIFA 14 now works because of this!](https://youtu.be/_10oQK-ionY?si=bfIBvHPv_spyLPCy)
+
 # What's New (as of May 05 2024)
 1. Minor fix - make minigbm_gbm_mesa as default. This should make [Roblox performance better.](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 2. Waydroid Toolbox - added option to toggle between gbm or minigbm_gbm_mesa.
