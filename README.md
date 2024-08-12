@@ -113,6 +113,18 @@ Read the sections below carefully!
 1. Go to Game Mode.
 2. Run the Android_Waydroid_Cage launcher.
 
+## Steam Deck Controller Layout
+[Thanks to DanielLester83!](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/134)
+
+Search 'Waydroid' in the community templates or maybe this link would work steam://controllerconfig/3665077347/3304296813
+
+This maps the back buttons to function keys for use with android key remappers like this https://github.com/keymapperorg/KeyMapper
+
+This work around seems to be needed because steaminput does not seem to pass the Search/OS/Windows/Meta Key to Android.
+
+This layout also tweaks the trackpad inputs.
+
+
 ## I dont want this anymore! I want to uninstall!
 1. Go to Desktop Mode.
 2. There will be an icon called Waydroid Toolbox on the desktop.
