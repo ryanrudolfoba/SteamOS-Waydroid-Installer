@@ -123,23 +123,24 @@ else
 fi
 
 # lets install and enable the binder module so we can start waydroid right away
-lsmod | grep binder &> /dev/null
-if [ $? -eq 1 ]
+binder_loaded=$(lsmod | grep -q binder; echo $?)
+binder_differs=$(cmp -s binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
+if [ "$binder_loaded" -ne 0 ] || [ "$binder_differs" -ne 0 ]
 then
-	echo binder kernel module not found! Installing binder!
-	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
-		echo -e "$current_password\n" | sudo -S depmod -a && sudo modprobe binder_linux && \
-		echo -e "$current_password\n" | sudo -S modprobe binder_linux
+        echo Binder kernel module not found or not up to date! Installing binder!
+        echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
+        echo -e "$current_password\n" | sudo -S depmod -a && \
+        echo -e "$current_password\n" | sudo -S modprobe binder_linux
 
 	if [ $? -eq 0 ]
 	then
-		echo binder kernel module has been installed!
+		echo Binder kernel module has been installed!
 	else
 		echo Error installing binder kernel module. Run the script again to install waydroid.
 		cleanup_exit
 	fi
 else
-	echo binder kernel module already loaded! no need to reinstall binder!
+	echo Binder kernel module already loaded and up to date! No need to reinstall binder!
 fi
 
 # ok lets install waydroid and cage
