@@ -157,6 +157,13 @@ else
 	cleanup_exit
 fi
 
+# firewall config for waydroid0 interface to forward packets for internet to work
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0 &> /dev/null
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp &> /dev/null
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp &> /dev/null
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward &> /dev/null
+echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /dev/null
+
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
 
@@ -253,7 +260,12 @@ if [ -z "\$1" ]
 			/usr/bin/waydroid app launch \$PACKAGE &'
 fi
 
-# Reset cage so it doesn't nuke the display environment variable
+# Reset cage so it doesn't nuke the display environment variable on exit
+while [ -n "\$(pgrep cage)" ]
+do
+	sleep 1
+done
+
 cage -- bash -c 'wlr-randr'
 EOF
 
@@ -315,13 +327,6 @@ else
 		echo Output of python version - $(python -V)
 		cleanup_exit
 	fi
-
-	# firewall config for waydroid0 interface to forward packets for internet to work
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0 &> /dev/null
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp &> /dev/null
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp &> /dev/null
-	echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward &> /dev/null
-	echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /dev/null
 
 	# casualsnek script
 	cd ~/AUR/waydroid/waydroid_script
@@ -386,5 +391,3 @@ fi
 
 # change GPU rendering to use minigbm_gbm_mesa
 echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
-
-
