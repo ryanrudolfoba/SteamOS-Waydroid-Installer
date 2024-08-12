@@ -249,7 +249,7 @@ if [ -z "\$1" ]
 			sleep 15 ; \\
 			sudo /usr/bin/waydroid-fix-controllers'
 	else
-		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments
+		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
 		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
 			/usr/bin/waydroid session start \$@ & \\
 
@@ -257,7 +257,10 @@ if [ -z "\$1" ]
 			sudo /usr/bin/waydroid-fix-controllers ; \\
 
 			sleep 1 ; \\
-			/usr/bin/waydroid app launch \$PACKAGE &'
+			/usr/bin/waydroid app launch \$PACKAGE & \\
+
+   			sleep 1 ; \\
+      			/usr/bin/waydroid show-full-ui $@ &'
 fi
 
 # Reset cage so it doesn't nuke the display environment variable on exit
