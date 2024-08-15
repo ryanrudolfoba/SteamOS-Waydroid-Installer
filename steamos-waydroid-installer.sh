@@ -282,7 +282,7 @@ cage -- bash -c 'wlr-randr'
 EOF
 
 # custom configs done. lets move them to the correct location
-cp $PWD/extras/Waydroid-Toolbox.sh ~/Android_Waydroid
+cp $PWD/extras/Waydroid-Toolbox.sh $PWD/extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
 ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
 
