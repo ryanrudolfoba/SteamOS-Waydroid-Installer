@@ -15,6 +15,7 @@ kernel3=6.1.52-valve16-1-neptune-61
 kernel4=6.5.0-valve5-1-neptune-65
 kernel5=6.5.0-valve12-1-neptune-65
 kernel6=6.5.0-valve16-1-neptune-65
+kernel7=6.5.0-valve16-2-neptune-65
 #kernel4=6.5.0-valve5-1-neptune-65-g6efe817cc486
 #kernel5=6.5.0-valve12-1-neptune-65-g1889664e19fc
 #kernel6=6.5.0-valve16-1-neptune-65-gc9ad4106624e
@@ -57,7 +58,7 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ]
+if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ] || [ $kernel_version = $kernel7 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
@@ -235,9 +236,17 @@ then
 	fi
 fi
 
-sudo /usr/bin/waydroid-container-stop
-
+# stop and start the waydroid container
+sudo /usr/bin/waydroid-container-stop 
 sudo /usr/bin/waydroid-container-start
+systemctl status waydroid-container.service | grep -i running
+if [ \$? -eq 0 ]
+then
+	echo All good continue with the script.
+else
+	kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
+	exit
+fi
 
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "\$1" ]
