@@ -46,6 +46,7 @@ Choice=$(zenity --width 850 --height 350 --list --radiolist --multiple 	--title 
 	FALSE AUDIO "Enable or disable the custom audio fixes."\
 	FALSE SERVICE "Start or Stop the Waydroid container service."\
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
+ 	FALSE LIBNDK "Use custom LIBNDK patches or the original LIBNDK."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
