@@ -37,9 +37,13 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of Aug 27 2024)
+1. support for SteamOS 3.6.10
+2. added experimental waydroid launcher that supports rotation - [demo here](https://youtu.be/OxApPDhZn9I)
+3. Waydroid Toolbox - option to uninstall waydroid and retain android user data, or full uninstall of waydroid including android user data
 # What's New (as of Aug 09 2024)
 1. support for SteamOS 3.6.9
-2. aydroid bump from 1.4.2 to 1.4.3
+2. waydroid bump from 1.4.2 to 1.4.3
 3. lxc bump from 0.2 to 0.3
 4. binder kernel môdule re-built using latest May26 commits
 5. cleanup the binder kernel folder names so its easier to read
