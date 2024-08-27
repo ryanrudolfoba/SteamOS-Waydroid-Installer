@@ -1,4 +1,32 @@
 #!/bin/bash
+
+# libndk patcher from qwerty12356-wart
+ndk_path="/var/lib/waydroid/overlay/system/lib64/libndk_translation.so"
+function CheckHex {
+#file path, Ghidra offset, Hex to check
+commandoutput="$(od $1 --skip-bytes=$(($2-0x101000)) --read-bytes=$((${#3} / 2)) --endian=little -t x1 -An file | sed 's/ //g')"
+if [ "$commandoutput" = "$3" ]; then
+echo "1"
+else
+echo "0"
+fi
+}
+
+function PatchHex {
+#file path, ghidra offset, original hex, new hex
+file_offset=$(($2-0x101000))
+if [ $(CheckHex $1 $2 $3) = "1" ]; then
+    hexinbin=$(printf $4 | xxd -r -p)
+    echo -n $hexinbin | dd of=$1 seek=$file_offset bs=1 conv=notrunc;
+    tmp="Patched $1 at $file_offset with new hex $4"
+    echo $tmp
+elif [ $(CheckHex $1 $2 $4) = "1" ]; then
+    echo "Already patched"
+else
+    echo "Hex mismatch!"
+fi
+}
+
 PASSWORD=$(zenity --password --title "sudo Password Authentication")
 echo $PASSWORD | sudo -S ls &> /dev/null
 if [ $? -ne 0 ]
@@ -26,6 +54,33 @@ if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
 then
 	echo User pressed CANCEL / EXIT.
 	exit
+
+elif [ "$Choice" == "LIBNDK" ]
+then
+LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+	FALSE PATCHED "Apply LIBNDK custom patches from qwerty12356-wart."\
+	FALSE ORIGINAL "Remove the patch and use the original LIBNDK."\
+	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
+	if [ $? -eq 1 ] || [ "$LIBNDK_Choice" == "MENU" ]
+	then
+		echo User pressed CANCEL. Going back to main menu.
+
+	elif [ "$LIBNDK_Choice" == "PATCHED" ]
+	then
+		# patch the libndk - credits from qwerty12356-wart
+		PatchHex $ndk_path 0x307dd1 83e2fa 83e2ff
+        	PatchHex $ndk_path 0x307cd6 83e2fa 83e2ff
+
+		zenity --warning --title "Waydroid Toolbox" --text "LIBNDK custom patches has been applied!" --width 350 --height 75
+
+	elif [ "$LIBNDK_Choice" == "ORIGINAL" ]
+	then
+		# remove the patch
+		PatchHex $ndk_path 0x307dd1 83e2ff 83e2fa
+        	PatchHex $ndk_path 0x307cd6 83e2ff 83e2fa
+
+  		zenity --warning --title "Waydroid Toolbox" --text "LIBNDK custom patches has been removed!" --width 350 --height 75
+	fi
 
 elif [ "$Choice" == "ADBLOCK" ]
 then
