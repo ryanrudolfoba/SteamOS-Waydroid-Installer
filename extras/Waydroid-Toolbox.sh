@@ -147,35 +147,78 @@ then
 
 elif [ "$Choice" == "UNINSTALL" ]
 then
-	# disable the steamos readonly
-	echo -e $PASSWORD\n | sudo -S steamos-readonly disable
-	
-	# remove the kernel module and packages installed
-	echo -e $PASSWORD\n | sudo -S systemctl stop waydroid-container
-	echo -e $PASSWORD\n | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst
-	echo -e $PASSWORD\n | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
-	
-	# delete the waydroid directories and config
-	echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
-	
-	# delete waydroid config and scripts
-	echo -e $PASSWORD\n | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
-		/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
-	
-	# delete cage binaries
-	echo -e $PASSWORD\n | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr
+UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+	FALSE WAYDROID "Uninstall Waydroid but keep the Android user data."\
+	FALSE FULL "Uninstall Waydroid and delete the Android user data."\
+	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
+	if [ $? -eq 1 ] || [ "$UNINSTALL_Choice" == "MENU" ]
+	then
+		echo User pressed CANCEL. Going back to main menu.
 
-	# delete Waydroid Toolbox symlink
-	rm ~/Desktop/Waydroid-Toolbox
+	elif [ "$UNINSTALL_Choice" == "WAYDROID" ]
+	then
+		# disable the steamos readonly
+		echo -e $PASSWORD\n | sudo -S steamos-readonly disable
 	
-	# delete contents of ~/Android_Waydroid
-	rm -rf ~/Android_Waydroid/
+		# remove the kernel module and packages installed
+		echo -e $PASSWORD\n | sudo -S systemctl stop waydroid-container
+		echo -e $PASSWORD\n | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst
+		echo -e $PASSWORD\n | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
 	
-	# re-enable the steamos readonly
-	echo -e $PASSWORD\n | sudo -S steamos-readonly enable
+		# delete the waydroid directories and config
+		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/AUR
 	
-	zenity --warning --title "Waydroid Toolbox" --text "Waydroid has been uninstalled! Goodbye!" --width 600 --height 75
-	exit
+		# delete waydroid config and scripts
+		echo -e $PASSWORD\n | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
+			/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
+	
+		# delete cage binaries
+		echo -e $PASSWORD\n | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr
+
+		# delete Waydroid Toolbox symlink
+		rm ~/Desktop/Waydroid-Toolbox
+	
+		# delete contents of ~/Android_Waydroid
+		rm -rf ~/Android_Waydroid/
+	
+		# re-enable the steamos readonly
+		echo -e $PASSWORD\n | sudo -S steamos-readonly enable
+	
+		zenity --warning --title "Waydroid Toolbox" --text "Waydroid has been uninstalled! Goodbye!" --width 600 --height 75
+		exit
+		
+	elif [ "$UNINSTALL_Choice" == "FULL" ]
+	then
+		# disable the steamos readonly
+		echo -e $PASSWORD\n | sudo -S steamos-readonly disable
+	
+		# remove the kernel module and packages installed
+		echo -e $PASSWORD\n | sudo -S systemctl stop waydroid-container
+		echo -e $PASSWORD\n | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst
+		echo -e $PASSWORD\n | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
+	
+		# delete the waydroid directories and config
+		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
+	
+		# delete waydroid config and scripts
+		echo -e $PASSWORD\n | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
+			/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
+	
+		# delete cage binaries
+		echo -e $PASSWORD\n | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr
+
+		# delete Waydroid Toolbox symlink
+		rm ~/Desktop/Waydroid-Toolbox
+	
+		# delete contents of ~/Android_Waydroid
+		rm -rf ~/Android_Waydroid/
+	
+		# re-enable the steamos readonly
+		echo -e $PASSWORD\n | sudo -S steamos-readonly enable
+	
+		zenity --warning --title "Waydroid Toolbox" --text "Waydroid and Android user data has been uninstalled! Goodbye!" --width 600 --height 75
+		exit
+	fi
 fi
 done
 echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
