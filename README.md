@@ -202,4 +202,5 @@ This mini guides are tailor-fitted for the Steam Deck that uses the script provi
 [Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) \
 [Activate and Configure Mantis Gamepad Pro](https://youtu.be/icVOh7IIfE0) \
 [How to Configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl) \
-[How to Access the OBB Folder / How to Root](https://youtu.be/RurH-XTTSDQ)
+[How to Access the OBB Folder / How to Root](https://youtu.be/RurH-XTTSDQ) \
+[How to Rotate Waydroid](https://youtu.be/OxApPDhZn9I)
