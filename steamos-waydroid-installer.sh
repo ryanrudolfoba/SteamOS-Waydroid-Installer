@@ -16,9 +16,7 @@ kernel4=6.5.0-valve5-1-neptune-65
 kernel5=6.5.0-valve12-1-neptune-65
 kernel6=6.5.0-valve16-1-neptune-65
 kernel7=6.5.0-valve16-2-neptune-65
-#kernel4=6.5.0-valve5-1-neptune-65-g6efe817cc486
-#kernel5=6.5.0-valve12-1-neptune-65-g1889664e19fc
-#kernel6=6.5.0-valve16-1-neptune-65-gc9ad4106624e
+kernel8=6.5.0-valve19-1-neptune-65
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -58,7 +56,7 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ] || [ $kernel_version = $kernel7 ]
+if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ] || [ $kernel_version = $kernel7 ] || [ $kernel_version = $kernel8 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
