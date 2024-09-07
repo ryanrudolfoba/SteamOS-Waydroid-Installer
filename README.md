@@ -37,6 +37,9 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of Sep 07 2024)
+1. support for SteamOS 3.6.12
+
 # What's New (as of Aug 27 2024)
 1. support for SteamOS 3.6.10
 2. added experimental waydroid launcher that supports rotation - [demo here](https://youtu.be/OxApPDhZn9I)
