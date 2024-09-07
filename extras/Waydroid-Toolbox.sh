@@ -17,7 +17,9 @@ function PatchHex {
 file_offset=$(($2-0x101000))
 if [ $(CheckHex $1 $2 $3) = "1" ]; then
     hexinbin=$(printf $4 | xxd -r -p)
-    echo -n $hexinbin | dd of=$1 seek=$file_offset bs=1 conv=notrunc;
+    # pre-cache sudo password so dd below can actually do its job
+    echo -e "$5\n" | sudo -S true &>/dev/null
+    echo -n $hexinbin | sudo dd of=$1 seek=$file_offset bs=1 conv=notrunc;
     tmp="Patched $1 at $file_offset with new hex $4"
     echo $tmp
 elif [ $(CheckHex $1 $2 $4) = "1" ]; then
@@ -69,16 +71,16 @@ LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	-
 	elif [ "$LIBNDK_Choice" == "PATCHED" ]
 	then
 		# patch the libndk - credits from qwerty12356-wart
-		PatchHex $ndk_path 0x307dd1 83e2fa 83e2ff
-        	PatchHex $ndk_path 0x307cd6 83e2fa 83e2ff
+		PatchHex $ndk_path 0x307dd1 83e2fa 83e2ff "$PASSWORD"
+		PatchHex $ndk_path 0x307cd6 83e2fa 83e2ff "$PASSWORD"
 
 		zenity --warning --title "Waydroid Toolbox" --text "LIBNDK custom patches has been applied!" --width 350 --height 75
 
 	elif [ "$LIBNDK_Choice" == "ORIGINAL" ]
 	then
 		# remove the patch
-		PatchHex $ndk_path 0x307dd1 83e2ff 83e2fa
-        	PatchHex $ndk_path 0x307cd6 83e2ff 83e2fa
+		PatchHex $ndk_path 0x307dd1 83e2ff 83e2fa "$PASSWORD"
+		PatchHex $ndk_path 0x307cd6 83e2ff 83e2fa "$PASSWORD"
 
   		zenity --warning --title "Waydroid Toolbox" --text "LIBNDK custom patches has been removed!" --width 350 --height 75
 	fi
