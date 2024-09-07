@@ -71,16 +71,16 @@ LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	-
 	elif [ "$LIBNDK_Choice" == "PATCHED" ]
 	then
 		# patch the libndk - credits from qwerty12356-wart
-		PatchHex $ndk_path 0x307dd1 83e2fa 83e2ff
-        	PatchHex $ndk_path 0x307cd6 83e2fa 83e2ff
+		PatchHex $ndk_path 0x307dd1 83e2fa 83e2ff "$PASSWORD"
+		PatchHex $ndk_path 0x307cd6 83e2fa 83e2ff "$PASSWORD"
 
 		zenity --warning --title "Waydroid Toolbox" --text "LIBNDK custom patches has been applied!" --width 350 --height 75
 
 	elif [ "$LIBNDK_Choice" == "ORIGINAL" ]
 	then
 		# remove the patch
-		PatchHex $ndk_path 0x307dd1 83e2ff 83e2fa
-        	PatchHex $ndk_path 0x307cd6 83e2ff 83e2fa
+		PatchHex $ndk_path 0x307dd1 83e2ff 83e2fa "$PASSWORD"
+		PatchHex $ndk_path 0x307cd6 83e2ff 83e2fa "$PASSWORD"
 
   		zenity --warning --title "Waydroid Toolbox" --text "LIBNDK custom patches has been removed!" --width 350 --height 75
 	fi
