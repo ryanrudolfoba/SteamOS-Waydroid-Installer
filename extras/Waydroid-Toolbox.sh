@@ -17,7 +17,9 @@ function PatchHex {
 file_offset=$(($2-0x101000))
 if [ $(CheckHex $1 $2 $3) = "1" ]; then
     hexinbin=$(printf $4 | xxd -r -p)
-    echo -n $hexinbin | dd of=$1 seek=$file_offset bs=1 conv=notrunc;
+    # pre-cache sudo password so dd below can actually do its job
+    echo -e "$5\n" | sudo -S true &>/dev/null
+    echo -n $hexinbin | sudo dd of=$1 seek=$file_offset bs=1 conv=notrunc;
     tmp="Patched $1 at $file_offset with new hex $4"
     echo $tmp
 elif [ $(CheckHex $1 $2 $4) = "1" ]; then
