@@ -17,11 +17,13 @@ kernel5=6.5.0-valve12-1-neptune-65
 kernel6=6.5.0-valve16-1-neptune-65
 kernel7=6.5.0-valve16-2-neptune-65
 kernel8=6.5.0-valve19-1-neptune-65
+kernel9=6.5.0-valve21-1-neptune-65
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 STEAMOS_VERSION=$(grep VERSION_ID /etc/os-release | cut -d "=" -f 2)
-
+FREE_HOME=$(df /home --output=avail | tail -n1)
+FREE_VAR=$(df /var --output=avail | tail -n1)
 
 # define functions here
 cleanup_exit () {
@@ -56,11 +58,35 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ] || [ $kernel_version = $kernel7 ] || [ $kernel_version = $kernel8 ]
+if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ] || [ $kernel_version = $kernel7 ] || [ $kernel_version = $kernel8 ] || [ $kernel_version = $kernel9 ]
 then
 	echo $kernel_version is supported. Proceed to next step.
 else
 	echo $kernel_version is NOT supported. Exiting immediately.
+	exit
+fi
+
+# sanity check - make sure there is enough free space in the home partition (at least 5GB)
+echo Checking if home partition has enough free space
+echo home partition has $FREE_HOME free space.
+if [ $FREE_HOME -ge 5000000 ]
+then
+	echo home partition has enough free space.
+else
+	echo Not enough space on the home partition!
+	echo Make sure that there is at least 5GB free space on the home partition!
+	exit
+fi
+
+# sanity check - make sure there is enough free space in the var partition (at least 100MB)
+echo Checking if var partition has enough free space
+echo var partition has $FREE_VAR free space.
+if [ $FREE_VAR -ge 150000 ]
+then
+	echo var partition has enough free space.
+else
+	echo Not enough space on the var partition!
+	echo Make sure that there is at least 100MB free space on the var partition!
 	exit
 fi
 
@@ -89,6 +115,10 @@ fi
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
+echo Cloning casualsnek repo. 
+echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
+echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
+
 echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK &> /dev/null
 
 if [ $? -eq 0 ]
@@ -288,23 +318,6 @@ ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-randr
 
-# place custom overlay files here - key layout, hosts, audio.rc etc etc
-# copy fixed key layout for Steam Controller
-echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
-echo -e "$current_password\n" | sudo -S cp extras/Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
-
-# copy custom audio.rc patch to lower the audio latency
-echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc/init
-echo -e "$current_password\n" | sudo -S cp extras/audio.rc /var/lib/waydroid/overlay/system/etc/init/
-
-# copy custom hosts file from StevenBlack to block ads (adware + malware + fakenews + gambling + pr0n)
-echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
-echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overlay/system/etc
-
-# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
-chmod +x extras/nodataperm.sh
-echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
-
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
@@ -315,13 +328,34 @@ then
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 else
-	echo Config file missing. Lets configure waydroid.
+	echo Downloading waydroid image from sourceforge. 
+	echo This can take a few seconds to a few minutes depending on the internet connection and the speed of the sourceforge mirror.
+	echo Sometimes it connects to a slow sourceforge mirror and the downloads are slow -. This is beyond my control!
+	echo If the downloads are slow due to a slow sourceforge mirror - cancel the sript \(CTL-C\) and run it again.
 
 	# lets initialize waydroid
-	mkdir -p ~/waydroid/{images,cache_http}
+	mkdir -p ~/waydroid/{images,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
+	
+	# place custom overlay files here - key layout, hosts, audio.rc etc etc
+	# copy fixed key layout for Steam Controller
+	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
+	echo -e "$current_password\n" | sudo -S cp extras/Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
+
+	# copy custom audio.rc patch to lower the audio latency
+	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc/init
+	echo -e "$current_password\n" | sudo -S cp extras/audio.rc /var/lib/waydroid/overlay/system/etc/init/
+
+	# copy custom hosts file from StevenBlack to block ads (adware + malware + fakenews + gambling + pr0n)
+	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
+	echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overlay/system/etc
+
+	# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
+	chmod +x extras/nodataperm.sh
+	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
+
 	echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
 
  	# check if waydroid initialization completed without errors
@@ -330,19 +364,21 @@ else
 		echo Waydroid initialization completed without errors!
 
 	else
-		echo Waydroid did not initialize correctly
-		echo Most probably this is due to python issue. Attach this screenshot when filing a bug report!
+		echo Waydroid did not initialize correctly.
+		echo This could be a hash mismatch / corrupted download.
+		echo This could also be a python issue. Attach this screenshot when filing a bug report!
 		echo Output of whereis python - $(whereis python)
 		echo Output of which python - $(which python)
 		echo Output of python version - $(python -V)
+
 		cleanup_exit
+		exit
 	fi
 
 	# casualsnek script
-	cd ~/AUR/waydroid/waydroid_script
-	python3 -m venv venv
-	venv/bin/pip install -r requirements.txt &> /dev/null
-	echo -e "$current_password\n" | sudo -S venv/bin/python3 main.py install {libndk,widevine}
+	python3 -m venv $DIR_CASUALSNEK/venv
+	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
+	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
 	if [ $? -eq 0 ]
 	then
 		echo Casualsnek script done.
@@ -351,6 +387,9 @@ else
 		echo Error with casualsnek script. Run the script again.
 		cleanup_exit
 	fi
+
+	# change GPU rendering to use minigbm_gbm_mesa
+	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
 
 	# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
 	echo -e "$current_password\n" | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null <<'EOF'
@@ -385,19 +424,16 @@ ro.odm.build.tags=release-keys
 ### end of custom build prop - you can safely delete if this causes issue
 ##########################################################################
 EOF
-
-	echo Adding shortcuts to game mode. Please wait.
-	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh
+	
+	echo Adding shortcuts to Game Mode. Please wait.
+	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh  &> /dev/null
 	sleep 15
-	echo Android_Waydroid_Cage.sh shortcut has been added to game mode.
-	steamos-add-to-steam /usr/bin/steamos-nested-desktop
+	echo Android_Waydroid_Cage.sh shortcut has been added to Game Mode.
+	steamos-add-to-steam /usr/bin/steamos-nested-desktop  &> /dev/null
 	sleep 15
-	echo steamos-nested-desktop shortcut has been added to game mode.
-
+	echo steamos-nested-desktop shortcut has been added to Game Mode.
+	
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 fi
-
-# change GPU rendering to use minigbm_gbm_mesa
-echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
