@@ -81,7 +81,7 @@ fi
 # sanity check - make sure there is enough free space in the var partition (at least 100MB)
 echo Checking if var partition has enough free space
 echo var partition has $FREE_VAR free space.
-if [ $FREE_VAR -ge 150000 ]
+if [ $FREE_VAR -ge 100000 ]
 then
 	echo var partition has enough free space.
 else
