@@ -37,6 +37,12 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of Oct 10 2024)
+1. add support for latest SteamOS Beta 3.6.16 / 3.6.17
+2. add sanity check for home and var partition - make sure home has at least 5GB free space, and var has at least 150MB free space
+3. add / fix verbose messages
+4. trim output of steamos-add-to-steam
+
 # What's New (as of Sep 07 2024)
 1. support for SteamOS 3.6.12
 
