@@ -39,7 +39,7 @@ A collection of tools that is packaged into an easy to use script that is stream
 
 # What's New (as of Oct 10 2024)
 1. add support for latest SteamOS Beta 3.6.16 / 3.6.17
-2. add sanity check for home and var partition - make sure home has at least 5GB free space, and var has at least 150MB free space
+2. add sanity check for home and var partition - make sure home has at least 5GB free space, and var has at least 100MB free space
 3. add / fix verbose messages
 4. trim output of steamos-add-to-steam
 
