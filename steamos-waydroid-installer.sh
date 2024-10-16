@@ -78,16 +78,23 @@ else
 	exit
 fi
 
-# sanity check - make sure there is enough free space in the var partition (at least 100MB)
-echo Checking if var partition has enough free space
-echo var partition has $FREE_VAR free space.
-if [ $FREE_VAR -ge 100000 ]
+# sanity check - is this a reinstall?
+grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
+if [ $? -eq 0 ]
 then
-	echo var partition has enough free space.
+	echo This seems to be a reinstall. var sanity check not needed.
 else
-	echo Not enough space on the var partition!
-	echo Make sure that there is at least 100MB free space on the var partition!
-	exit
+	# sanity check - make sure there is enough free space in the var partition (at least 100MB)
+	echo Checking if var partition has enough free space
+	echo var partition has $FREE_VAR free space.
+	if [ $FREE_VAR -ge 100000 ]
+	then
+		echo var partition has enough free space.
+	else
+		echo Not enough space on the var partition!
+		echo Make sure that there is at least 100MB free space on the var partition!
+		exit
+	fi
 fi
 
 # sanity check - make sure sudo password is already set
