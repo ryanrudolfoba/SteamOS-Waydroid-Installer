@@ -244,39 +244,72 @@ EOF
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
 # waydroid launcher - cage
-cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
+cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << "EOF"
 #!/bin/bash
 
+# Default values
+MODE="1280x800@60Hz"
+PACKAGE=""
+
+# Help function
+show_help() {
+	echo "Usage: $0 [OPTIONS]"
+	echo "Options:"
+	echo "  -h, --help        Show this help message"
+	echo "  -m, --mode        Set the mode (default: 1280x800@60Hz)"
+	echo "  -p, --package     Specify the package to launch"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+	case $1 in
+	-h | --help)
+		show_help
+		exit 0
+		;;
+	-m | --mode)
+		MODE="$2"
+		shift 2
+		;;
+	-p | --package)
+		PACKAGE="$2"
+		shift 2
+		;;
+	*)
+		echo "Error: Unknown option '$1'"
+		show_help
+		exit 1
+		;;
+	esac
+done
+
 # Check if waydroid exists
-if [ ! -f /usr/bin/waydroid ]
-then
-	kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \\
-	\\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \\
-	\\nLaunch the Waydroid install script again to re-install Waydroid! \\
-	\\nSteamOS version: \$(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \\
-	\\nKernel version: \$(uname -r | cut -d "-" -f 1-5)"
+if [ ! -f /usr/bin/waydroid ]; then
+	kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \
+	\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \
+	\nLaunch the Waydroid install script again to re-install Waydroid! \
+	\nSteamOS version: $(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \
+	\nKernel version: $(uname -r | cut -d "-" -f 1-5)"
 	exit
 fi
 
 # Try to kill cage gracefully using SIGTERM
-timeout 5s killall -15 cage -w &> /dev/null
-if [ \$? -eq 124 ]
-then
+timeout 5s killall -15 cage -w &>/dev/null
+if [ $? -eq 124 ]; then
 	# Timed out, process still active, let's force some more using SIGINT
-	timeout 5s killall -2 cage -w &> /dev/null
-	if [ \$? -eq 124 ]
-	then
+	timeout 5s killall -2 cage -w &>/dev/null
+	if [ $? -eq 124 ]; then
 		# Timed out again, this will shut it down for good using SIGKILL
-		timeout 5s killall -9 cage -w &> /dev/null
+		timeout 5s killall -9 cage -w &>/dev/null
 	fi
 fi
 
 # stop and start the waydroid container
-sudo /usr/bin/waydroid-container-stop 
+sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
+
 systemctl status waydroid-container.service | grep -i running
-if [ \$? -eq 0 ]
-then
+if [ $? -eq 0 ]; then
 	echo All good continue with the script.
 else
 	kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
@@ -284,32 +317,26 @@ else
 fi
 
 # Check if non Steam shortcut has the game / app as the launch option
-if [ -z "\$1" ]
-	then
-		# launch option not provided. launch Waydroid via cage and show the full ui right away
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ;	\\
-			/usr/bin/waydroid show-full-ui \$@ & \\
-
-			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers'
-	else
-		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
-		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
-			/usr/bin/waydroid session start \$@ & \\
-
-			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers ; \\
-
-			sleep 1 ; \\
-			/usr/bin/waydroid app launch \$PACKAGE & \\
-
-   			sleep 1 ; \\
-      			/usr/bin/waydroid show-full-ui $@ &'
+if [ -z "$PACKAGE" ]; then
+	# launch option not provided. launch Waydroid via cage and show the full ui right away
+	cage -- bash -c "wlr-randr --output X11-1 --custom-mode $MODE ; \
+		/usr/bin/waydroid show-full-ui $@ & \
+		sleep 15 ; \
+		sudo /usr/bin/waydroid-fix-controllers"
+else
+	# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
+	cage -- env PACKAGE="$PACKAGE" bash -c "wlr-randr --output X11-1 --custom-mode $MODE ; \
+		/usr/bin/waydroid session start $@ & \
+		sleep 15 ; \
+		sudo /usr/bin/waydroid-fix-controllers ; \
+		sleep 1 ; \
+		/usr/bin/waydroid app launch \$PACKAGE & \
+		sleep 1 ; \
+		/usr/bin/waydroid show-full-ui &"
 fi
 
 # Reset cage so it doesn't nuke the display environment variable on exit
-while [ -n "\$(pgrep cage)" ]
-do
+while [ -n "$(pgrep cage)" ]; do
 	sleep 1
 done
 
