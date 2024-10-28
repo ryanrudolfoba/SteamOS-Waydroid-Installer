@@ -37,6 +37,16 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of Oct 28 2024)
+1. Support for latest SteamOS Stable 3.6.19
+2. fixed binder kernel module parameters
+3. enhancement - ability to choose with / without Google Playstore on a fresh install
+4. enhancement - automatically activate mantis gamepad pro and shizuku
+5. enhancement - disable root detection (some apps might still detect root)
+6. enhancement - disable first time setup wizard
+7. enhancement - Waydroid Toolbox - added NETWORK option
+8. enhanceement - Waydroid Toolbox - updated ADBLOCK option
+
 # What's New (as of Oct 10 2024)
 1. add support for latest SteamOS Beta 3.6.16 / 3.6.17
 2. add sanity check for home and var partition - make sure home has at least 5GB free space, and var has at least 100MB free space
