@@ -222,7 +222,7 @@ echo add > /sys/devices/virtual/input/input*/event*/uevent
 waydroid shell sh /system/etc/nodataperm.sh
 
 # disable initial device setup via ADB
-waydroid shell sh pm disable com.google.android.setupwizard
+waydroid shell pm disable com.google.android.setupwizard
 
 # shizuku root
 waydroid shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh &
