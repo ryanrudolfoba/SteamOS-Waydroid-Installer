@@ -8,16 +8,10 @@ echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
 # define variables here
+steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 kernel_version=$(uname -r | cut -d "-" -f 1-5 )
-kernel1=6.1.52-valve9-1-neptune-61
-kernel2=6.1.52-valve14-1-neptune-61
-kernel3=6.1.52-valve16-1-neptune-61
-kernel4=6.5.0-valve5-1-neptune-65
-kernel5=6.5.0-valve12-1-neptune-65
-kernel6=6.5.0-valve16-1-neptune-65
-kernel7=6.5.0-valve16-2-neptune-65
-kernel8=6.5.0-valve19-1-neptune-65
-kernel9=6.5.0-valve21-1-neptune-65
+stable_kernel1=6.1.52-valve16-1-neptune-61
+stable_kernel2=6.5.0-valve22-1-neptune-65
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -58,11 +52,11 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $kernel1 ] || [ $kernel_version = $kernel2 ] || [ $kernel_version = $kernel3 ] || [ $kernel_version = $kernel4 ] || [ $kernel_version = $kernel5 ] || [ $kernel_version = $kernel6 ] || [ $kernel_version = $kernel7 ] || [ $kernel_version = $kernel8 ] || [ $kernel_version = $kernel9 ]
+if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $stable_kernel2 ]
 then
-	echo $kernel_version is supported. Proceed to next step.
+	echo SteamOS $steamos_version - kernel version $kernel_version is supported. Proceed to next step.
 else
-	echo $kernel_version is NOT supported. Exiting immediately.
+	echo SteamOS $steamos_version - kernel version $kernel_version is NOT supported. Exiting immediately.
 	exit
 fi
 
@@ -166,7 +160,7 @@ then
         echo Binder kernel module not found or not up to date! Installing binder!
         echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
         echo -e "$current_password\n" | sudo -S depmod -a && \
-        echo -e "$current_password\n" | sudo -S modprobe binder_linux
+        echo -e "$current_password\n" | sudo -S modprobe binder-linux device=binder,hwbinder,vndbinder
 
 	if [ $? -eq 0 ]
 	then
@@ -203,18 +197,12 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
 
-# waydroid kernel module
-echo -e "$current_password\n" | sudo -S tee /etc/modules-load.d/waydroid.conf > /dev/null <<'EOF'
-binder_linux
-EOF
-
 # waydroid start service
 echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-container-start > /dev/null <<'EOF'
 #!/bin/bash
+modprobe binder-linux device=binder,hwbinder,vndbinder
 systemctl start waydroid-container.service
 sleep 5
-ln -s /dev/binderfs/binder /dev/anbox-binder &> /dev/null
-chmod o=rw /dev/anbox-binder
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
 
@@ -225,21 +213,30 @@ systemctl stop waydroid-container.service
 EOF
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
 
-# waydroid fix controllers
-echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-fix-controllers > /dev/null <<'EOF'
+# waydroid startup scripts
+echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-startup-scripts > /dev/null <<'EOF'
 #!/bin/bash
 echo add > /sys/devices/virtual/input/input*/event*/uevent
 
 # fix for scoped storage permission issue
 waydroid shell sh /system/etc/nodataperm.sh
+
+# disable initial device setup via ADB
+waydroid shell sh pm disable com.google.android.setupwizard
+
+# shizuku root
+waydroid shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh &
+
+# mantis gamepad pro
+waydroid shell sh /sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh &
 EOF
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-fix-controllers
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S tee /etc/sudoers.d/zzzzzzzz-waydroid > /dev/null <<'EOF'
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-stop
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-start
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-fix-controllers
+deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-startup-scripts
 EOF
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
@@ -291,14 +288,14 @@ if [ -z "\$1" ]
 			/usr/bin/waydroid show-full-ui \$@ & \\
 
 			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers'
+			sudo /usr/bin/waydroid-startup-scripts'
 	else
 		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
 		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode 1280x800@60Hz ; \\
 			/usr/bin/waydroid session start \$@ & \\
 
 			sleep 15 ; \\
-			sudo /usr/bin/waydroid-fix-controllers ; \\
+			sudo /usr/bin/waydroid-startup-scripts ; \\
 
 			sleep 1 ; \\
 			/usr/bin/waydroid app launch \$PACKAGE & \\
@@ -362,10 +359,32 @@ else
 	# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
+	
 
-	echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
+	Choice=$(zenity --width 750 --height 220 --list --radiolist --multiple \
+		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
+		--column "Select One" \
+		--column "Option" \
+		--column="Description - Read this carefully!"\
+		TRUE GAPPS "Download Android image with Google Play Store."\
+		FALSE NO_GAPPS "Download Android image without Google Play Store."\
+		FALSE EXIT "***** Exit this script *****")
 
- 	# check if waydroid initialization completed without errors
+		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
+		then
+			echo User pressed CANCEL / EXIT. Goodbye!
+			cleanup_exit
+
+		elif [ "$Choice" == "GAPPS" ]
+		then
+			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
+
+		elif [ "$Choice" == "NO_GAPPS" ]
+		then
+			echo -e "$current_password\n" | sudo -S waydroid init
+		fi
+ 	
+	# check if waydroid initialization completed without errors
 	if [ $? -eq 0 ]
 	then
 		echo Waydroid initialization completed without errors!
@@ -379,7 +398,6 @@ else
 		echo Output of python version - $(python -V)
 
 		cleanup_exit
-		exit
 	fi
 
 	# casualsnek script
@@ -406,15 +424,20 @@ else
 persist.waydroid.udev=true
 persist.waydroid.uevent=true
 
+# disable root
+ro.adb.secure=1
+ro.debuggable=0
+ro.build.selinux=1
+
 ##########################################################################
 ### start of custom build prop - you can safely delete if this causes issue
 
 ro.product.brand=google
-ro.product.manufacturer=Google
+ro.product.manufacturer=Valve
 ro.system.build.product=redfin
 ro.product.name=redfin
 ro.product.device=redfin
-ro.product.model=Pixel 5
+ro.product.model=Steam Deck
 ro.system.build.flavor=redfin-user
 ro.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
 ro.system.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
