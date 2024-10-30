@@ -147,6 +147,11 @@ This work around seems to be needed because steaminput does not seem to pass the
 
 This layout also tweaks the trackpad inputs.
 
+## Configure Android Start Menu Shortcuts to Work in Desktop Mode
+NOTE: This is purely optional and doesn't affect the functionality of Waydroid if you don't do the steps.\
+Personally I don't need it but for those that do then this is what you need -
+
+[Thanks to DanielLester83 for the instructions!](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/143)
 
 ## I dont want this anymore! I want to uninstall!
 1. Go to Desktop Mode.
