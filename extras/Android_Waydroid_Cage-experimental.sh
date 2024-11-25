@@ -24,10 +24,14 @@ then
 	fi
 fi
 
+export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
+export RES_X=$(echo $RESOLUTION | cut -d 'x' -f1)
+export RES_Y=$(echo $RESOLUTION | cut -d 'x' -f2)
+
 # ask if Landscape or Portrait
 SCREEN_ORIENTATION=$(kdialog --radiolist "Select Waydroid Orientation:" \
-       1 "Landscape" on \
-       2 "Portrait" off)
+       1 "Landscape $RES_X x $RES_Y" on \
+       2 "Portrait $RES_Y x $RES_X" off)
 
 if [ $? -eq 1 ]
 then
@@ -37,14 +41,14 @@ then
 elif [ $SCREEN_ORIENTATION -eq 1 ]
 then
 	export TRANSFORM=normal
-	export HEIGHT=0
-	export WIDTH=0
+	export HEIGHT=$RES_Y
+	export WIDTH=$RES_X
 
 elif [ $SCREEN_ORIENTATION -eq 2 ]
 then
 	export TRANSFORM=90
-	export HEIGHT=1280
-	export WIDTH=800
+	export HEIGHT=$RES_X
+	export WIDTH=$RES_Y
 fi
 
 # stop and start the waydroid container
@@ -63,7 +67,7 @@ fi
 if [ -z "$1" ]
 	then
 		# launch option not provided. launch Waydroid via cage and show the full ui right away
-		cage -- bash -c 'wlr-randr --output X11-1 --transform $TRANSFORM --custom-mode 1280x800@60Hz ;	\
+		cage -- bash -c 'wlr-randr --output X11-1 --transform $TRANSFORM --custom-mode ${RESOLUTION}@60Hz ;	\
 			/usr/bin/waydroid session start $@ & \
 			sleep 5 ;\
 			waydroid prop set persist.waydroid.height $HEIGHT ;\
@@ -77,7 +81,7 @@ if [ -z "$1" ]
 			/usr/bin/waydroid show-full-ui $@ & '
 	else
 		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
-		cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --transform $TRANSFORM --custom-mode 1280x800@60Hz ; \
+		cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --transform $TRANSFORM --custom-mode ${RESOLUTION}@60Hz ; \
 			/usr/bin/waydroid session start $@ & \
 			sleep 5 ;\
 			waydroid prop set persist.waydroid.height $HEIGHT ;\
