@@ -77,7 +77,7 @@ if [ -z "$1" ]
 			/usr/bin/waydroid session start $@ & \
 			sleep 15 ; \
 
-			sudo /usr/bin/waydroid-fix-controllers ;\
+			sudo /usr/bin/waydroid-startup-scripts ;\
 			/usr/bin/waydroid show-full-ui $@ & '
 	else
 		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
@@ -91,7 +91,7 @@ if [ -z "$1" ]
 			/usr/bin/waydroid session start $@ & \
 			sleep 15 ; \
 
-			sudo /usr/bin/waydroid-fix-controllers ; \
+			sudo /usr/bin/waydroid-startup-scripts ; \
 
 			sleep 5 ; \
 			/usr/bin/waydroid app launch $PACKAGE & \
