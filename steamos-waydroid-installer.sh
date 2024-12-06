@@ -216,6 +216,15 @@ echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-sto
 # waydroid startup scripts
 echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-startup-scripts > /dev/null <<'EOF'
 #!/bin/bash
+
+while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
+do
+	sleep 1
+done
+
+# This are the commands to execute once Android boot is completed
+
+# detect and add Steam Deck controller
 echo add > /sys/devices/virtual/input/input*/event*/uevent
 
 # fix for scoped storage permission issue
@@ -289,14 +298,12 @@ if [ -z "\$1" ]
 		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode \$RESOLUTION@60Hz ; \\
 			/usr/bin/waydroid show-full-ui \$@ & \\
 
-			sleep 15 ; \\
 			sudo /usr/bin/waydroid-startup-scripts'
 	else
 		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
 		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode \$RESOLUTION@60Hz ; \\
 			/usr/bin/waydroid session start \$@ & \\
 
-			sleep 15 ; \\
 			sudo /usr/bin/waydroid-startup-scripts ; \\
 
 			sleep 1 ; \\
@@ -363,13 +370,14 @@ else
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
 	
 
-	Choice=$(zenity --width 750 --height 220 --list --radiolist --multiple \
+	Choice=$(zenity --width 750 --height 240 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
 		--column "Select One" \
 		--column "Option" \
 		--column="Description - Read this carefully!"\
 		TRUE GAPPS "Download Android image with Google Play Store."\
 		FALSE NO_GAPPS "Download Android image without Google Play Store."\
+		FALSE TV "Download Android TV image - thanks SupeChicken666!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -384,8 +392,13 @@ else
 		elif [ "$Choice" == "NO_GAPPS" ]
 		then
 			echo -e "$current_password\n" | sudo -S waydroid init
+
+		elif [ "$Choice" == "TV" ]
+		then
+			echo Android TV chosen!
+			exit
 		fi
- 	
+
 	# check if waydroid initialization completed without errors
 	if [ $? -eq 0 ]
 	then
