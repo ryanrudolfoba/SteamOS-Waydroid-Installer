@@ -153,6 +153,11 @@ Personally I don't need it but for those that do then this is what you need -
 
 [Thanks to DanielLester83 for the instructions!](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/143)
 
+## Controller Not Being Detected
+The script has been updated so that the controller detection will get triggered once Android has completed the boot process. This makes the controller detection more accurate and the boot sequence to be faster.
+
+However if you use Bluetooth headphones it will interfere with controller detection. Use the workaround mentioned [here](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/91#issuecomment-2497139748) and [here](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/91#issuecomment-2530544096)
+
 ## I dont want this anymore! I want to uninstall!
 1. Go to Desktop Mode.
 2. There will be an icon called Waydroid Toolbox on the desktop.
