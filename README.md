@@ -139,7 +139,7 @@ Read the sections below carefully!
 ## Steam Deck Controller Layout
 [Thanks to DanielLester83!](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/134)
 
-Search 'Waydroid' in the community templates or maybe this link would work steam://controllerconfig/3665077347/3304296813
+Search 'Waydroid' in the community templates or try this link: [steam://controllerconfig/3665077347/3304296813](steam://controllerconfig/3665077347/3304296813)
 
 This maps the back buttons to function keys for use with android key remappers like this https://github.com/keymapperorg/KeyMapper
 
