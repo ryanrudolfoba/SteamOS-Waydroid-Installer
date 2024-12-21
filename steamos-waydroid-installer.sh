@@ -120,14 +120,14 @@ echo Cloning casualsnek repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
-echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK $DIR_CASUALSNEK &> /dev/null
+echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone --depth=1 $AUR_CASUALSNEK $DIR_CASUALSNEK &> /dev/null
 
 if [ $? -eq 0 ]
 then
 	echo Casualsnek repo has been successfully cloned!
 else
 	echo Error cloning Casualsnek repo! Trying to clone again using backup repo.
-	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone $AUR_CASUALSNEK2 $DIR_CASUALSNEK &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone --depth=1 $AUR_CASUALSNEK2 $DIR_CASUALSNEK &> /dev/null
 
 	if [ $? -eq 0 ]
 	then

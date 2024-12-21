@@ -2,7 +2,7 @@ echo This will clone the later version of the SteamOS Waydroid Installer script 
 sleep 5
 cd ~/
 rm -rf ~/steamos-waydroid-installer
-git clone https://github.com/ryanrudolfoba/steamos-waydroid-installer
+git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 cd ~/steamos-waydroid-installer
 chmod +x steamos-waydroid-installer.sh
 ./steamos-waydroid-installer.sh
