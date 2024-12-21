@@ -6,11 +6,9 @@ A collection of tools that is packaged into an easy to use script that is stream
 * [waydroid_script](https://github.com/casualsnek/waydroid_script) to easily add the libndk ARM translation layer and widevine.
 * ~~[libndk-fixer](https://github.com/Slappy826/libndk-fixer) is a fixed / improved libndk translation layer specific for Roblox [(demo guide here)](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl).~~ we don't need libndk-fixer anymore for Roblox - [demo here](https://youtu.be/8lDD7mQYEas)
 
-
-> **NOTE**\
+> [!NOTE]
 > If you are going to use this script for a video tutorial, PLEASE reference on your video where you got the script! This will make the support process easier!
 > And don't forget to give a shoutout to [@10MinuteSteamDeckGamer](https://www.youtube.com/@10MinuteSteamDeckGamer/) / ryanrudolf from the Philippines!
->
 
 <b> If you like my work please show support by subscribing to my [YouTube channel @10MinuteSteamDeckGamer.](https://www.youtube.com/@10MinuteSteamDeckGamer/) </b> <br>
 <b> I'm just passionate about Linux, Windows, how stuff works, and playing retro and modern video games on my Steam Deck! </b>
@@ -118,21 +116,29 @@ SteamOS has been stuck on 6.1.52-valve16-1 for several releases now so I think t
 Read the sections below carefully!
 
 ## Prerequisites for SteamOS
-1. sudo password should already be set by the end user. If sudo password is not yet set, the script will ask to set it up.
+1. `sudo` password should already be set by the end user. If `sudo` password is not yet set, the script will ask to set it up.
 
 ## NOTE IF YOU ARE USING AN OLDER VERSION OF MY SCRIPT FROM 2023!
 1. [Uninstall first if you are using an older version from 2023.](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/tree/main#i-dont-want-this-anymore-i-want-to-uninstall)
 2. If you are using my script from 2024 onwards no need to uninstall - just clone the repo to get the latest version and install it.
 
 ## How to Use
-1. Go into Desktop Mode and open a konsole terminal.
-2. Clone the github repo. \
-   cd ~/ \
+1. Go into Desktop Mode and open a `konsole` terminal.
+2. Clone the github repo.
+
+   ```sh
+   cd ~/
    git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
+   ```
+
 3. Execute the script! \
-   cd ~/steamos-waydroid-installer \
-   chmod +x steamos-waydroid-installer.sh \
+
+   ```sh
+   cd ~/steamos-waydroid-installer
+   chmod +x steamos-waydroid-installer.sh
    ./steamos-waydroid-installer.sh
+   ```
+
 4. Script will automatically install Waydroid together with the custom config. Install will roughly take around 5mins depending on the internet connection speed.
 5. Once done exit the script and go back to Game Mode.
 
