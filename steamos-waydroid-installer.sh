@@ -199,129 +199,23 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 mkdir ~/Android_Waydroid &> /dev/null
 
 # waydroid start service
-echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-container-start > /dev/null <<'EOF'
-#!/bin/bash
-modprobe binder-linux device=binder,hwbinder,vndbinder
-systemctl start waydroid-container.service
-sleep 5
-EOF
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-start /usr/bin/waydroid-container-start
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
 
 # waydroid stop service
-echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-container-stop > /dev/null <<'EOF'
-#!/bin/bash
-systemctl stop waydroid-container.service
-EOF
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-stop /usr/bin/waydroid-container-stop
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
 
 # waydroid startup scripts
-echo -e "$current_password\n" | sudo -S tee /usr/bin/waydroid-startup-scripts > /dev/null <<'EOF'
-#!/bin/bash
-
-while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
-do
-	sleep 1
-done
-
-# This are the commands to execute once Android boot is completed
-
-# detect and add Steam Deck controller
-echo add > /sys/devices/virtual/input/input*/event*/uevent
-
-# fix for scoped storage permission issue
-waydroid shell sh /system/etc/nodataperm.sh
-
-# disable initial device setup via ADB
-waydroid shell pm disable com.google.android.setupwizard
-
-# shizuku root
-waydroid shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh &
-
-# mantis gamepad pro
-waydroid shell sh /sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh &
-EOF
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
-echo -e "$current_password\n" | sudo -S tee /etc/sudoers.d/zzzzzzzz-waydroid > /dev/null <<'EOF'
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-stop
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-start
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-startup-scripts
-EOF
+echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
 # waydroid launcher - cage
-cat > ~/Android_Waydroid/Android_Waydroid_Cage.sh << EOF
-#!/bin/bash
-
-# Check if waydroid exists
-if [ ! -f /usr/bin/waydroid ]
-then
-	kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \\
-	\\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \\
-	\\nLaunch the Waydroid install script again to re-install Waydroid! \\
-	\\nSteamOS version: \$(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \\
-	\\nKernel version: \$(uname -r | cut -d "-" -f 1-5)"
-	exit
-fi
-
-# Try to kill cage gracefully using SIGTERM
-timeout 5s killall -15 cage -w &> /dev/null
-if [ \$? -eq 124 ]
-then
-	# Timed out, process still active, let's force some more using SIGINT
-	timeout 5s killall -2 cage -w &> /dev/null
-	if [ \$? -eq 124 ]
-	then
-		# Timed out again, this will shut it down for good using SIGKILL
-		timeout 5s killall -9 cage -w &> /dev/null
-	fi
-fi
-
-export RESOLUTION=\$(xdpyinfo | awk '/dimensions/{print \$2}')
-
-# stop and start the waydroid container
-sudo /usr/bin/waydroid-container-stop
-sudo /usr/bin/waydroid-container-start
-systemctl status waydroid-container.service | grep -i running
-if [ \$? -eq 0 ]
-then
-	echo All good continue with the script.
-else
-	kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
-	exit
-fi
-
-# Check if non Steam shortcut has the game / app as the launch option
-if [ -z "\$1" ]
-	then
-		# launch option not provided. launch Waydroid via cage and show the full ui right away
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode \$RESOLUTION@60Hz ; \\
-			/usr/bin/waydroid show-full-ui \$@ & \\
-
-			sudo /usr/bin/waydroid-startup-scripts'
-	else
-		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
-		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode \$RESOLUTION@60Hz ; \\
-			/usr/bin/waydroid session start \$@ & \\
-
-			sudo /usr/bin/waydroid-startup-scripts ; \\
-
-			sleep 1 ; \\
-			/usr/bin/waydroid app launch \$PACKAGE & \\
-
-			sleep 1 ; \\
-			/usr/bin/waydroid show-full-ui $@ &'
-fi
-
-# Reset cage so it doesn't nuke the display environment variable on exit
-while [ -n "\$(pgrep cage)" ]
-do
-	sleep 1
-done
-
-cage -- bash -c 'wlr-randr'
-EOF
+cp extras/Android_Waydroid_Cage.sh ~/Android_Waydroid/Android_Waydroid_Cage.sh
 
 # custom configs done. lets move them to the correct location
 cp $PWD/extras/Waydroid-Toolbox.sh $PWD/extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
@@ -433,43 +327,7 @@ else
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
 
 	# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
-	echo -e "$current_password\n" | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null <<'EOF'
-
-##########################################################################
-# controller config for udev events
-persist.waydroid.udev=true
-persist.waydroid.uevent=true
-
-# disable root
-ro.adb.secure=1
-ro.debuggable=0
-ro.build.selinux=1
-
-##########################################################################
-### start of custom build prop - you can safely delete if this causes issue
-
-ro.product.brand=google
-ro.product.manufacturer=Valve
-ro.system.build.product=redfin
-ro.product.name=redfin
-ro.product.device=redfin
-ro.product.model=Steam Deck
-ro.system.build.flavor=redfin-user
-ro.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.system.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
-ro.bootimage.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.build.display.id=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.build.tags=release-keys
-ro.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
-ro.vendor.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.vendor.build.id=RQ3A.211001.001
-ro.vendor.build.tags=release-keys
-ro.vendor.build.type=user
-ro.odm.build.tags=release-keys
-
-### end of custom build prop - you can safely delete if this causes issue
-##########################################################################
-EOF
+	{ echo -e "$current_password\n" ; cat extras/waydroid_base.prop ; } | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop
 
 	echo Adding shortcuts to Game Mode. Please wait.
 	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh  &> /dev/null
