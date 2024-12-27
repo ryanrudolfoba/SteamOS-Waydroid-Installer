@@ -116,7 +116,7 @@ fi
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
-echo Cloning casualsnek repo. 
+echo Cloning casualsnek repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
@@ -157,10 +157,10 @@ binder_loaded=$(lsmod | grep -q binder; echo $?)
 binder_differs=$(cmp -s binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
 if [ "$binder_loaded" -ne 0 ] || [ "$binder_differs" -ne 0 ]
 then
-        echo Binder kernel module not found or not up to date! Installing binder!
-        echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
-        echo -e "$current_password\n" | sudo -S depmod -a && \
-        echo -e "$current_password\n" | sudo -S modprobe binder-linux device=binder,hwbinder,vndbinder
+	echo Binder kernel module not found or not up to date! Installing binder!
+	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
+	echo -e "$current_password\n" | sudo -S depmod -a && \
+	echo -e "$current_password\n" | sudo -S modprobe binder-linux device=binder,hwbinder,vndbinder
 
 	if [ $? -eq 0 ]
 	then
@@ -280,7 +280,7 @@ fi
 export RESOLUTION=\$(xdpyinfo | awk '/dimensions/{print \$2}')
 
 # stop and start the waydroid container
-sudo /usr/bin/waydroid-container-stop 
+sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 systemctl status waydroid-container.service | grep -i running
 if [ \$? -eq 0 ]
@@ -309,8 +309,8 @@ if [ -z "\$1" ]
 			sleep 1 ; \\
 			/usr/bin/waydroid app launch \$PACKAGE & \\
 
-   			sleep 1 ; \\
-      			/usr/bin/waydroid show-full-ui $@ &'
+			sleep 1 ; \\
+			/usr/bin/waydroid show-full-ui $@ &'
 fi
 
 # Reset cage so it doesn't nuke the display environment variable on exit
@@ -341,7 +341,7 @@ then
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 else
-	echo Downloading waydroid image from sourceforge. 
+	echo Downloading waydroid image from sourceforge.
 	echo This can take a few seconds to a few minutes depending on the internet connection and the speed of the sourceforge mirror.
 	echo Sometimes it connects to a slow sourceforge mirror and the downloads are slow -. This is beyond my control!
 	echo If the downloads are slow due to a slow sourceforge mirror - cancel the sript \(CTL-C\) and run it again.
@@ -351,7 +351,7 @@ else
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
-	
+
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
 	# copy fixed key layout for Steam Controller
 	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
@@ -368,7 +368,7 @@ else
 	# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
-	
+
 
 	Choice=$(zenity --width 750 --height 240 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
@@ -469,7 +469,7 @@ ro.odm.build.tags=release-keys
 ### end of custom build prop - you can safely delete if this causes issue
 ##########################################################################
 EOF
-	
+
 	echo Adding shortcuts to Game Mode. Please wait.
 	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh  &> /dev/null
 	sleep 15
@@ -477,7 +477,7 @@ EOF
 	steamos-add-to-steam /usr/bin/steamos-nested-desktop  &> /dev/null
 	sleep 15
 	echo steamos-nested-desktop shortcut has been added to Game Mode.
-	
+
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
