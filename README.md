@@ -37,6 +37,10 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of Dec 27 2024)
+1. Support for SteamOS Beta 3.6.21
+2. Uploaded initial Waydroid Android 11 TV image in the [release section](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/tag/Android11TV)
+
 # What's New (as of Oct 28 2024)
 1. Support for latest SteamOS Stable 3.6.19
 2. fixed binder kernel module parameters
