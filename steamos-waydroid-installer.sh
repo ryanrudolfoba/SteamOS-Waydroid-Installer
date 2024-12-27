@@ -344,7 +344,7 @@ else
 	echo Downloading waydroid image from sourceforge.
 	echo This can take a few seconds to a few minutes depending on the internet connection and the speed of the sourceforge mirror.
 	echo Sometimes it connects to a slow sourceforge mirror and the downloads are slow -. This is beyond my control!
-	echo If the downloads are slow due to a slow sourceforge mirror - cancel the sript \(CTL-C\) and run it again.
+	echo If the downloads are slow due to a slow sourceforge mirror - cancel the script \(CTL-C\) and run it again.
 
 	# lets initialize waydroid
 	mkdir -p ~/waydroid/{images,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
