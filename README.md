@@ -124,7 +124,7 @@ Read the sections below carefully!
 1. Go into Desktop Mode and open a konsole terminal.
 2. Clone the github repo. \
    cd ~/ \
-   git clone https://github.com/ryanrudolfoba/steamos-waydroid-installer
+   git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 3. Execute the script! \
    cd ~/steamos-waydroid-installer \
    chmod +x steamos-waydroid-installer.sh \
