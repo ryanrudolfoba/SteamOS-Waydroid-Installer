@@ -12,6 +12,7 @@ steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.1.52-valve16-1-neptune-61
 stable_kernel2=6.5.0-valve22-1-neptune-65
+beta_kernel1=6.5.0-valve23-1-neptune-65
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -52,7 +53,7 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $stable_kernel2 ]
+if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $stable_kernel2 ] || [ $kernel_version = $beta_kernel1 ]
 then
 	echo SteamOS $steamos_version - kernel version $kernel_version is supported. Proceed to next step.
 else
