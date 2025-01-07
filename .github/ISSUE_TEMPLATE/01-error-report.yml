@@ -1,0 +1,47 @@
+name: Error report
+description: If you got an error while running the script
+body:
+  # require that users are on the latest version
+  - type: checkboxes
+    attributes:
+      label: Are you on the latest version of the script?
+      description: Please make sure you have cloned the latest version of the script
+      options:
+        - label: I am on the latest version of the script
+          required: true
+
+  # require that users have searched existing issues
+  - type: checkboxes
+    attributes:
+      label: Have you searched the existing issues?
+      description: Please search to see if an issue already exists for the problem you encountered
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  # require that users add an error log
+  - type: textarea
+    attributes:
+      label: What specific error did you get?
+      description: Copy and paste the logs from the script below
+      render: text # render as a ```text code block
+      # example output of the script when a kernel version is not supported
+      # this is to clue them in about which specific log to copy + paste
+      placeholder: |
+        SteamOS Waydroid Installer Script by ryanrudolf
+        https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
+        YT - 10MinuteSteamDeckGamer
+        Script is running in Desktop Mode.
+        Checking if kernel is supported.
+        SteamOS 3.6.20 - kernel version 6.5.0-valve23-1-neptune-65 is NOT supported. Exiting immediately.
+    validations:
+      required: true
+
+  # optional textarea for any other details, like screenshots etc
+  - type: textarea
+    attributes:
+      label: Any other details you think would be helpful?
+      description: Can attach a screenshot here, add any other version details, anything specific about your OS, what happened just before the error, etc
+      # example of some text a user might write for additional context
+      placeholder: |
+        Attached screenshot below. Running on Steam Deck
