@@ -401,6 +401,8 @@ else
             echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG
 			echo -e "$current_password\n" | sudo -S unzip ~/waydroid/images/androidtv.zip -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm androidtv.zip
+			echo -e "$current_password\n" | sudo -S waydroid init -f
+
 		fi
 
 	# check if waydroid initialization completed without errors
