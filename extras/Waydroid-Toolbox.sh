@@ -34,7 +34,7 @@ echo -e "$PASSWORD\n" | sudo -S ls &> /dev/null
 if [ $? -ne 0 ]
 then
 	echo sudo password is wrong! | \
-		zenity --text-info --title "Clover Toolbox" --width 400 --height 200
+		zenity --text-info --title "Waydroid Toolbox" --width 400 --height 200
 	exit
 fi
 

@@ -16,6 +16,7 @@ beta_kernel1=6.5.0-valve23-1-neptune-65
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
+ANDROID_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
 STEAMOS_VERSION=$(grep VERSION_ID /etc/os-release | cut -d "=" -f 2)
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
@@ -397,7 +398,9 @@ else
 		elif [ "$Choice" == "TV" ]
 		then
 			echo Android TV chosen!
-			exit
+            echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG
+			echo -e "$current_password\n" | sudo -S unzip ~/waydroid/images/androidtv.zip -d ~/waydroid/images
+			echo -e "$current_password\n" | sudo -S rm androidtv.zip
 		fi
 
 	# check if waydroid initialization completed without errors
