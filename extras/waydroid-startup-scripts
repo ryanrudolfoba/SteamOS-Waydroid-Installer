@@ -1,0 +1,23 @@
+#!/bin/bash
+
+while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
+do
+	sleep 1
+done
+
+# This are the commands to execute once Android boot is completed
+
+# detect and add Steam Deck controller
+echo add > /sys/devices/virtual/input/input*/event*/uevent
+
+# fix for scoped storage permission issue
+waydroid shell sh /system/etc/nodataperm.sh
+
+# disable initial device setup via ADB
+waydroid shell pm disable com.google.android.setupwizard
+
+# shizuku root
+waydroid shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh &
+
+# mantis gamepad pro
+waydroid shell sh /sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh &
