@@ -407,12 +407,16 @@ else
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 			echo Reinitializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -f
-		    if zenity --question --text="Install OpenGapps"; then
-			 echo -e "$current_password\n" | sudo -S pacman -Sy --noconfirm lzip
-             echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-opengapps.sh  -o ~/waydroid/install-opengapps.sh
-			 echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/opengapps.zip https://sourceforge.net/projects/opengapps/files/x86_64/20220503/open_gapps-x86_64-11.0-tvstock-20220503.zip/download
-			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-opengapps.sh
-             echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-opengapps.sh ~/waydroid/opengapps.zip
+		    if zenity --question --text="Install MicroG and other apps"; then
+			echo -e "$current_password\n" | sudo -S mkdir ~/waydroid/apks
+			echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/com.google.android.gms-244735012.apk https://github.com/microg/GmsCore/releases/download/v0.3.6.244735/com.google.android.gms-244735012.apk
+			echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/AuroraStore-4.6.4.apk https://auroraoss.com/downloads/AuroraStore/Release/AuroraStore-4.6.4.apk
+			echo -e "$current_password\n" | sudo -S bash ~/Android_Waydroid/Android_Waydroid_Cage.sh &
+			sleep 5
+			echo "$current_password\n" | sudo -S waydroid app install /waydroid/apks/com.google.android.gms-244735012.apk
+			echo "$current_password\n" | sudo -S waydroid app install /waydroid/apks/AuroraStore-4.6.4.apk
+		    echo "$current_password\n" | sudo -S waydroid container stop
+
             else
               echo OK!
             fi
@@ -502,3 +506,8 @@ EOF
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 fi
+if zenity --question --text="Do you Want to Return to Gaming Mode?"; then
+              qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
+            else
+              echo OK!
+            fi
