@@ -403,7 +403,7 @@ else
 			echo Downloading Android TV image
             echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
 			echo Extracting Archive
-			echo -e "$current_password\n" | sudo -S unzip ~/waydroid/images/androidtv -d ~/waydroid/images
+			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 			echo Reinitializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -f
