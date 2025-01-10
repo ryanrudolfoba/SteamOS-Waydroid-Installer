@@ -353,7 +353,7 @@ else
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
-
+    echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/overlay /var/lib/waydroid/overlay &> /dev/null
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
 	# copy fixed key layout for Steam Controller
 	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
@@ -406,7 +406,7 @@ else
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 		    if zenity --question --text="Install Widevine (GAPPS)"; then
-             echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-widevine-a13.sh -o ~/waydroid/install-widevine-a13.sh
+             echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-mindthegapps.sh  -o ~/waydroid/install-mindthegapps.sh
 			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-widevine-a13.sh
              echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-widevine-a13.sh
             else
