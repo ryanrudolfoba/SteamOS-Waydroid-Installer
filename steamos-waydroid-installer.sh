@@ -404,12 +404,12 @@ else
 			echo -e "$current_password\n" | sudo -S waydroid init
 			echo Downloading Android TV image
             echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
-			hash=$(md5sum "~/waydroid/images/androidtv.zip" | awk '{print $1}')
+			hash=$(md5sum "/home/deck/waydroid/images/androidtv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
 			if [[ "$hash" == "$ANDROID_TV_IMG_MD5" ]]; then
-  				echo "'~/waydroid/images/androidtv.zip': MD5 hash verified."
+  				echo "'/home/deck/waydroid/images/androidtv.zip': MD5 hash verified."
 			else
-  				echo "'~/waydroid/images/androidtv.zip': MD5 hash mismatch."
+  				echo "'/home/deck/waydroid/images/androidtv.zip': MD5 hash mismatch."
 			fi
 			echo Extracting Archive
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
