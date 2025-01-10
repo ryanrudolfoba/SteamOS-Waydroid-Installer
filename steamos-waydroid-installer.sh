@@ -407,8 +407,8 @@ else
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 		    if zenity --question --text="Install Widevine (GAPPS)"; then
              echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-mindthegapps.sh  -o ~/waydroid/install-mindthegapps.sh
-			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-widevine-a13.sh
-             echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-widevine-a13.sh
+			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-mindthegapps.sh
+             echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-mindthegapps.sh
             else
               echo OK!
 			echo Reinitializing Waydroid
