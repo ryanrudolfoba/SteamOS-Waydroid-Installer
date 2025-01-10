@@ -405,14 +405,14 @@ else
 			echo Extracting Archive
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
+			echo Reinitializing Waydroid
+			echo -e "$current_password\n" | sudo -S waydroid init -f
 		    if zenity --question --text="Install MindTheGapps TV"; then
              echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-mindthegapps.sh  -o ~/waydroid/install-mindthegapps.sh
 			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-mindthegapps.sh
              echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-mindthegapps.sh
             else
               echo OK!
-			echo Reinitializing Waydroid
-			echo -e "$current_password\n" | sudo -S waydroid init -f
             fi
 
 		fi
