@@ -399,7 +399,7 @@ else
 		then
 			echo Android TV chosen!
 			echo Initializing Waydroid
-			echo -e "$current_password\n" | sudo -S waydroid init -f
+			echo -e "$current_password\n" | sudo -S waydroid init
 			echo Downloading Android TV image
             echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
 			echo Extracting Archive
