@@ -416,7 +416,9 @@ else
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 			echo Reinitializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -f
-		    if zenity --question --text="Install MicroG and Aurora Store"; then
+
+			# install MicroG and Aurora Store if desired
+			if zenity --question --text="Install MicroG and Aurora Store"; then
 				MicroG=TRUE
 				echo -e "$current_password\n" | sudo -S mkdir ~/waydroid/apks
 				echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/com.google.android.gms-244735012.apk https://github.com/microg/GmsCore/releases/download/v0.3.6.244735/com.google.android.gms-244735012.apk
