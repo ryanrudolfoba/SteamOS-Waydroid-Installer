@@ -413,7 +413,17 @@ else
 			 echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/AuroraStore-4.6.4.apk https://auroraoss.com/downloads/AuroraStore/Release/AuroraStore-4.6.4.apk
 			 konsole -e bash /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh &
 			 sleep 30
-			 waydroid app install ~/waydroid/apks/com.google.android.gms-244735012.apk
+			 python3 -m venv $DIR_CASUALSNEK/venv
+	         $DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
+	         echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {microg}
+	         if [ $? -eq 0 ]
+	         then
+		    	echo Casualsnek script done.
+				echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
+			else
+				echo Error with casualsnek script. Run the script again.
+				cleanup_exit
+			fi
 			 waydroid app install ~/waydroid/apks/AuroraStore-4.6.4.apk
 			 sleep 40
 		     echo "$current_password\n" | sudo -S waydroid container stop
