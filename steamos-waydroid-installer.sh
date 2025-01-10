@@ -407,10 +407,11 @@ else
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 			echo Reinitializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -f
-		    if zenity --question --text="Install MindTheGapps TV"; then
-             echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-mindthegapps.sh  -o ~/waydroid/install-mindthegapps.sh
-			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-mindthegapps.sh
-             echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-mindthegapps.sh
+		    if zenity --question --text="Install OpenGapps"; then
+             echo -e "$current_password\n" | sudo -S curl -L https://github.com/Waydroid-ATV/androidtv_scripts/raw/refs/heads/main/install-opengapps.sh  -o ~/waydroid/install-opengapps.sh
+			 echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/opengapps.zip https://sourceforge.net/projects/opengapps/files/x86_64/20220503/open_gapps-x86_64-11.0-tvstock-20220503.zip/download
+			 echo -e "$current_password\n" | sudo -S chmod +x ~/waydroid/install-opengapps.sh
+             echo -e "$current_password\n" | sudo -S bash -eu ~/waydroid/install-opengapps.sh ~/waydroid/opengapps.zip
             else
               echo OK!
             fi
