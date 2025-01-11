@@ -220,7 +220,6 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 # waydroid launcher - cage
 cp extras/Android_Waydroid_Cage.sh ~/Android_Waydroid/Android_Waydroid_Cage.sh
 
-
 # custom configs done. lets move them to the correct location
 cp $PWD/extras/Waydroid-Toolbox.sh $PWD/extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
