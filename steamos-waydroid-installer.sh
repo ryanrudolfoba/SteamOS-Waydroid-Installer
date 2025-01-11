@@ -340,7 +340,7 @@ else
 	# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
-	echo -e "$current_password\n" | sudo -S pacman -Sy --noconfirm lzip
+
 
 	Choice=$(zenity --width 750 --height 240 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
@@ -420,6 +420,7 @@ else
 	fi
 
 	# casualsnek script
+	echo -e "$current_password\n" | sudo -S pacman -Sy --noconfirm lzip
 	python3 -m venv $DIR_CASUALSNEK/venv
 	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
 	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
