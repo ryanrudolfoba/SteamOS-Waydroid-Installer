@@ -340,7 +340,7 @@ else
 	# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
-
+	echo -e "$current_password\n" | sudo -S pacman -Sy --noconfirm lzip
 
 	Choice=$(zenity --width 750 --height 240 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
