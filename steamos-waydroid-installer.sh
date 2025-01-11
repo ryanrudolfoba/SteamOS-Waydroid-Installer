@@ -313,7 +313,7 @@ else
 			echo -e "$current_password\n" | sudo -S waydroid init -f
 
 			# install MicroG and Aurora Store if desired
-			if zenity --question --text="Install MicroG and Aurora Store"; then
+			if zenity --question --text="Install MicroG and Aurora Store?"; then
 				MicroG=TRUE
 				echo -e "$current_password\n" | sudo -S mkdir ~/waydroid/apks
 				echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/com.google.android.gms-244735012.apk https://github.com/microg/GmsCore/releases/download/v0.3.6.244735/com.google.android.gms-244735012.apk
