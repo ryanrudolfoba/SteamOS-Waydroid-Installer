@@ -316,7 +316,6 @@ else
 			if zenity --question --text="Install MicroG and Aurora Store?"; then
 				MicroG=TRUE
 				echo -e "$current_password\n" | sudo -S mkdir ~/waydroid/apks
-				echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/com.google.android.gms-244735012.apk https://github.com/microg/GmsCore/releases/download/v0.3.6.244735/com.google.android.gms-244735012.apk
 				echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/AuroraStore-4.6.4.apk https://auroraoss.com/downloads/AuroraStore/Release/AuroraStore-4.6.4.apk
 				konsole -e bash /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh &
 				sleep 30
