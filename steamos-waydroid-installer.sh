@@ -310,19 +310,6 @@ else
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
 			echo Reinitializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -f
-
-			# install MicroG and Aurora Store if desired
-			if zenity --question --text="Install MicroG and Aurora Store?"; then
-				MicroG=TRUE
-				echo -e "$current_password\n" | sudo -S mkdir ~/waydroid/apks
-				echo -e "$current_password\n" | sudo -S curl -L -o ~/waydroid/apks/AuroraStore-4.6.4.apk https://auroraoss.com/downloads/AuroraStore/Release/AuroraStore-4.6.4.apk
-				konsole -e bash /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh &
-				sleep 30
-				waydroid app install ~/waydroid/apks/AuroraStore-4.6.4.apk
-				sleep 40
-		     	echo "$current_password\n" | sudo -S waydroid container stop
-            fi
-
 		fi
 
 	# check if waydroid initialization completed without errors
@@ -346,9 +333,6 @@ else
 	python3 -m venv $DIR_CASUALSNEK/venv
 	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
 	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
-	if [ "$MicroG" == "TRUE" ]; then
-     echo -e "$current_password\n" | sudo -S "$DIR_CASUALSNEK/venv/bin/python3" "$DIR_CASUALSNEK/main.py" install microg
-    fi
 	if [ $? -eq 0 ]
 	then
 		echo Casualsnek script done.
