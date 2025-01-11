@@ -323,9 +323,6 @@ else
 				waydroid app install ~/waydroid/apks/AuroraStore-4.6.4.apk
 				sleep 40
 		     	echo "$current_password\n" | sudo -S waydroid container stop
-
-            else
-            	echo OK!
             fi
 
 		fi
