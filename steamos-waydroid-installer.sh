@@ -301,11 +301,11 @@ else
             echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
 			hash=$(md5sum "/home/deck/waydroid/images/androidtv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
-			if [[ "$hash" == "$ANDROID_TV_IMG_MD5" ]]; then
-  				echo "'/home/deck/waydroid/images/androidtv.zip': MD5 hash verified."
-			else
-  				echo "'/home/deck/waydroid/images/androidtv.zip': MD5 hash mismatch."
+			if [[ "$hash" != "$ANDROID_TV_IMG_MD5" ]]; then
+  				echo MD5 hash mismatch for Android TV image, indicating a corrupted download. This might be due to a network error, you can try again.
+  				cleanup_exit
 			fi
+
 			echo Extracting Archive
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
