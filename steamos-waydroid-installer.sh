@@ -307,8 +307,8 @@ else
 			echo Extracting Archive
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
-			echo Reinitializing Waydroid
-			echo -e "$current_password\n" | sudo -S waydroid init -f
+			echo Initializing Waydroid
+			echo -e "$current_password\n" | sudo -S waydroid init
 		fi
 
 	# check if waydroid initialization completed without errors
