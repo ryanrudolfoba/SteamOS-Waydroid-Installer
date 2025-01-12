@@ -328,7 +328,6 @@ else
 	fi
 
 	# casualsnek script
-	echo -e "$current_password\n" | sudo -S pacman -Sy --noconfirm lzip
 	python3 -m venv $DIR_CASUALSNEK/venv
 	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
 	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
