@@ -293,8 +293,6 @@ else
 		elif [ "$Choice" == "TV" ]
 		then
 			echo Android TV chosen!
-			echo Initializing Waydroid
-			echo -e "$current_password\n" | sudo -S waydroid init
 			echo Downloading Android TV image
             echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
 			hash=$(md5sum "/home/deck/waydroid/images/androidtv.zip" | awk '{print $1}')
