@@ -21,7 +21,6 @@ ANDROID_TV_IMG_MD5=4b0236af2d83164135d86872e27ce6af
 STEAMOS_VERSION=$(grep VERSION_ID /etc/os-release | cut -d "=" -f 2)
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
-MicroG=FALSE
 
 # define functions here
 cleanup_exit () {
