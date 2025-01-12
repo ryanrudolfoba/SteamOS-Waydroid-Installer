@@ -294,7 +294,7 @@ else
 		then
 			echo Android TV chosen!
 			echo Downloading Android TV image
-            echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
 			hash=$(md5sum "/home/deck/waydroid/images/androidtv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
 			if [[ "$hash" != "$ANDROID_TV_IMG_MD5" ]]; then
