@@ -34,7 +34,7 @@ echo -e "$PASSWORD\n" | sudo -S ls &> /dev/null
 if [ $? -ne 0 ]
 then
 	echo sudo password is wrong! | \
-		zenity --text-info --title "Clover Toolbox" --width 400 --height 200
+		zenity --text-info --title "Waydroid Toolbox" --width 400 --height 200
 	exit
 fi
 
@@ -50,7 +50,7 @@ Choice=$(zenity --width 850 --height 400 --list --radiolist --multiple 	--title 
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
  	FALSE LIBNDK "Use custom LIBNDK patches or the original LIBNDK."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
-	FALSE NETWORK "Reinitialize firewall network configuration for.."\
+	FALSE NETWORK "Reinitialize firewall configuration - use this when WIFI is not working."\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
 
