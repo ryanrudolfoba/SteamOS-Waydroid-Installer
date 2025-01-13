@@ -40,7 +40,7 @@ fi
 
 while true
 do
-Choice=$(zenity --width 850 --height 400 --list --radiolist --multiple 	--title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
+Choice=$(zenity --width 850 --height 400 --list --radiolist --multiple --title "Waydroid Toolbox for SteamOS Waydroid script  - https://github.com/ryanrudolfoba/steamos-waydroid-installer"\
 	--column "Select One" \
 	--column "Option" \
 	--column="Description - Read this carefully!"\
@@ -50,7 +50,7 @@ Choice=$(zenity --width 850 --height 400 --list --radiolist --multiple 	--title 
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
  	FALSE LIBNDK "Use custom LIBNDK patches or the original LIBNDK."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
-	FALSE NETWORK "Reinitialize firewall network configuration for.."\
+	FALSE NETWORK "Reinitialize firewall configuration - use this when WIFI is not working."\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
 
@@ -72,7 +72,7 @@ then
 
 elif [ "$Choice" == "LIBNDK" ]
 then
-LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+LIBNDK_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
 	FALSE PATCHED "Apply LIBNDK custom patches from qwerty12356-wart."\
 	FALSE ORIGINAL "Remove the patch and use the original LIBNDK."\
 	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
@@ -136,7 +136,7 @@ ADBLOCK_Choice=$(zenity --width 600 --height 250 --list --radiolist --multiple -
 
 elif [ "$Choice" == "GPU" ]
 then
-GPU_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+GPU_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
 	FALSE GBM "Use gbm config for GPU."\
 	FALSE MINIGBM "Use minigbm_gbm_mesa for GPU (default)."\
 	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
@@ -163,7 +163,7 @@ GPU_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--ti
 
 elif [ "$Choice" == "AUDIO" ]
 then
-AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple 	--title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+AUDIO_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
 	FALSE DISABLE "Disable the custom audio config."\
 	FALSE ENABLE "Enable the custom audio config to lower audio latency."\
 	TRUE MENU "***** Go back to Waydroid Toolbox Main Menu *****")
