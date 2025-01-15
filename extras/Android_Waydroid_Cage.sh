@@ -48,7 +48,7 @@ if [ -z "$1" ]
 			sudo /usr/bin/waydroid-startup-scripts'
 	else
 		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
-		cage -- env PACKAGE="\$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION@60Hz ; \
+		cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION@60Hz ; \
 			/usr/bin/waydroid session start $@ & \
 
 			sudo /usr/bin/waydroid-startup-scripts ; \
