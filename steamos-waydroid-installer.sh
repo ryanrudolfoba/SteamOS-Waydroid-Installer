@@ -16,7 +16,6 @@ beta_kernel1=6.5.0-valve23-1-neptune-65
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
-STEAMOS_VERSION=$(grep VERSION_ID /etc/os-release | cut -d "=" -f 2)
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 
