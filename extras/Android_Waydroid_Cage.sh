@@ -30,10 +30,8 @@ export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 sudo /usr/bin/waydroid-container-stop
 sudo /usr/bin/waydroid-container-start
 systemctl status waydroid-container.service | grep -i running
-if [ $? -eq 0 ]
+if [ $? -ne 0 ]
 then
-	echo All good continue with the script.
-else
 	kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
 	exit
 fi
