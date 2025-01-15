@@ -40,24 +40,24 @@ fi
 
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "$1" ]
-	then
-		# launch option not provided. launch Waydroid via cage and show the full ui right away
-		cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION@60Hz ; \
-			/usr/bin/waydroid show-full-ui $@ & \
+then
+	# launch option not provided. launch Waydroid via cage and show the full ui right away
+	cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION@60Hz ; \
+		/usr/bin/waydroid show-full-ui $@ & \
 
-			sudo /usr/bin/waydroid-startup-scripts'
-	else
-		# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
-		cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION@60Hz ; \
-			/usr/bin/waydroid session start $@ & \
+		sudo /usr/bin/waydroid-startup-scripts'
+else
+	# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
+	cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION@60Hz ; \
+		/usr/bin/waydroid session start $@ & \
 
-			sudo /usr/bin/waydroid-startup-scripts ; \
+		sudo /usr/bin/waydroid-startup-scripts ; \
 
-			sleep 1 ; \
-			/usr/bin/waydroid app launch $PACKAGE & \
+		sleep 1 ; \
+		/usr/bin/waydroid app launch $PACKAGE & \
 
-			sleep 1 ; \
-			/usr/bin/waydroid show-full-ui $@ &'
+		sleep 1 ; \
+		/usr/bin/waydroid show-full-ui $@ &'
 fi
 
 # Reset cage so it doesn't nuke the display environment variable on exit
