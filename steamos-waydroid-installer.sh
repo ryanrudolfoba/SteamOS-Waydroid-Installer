@@ -13,6 +13,8 @@ kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.1.52-valve16-1-neptune-61
 stable_kernel2=6.5.0-valve22-1-neptune-65
 beta_kernel1=6.5.0-valve23-1-neptune-65
+ANDROID_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
+ANDROID_TV_IMG_MD5=4b0236af2d83164135d86872e27ce6af
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -289,8 +291,20 @@ else
 
 		elif [ "$Choice" == "TV" ]
 		then
-			echo Android TV chosen!
-			exit
+			echo Downloading Android TV image
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
+			hash=$(md5sum "/home/deck/waydroid/images/androidtv.zip" | awk '{print $1}')
+			# Verify the MD5 hash
+			if [[ "$hash" != "$ANDROID_TV_IMG_MD5" ]]; then
+				echo MD5 hash mismatch for Android TV image, indicating a corrupted download. This might be due to a network error, you can try again.
+				cleanup_exit
+			fi
+
+			echo Extracting Archive
+			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
+			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
+			echo Initializing Waydroid
+			echo -e "$current_password\n" | sudo -S waydroid init
 		fi
 
 	# check if waydroid initialization completed without errors
