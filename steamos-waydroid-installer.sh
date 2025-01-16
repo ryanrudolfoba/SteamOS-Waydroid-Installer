@@ -13,8 +13,8 @@ kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.1.52-valve16-1-neptune-61
 stable_kernel2=6.5.0-valve22-1-neptune-65
 beta_kernel1=6.5.0-valve23-1-neptune-65
-ANDROID_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
-ANDROID_TV_IMG_MD5=4b0236af2d83164135d86872e27ce6af
+ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
+ANDROID11_TV_IMG_MD5=4b0236af2d83164135d86872e27ce6af
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -273,7 +273,7 @@ else
 		--column="Description - Read this carefully!"\
 		TRUE GAPPS "Download Android image with Google Play Store."\
 		FALSE NO_GAPPS "Download Android image without Google Play Store."\
-		FALSE TV "Download Android TV image - thanks SupeChicken666!" \
+		FALSE TV11 "Download Android 11 TV image - thanks SupeChicken666!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -289,20 +289,20 @@ else
 		then
 			echo -e "$current_password\n" | sudo -S waydroid init
 
-		elif [ "$Choice" == "TV" ]
+		elif [ "$Choice" == "TV11" ]
 		then
 			echo Downloading Android TV image
-			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/androidtv.zip $ANDROID_TV_IMG -L
-			hash=$(md5sum "/home/deck/waydroid/images/androidtv.zip" | awk '{print $1}')
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/android11tv.zip $ANDROID11_TV_IMG -L
+			hash=$(md5sum "/home/deck/waydroid/images/android11tv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
-			if [[ "$hash" != "$ANDROID_TV_IMG_MD5" ]]; then
-				echo MD5 hash mismatch for Android TV image, indicating a corrupted download. This might be due to a network error, you can try again.
+			if [[ "$hash" != "$ANDROID11_TV_IMG_MD5" ]]; then
+				echo MD5 hash mismatch for Android 11 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
 				cleanup_exit
 			fi
 
 			echo Extracting Archive
-			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/androidtv -d ~/waydroid/images
-			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/androidtv.zip
+			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/android11tv -d ~/waydroid/images
+			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/android11tv.zip
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init
 		fi
