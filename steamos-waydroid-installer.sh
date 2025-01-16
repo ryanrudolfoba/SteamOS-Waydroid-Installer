@@ -41,6 +41,43 @@ cleanup_exit () {
 	exit
 }
 
+install_android_extras () {
+	# casualsnek script
+	python3 -m venv $DIR_CASUALSNEK/venv
+	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
+	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
+	if [ $? -eq 0 ]
+	then
+		echo Casualsnek script done.
+		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
+  
+  		# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
+		{ echo -e "$current_password\n" ; cat extras/waydroid_base.prop ; } | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop
+	else
+		echo Error with casualsnek script. Run the script again.
+		cleanup_exit
+	fi
+}
+
+check_waydroid_init () {
+	# check if waydroid initialization completed without errors
+ 	echo -e "$current_password\n" | sudo -S waydroid init
+	if [ $? -eq 0 ]
+	then
+		echo Waydroid initialization completed without errors!
+
+	else
+		echo Waydroid did not initialize correctly.
+		echo This could be a hash mismatch / corrupted download.
+		echo This could also be a python issue. Attach this screenshot when filing a bug report!
+		echo Output of whereis python - $(whereis python)
+		echo Output of which python - $(which python)
+		echo Output of python version - $(python -V)
+
+		cleanup_exit
+	fi
+}
+
 # sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
 xdpyinfo &> /dev/null
 if [ $? -eq 0 ]
@@ -271,9 +308,9 @@ else
 		--column "Select One" \
 		--column "Option" \
 		--column="Description - Read this carefully!"\
-		TRUE GAPPS "Download Android image with Google Play Store."\
-		FALSE NO_GAPPS "Download Android image without Google Play Store."\
-		FALSE TV11 "Download Android 11 TV image - thanks SupeChicken666!" \
+		TRUE GAPPS "Download regular Android image with Google Play Store."\
+		FALSE NO_GAPPS "Download regular Android image without Google Play Store."\
+		FALSE TV11 "Download custom Android 11 TV image - thanks SupeChicken666 for the build instructions!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -284,10 +321,14 @@ else
 		elif [ "$Choice" == "GAPPS" ]
 		then
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
+   			check_waydroid_init
+   			install_android_extras
 
 		elif [ "$Choice" == "NO_GAPPS" ]
 		then
 			echo -e "$current_password\n" | sudo -S waydroid init
+   			check_waydroid_init
+   			install_android_extras
 
 		elif [ "$Choice" == "TV11" ]
 		then
@@ -304,43 +345,11 @@ else
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/android11tv -d ~/waydroid/images
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/android11tv.zip
 			echo Initializing Waydroid
-			echo -e "$current_password\n" | sudo -S waydroid init
+			check_waydroid_init
 		fi
-
-	# check if waydroid initialization completed without errors
-	if [ $? -eq 0 ]
-	then
-		echo Waydroid initialization completed without errors!
-
-	else
-		echo Waydroid did not initialize correctly.
-		echo This could be a hash mismatch / corrupted download.
-		echo This could also be a python issue. Attach this screenshot when filing a bug report!
-		echo Output of whereis python - $(whereis python)
-		echo Output of which python - $(which python)
-		echo Output of python version - $(python -V)
-
-		cleanup_exit
-	fi
-
-	# casualsnek script
-	python3 -m venv $DIR_CASUALSNEK/venv
-	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
-	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
-	if [ $? -eq 0 ]
-	then
-		echo Casualsnek script done.
-		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
-	else
-		echo Error with casualsnek script. Run the script again.
-		cleanup_exit
-	fi
-
+	
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
-
-	# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
-	{ echo -e "$current_password\n" ; cat extras/waydroid_base.prop ; } | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop
 
 	echo Adding shortcuts to Game Mode. Please wait.
 	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh  &> /dev/null
