@@ -280,9 +280,11 @@ else
 	echo If the downloads are slow due to a slow sourceforge mirror - cancel the script \(CTL-C\) and run it again.
 
 	# lets initialize waydroid
-	mkdir -p ~/waydroid/{images,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
+	mkdir -p ~/waydroid/{images,custom,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo mkdir /etc/waydroid-extra &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
+	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
 
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
@@ -333,8 +335,8 @@ else
 		elif [ "$Choice" == "TV11" ]
 		then
 			echo Downloading Android TV image
-			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/images/android11tv.zip $ANDROID11_TV_IMG -L
-			hash=$(md5sum "/home/deck/waydroid/images/android11tv.zip" | awk '{print $1}')
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android11tv.zip $ANDROID11_TV_IMG -L
+			hash=$(md5sum "/home/deck/waydroid/custom/android11tv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
 			if [[ "$hash" != "$ANDROID11_TV_IMG_MD5" ]]; then
 				echo MD5 hash mismatch for Android 11 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
@@ -342,8 +344,8 @@ else
 			fi
 
 			echo Extracting Archive
-			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/images/android11tv -d ~/waydroid/images
-			echo -e "$current_password\n" | sudo -S rm ~/waydroid/images/android11tv.zip
+			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android11tv -d ~/waydroid/custom
+			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android11tv.zip
 			echo Initializing Waydroid
 			check_waydroid_init
 		fi
