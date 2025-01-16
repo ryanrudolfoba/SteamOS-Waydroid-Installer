@@ -244,7 +244,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
 	
 		# delete the waydroid directories and config
-		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/AUR
+		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/AUR
 	
 		# delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
@@ -276,7 +276,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc
 	
 		# delete the waydroid directories and config
-		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
+		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
 	
 		# delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
