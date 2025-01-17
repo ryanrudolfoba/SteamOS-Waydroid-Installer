@@ -61,7 +61,6 @@ install_android_extras () {
 
 check_waydroid_init () {
 	# check if waydroid initialization completed without errors
- 	echo -e "$current_password\n" | sudo -S waydroid init
 	if [ $? -eq 0 ]
 	then
 		echo Waydroid initialization completed without errors!
@@ -322,14 +321,20 @@ else
 
 		elif [ "$Choice" == "GAPPS" ]
 		then
+			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
    			check_waydroid_init
-   			install_android_extras
+   			
+			echo Install libndk, widevine and fingerprint spoof 
+			install_android_extras
 
 		elif [ "$Choice" == "NO_GAPPS" ]
 		then
+			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init
    			check_waydroid_init
+			
+			echo Install libndk, widevine and fingerprint spoof 
    			install_android_extras
 
 		elif [ "$Choice" == "TV11" ]
@@ -347,6 +352,7 @@ else
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android11tv -d ~/waydroid/custom
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android11tv.zip
 			echo Initializing Waydroid
+ 			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 		fi
 	
