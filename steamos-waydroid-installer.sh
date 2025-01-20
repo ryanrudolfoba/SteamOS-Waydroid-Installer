@@ -15,6 +15,8 @@ stable_kernel2=6.5.0-valve22-1-neptune-65
 beta_kernel1=6.5.0-valve23-1-neptune-65
 ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
 ANDROID11_TV_IMG_MD5=4b0236af2d83164135d86872e27ce6af
+ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
+ANDROID13_TV_IMG_MD5=bf98616ddaba97ecd91d4dd82b1e748a
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -304,7 +306,7 @@ else
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
 
 
-	Choice=$(zenity --width 750 --height 240 --list --radiolist --multiple \
+	Choice=$(zenity --width 800 --height 280 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
 		--column "Select One" \
 		--column "Option" \
@@ -339,7 +341,7 @@ else
 
 		elif [ "$Choice" == "TV11" ]
 		then
-			echo Downloading Android TV image
+			echo Downloading Android 11 TV image
 			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android11tv.zip $ANDROID11_TV_IMG -L
 			hash=$(md5sum "/home/deck/waydroid/custom/android11tv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
@@ -358,7 +360,29 @@ else
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-		fi
+   
+		elif [ "$Choice" == "TV13" ]
+		then
+			echo Downloading Android 13 TV image
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13tv.zip $ANDROID11_TV_IMG -L
+			hash=$(md5sum "/home/deck/waydroid/custom/android13tv.zip" | awk '{print $1}')
+			# Verify the MD5 hash
+			if [[ "$hash" != "$ANDROID13_TV_IMG_MD5" ]]; then
+				echo MD5 hash mismatch for Android 13 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
+				cleanup_exit
+			fi
+
+			echo Extracting Archive
+			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android13tv -d ~/waydroid/custom
+			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android13tv.zip
+
+			echo Applying fix for Leanback Keyboard
+			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
+
+			echo Initializing Waydroid
+ 			echo -e "$current_password\n" | sudo -S waydroid init
+			check_waydroid_init
+   		fi
 
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
