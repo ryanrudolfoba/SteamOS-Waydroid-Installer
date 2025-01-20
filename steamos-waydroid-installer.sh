@@ -50,7 +50,7 @@ install_android_extras () {
 	then
 		echo Casualsnek script done.
 		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
-  
+
   		# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
 		{ echo -e "$current_password\n" ; cat extras/waydroid_base.prop ; } | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop
 	else
@@ -324,8 +324,8 @@ else
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
    			check_waydroid_init
-   			
-			echo Install libndk, widevine and fingerprint spoof 
+
+			echo Install libndk, widevine and fingerprint spoof
 			install_android_extras
 
 		elif [ "$Choice" == "NO_GAPPS" ]
@@ -333,8 +333,8 @@ else
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init
    			check_waydroid_init
-			
-			echo Install libndk, widevine and fingerprint spoof 
+
+			echo Install libndk, widevine and fingerprint spoof
    			install_android_extras
 
 		elif [ "$Choice" == "TV11" ]
@@ -351,11 +351,15 @@ else
 			echo Extracting Archive
 			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android11tv -d ~/waydroid/custom
 			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android11tv.zip
+
+			echo Applying fix for Leanback Keyboard
+			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
+
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 		fi
-	
+
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
 
