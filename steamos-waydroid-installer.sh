@@ -314,6 +314,7 @@ else
 		TRUE GAPPS "Download regular Android image with Google Play Store."\
 		FALSE NO_GAPPS "Download regular Android image without Google Play Store."\
 		FALSE TV11 "Download custom Android 11 TV image - thanks SupeChicken666 for the build instructions!" \
+  		FALSE TV13 "Download custom Android 13 TV image - thanks SupeChicken666 for the build instructions!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
