@@ -365,7 +365,7 @@ else
 		elif [ "$Choice" == "TV13" ]
 		then
 			echo Downloading Android 13 TV image
-			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13tv.zip $ANDROID11_TV_IMG -L
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13tv.zip $ANDROID13_TV_IMG -L
 			hash=$(md5sum "/home/deck/waydroid/custom/android13tv.zip" | awk '{print $1}')
 			# Verify the MD5 hash
 			if [[ "$hash" != "$ANDROID13_TV_IMG_MD5" ]]; then
