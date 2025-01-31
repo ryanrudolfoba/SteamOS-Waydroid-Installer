@@ -14,11 +14,11 @@ stable_kernel1=6.1.52-valve16-1-neptune-61
 stable_kernel2=6.5.0-valve22-1-neptune-65
 beta_kernel1=6.5.0-valve23-1-neptune-65
 ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
-ANDROID11_TV_IMG_MD5=4b0236af2d83164135d86872e27ce6af
+ANDROID11_TV_IMG_HASH=680971aaeb9edc64d9d79de628bff0300c91e86134f8daea1bbc636a2476e2a7
 ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
-ANDROID13_TV_IMG_MD5=bf98616ddaba97ecd91d4dd82b1e748a
+ANDROID13_TV_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
 ANDROID13_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13/lineage-20-20250121-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
-ANDROID13_IMG_MD5=8bce8f952f54647dff36bcf50e9136c4
+ANDROID13_IMG_HASH=833be8279a605285cc2b9c85425511a100320102c7ff8897f254fcfdf3929bb1
 AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
 AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
@@ -313,10 +313,11 @@ else
 		--column "Select One" \
 		--column "Option" \
 		--column="Description - Read this carefully!"\
-		TRUE GAPPS "Download regular Android image with Google Play Store."\
-		FALSE NO_GAPPS "Download regular Android image without Google Play Store."\
-		FALSE TV11 "Download custom Android 11 TV image - thanks SupeChicken666 for the build instructions!" \
-  		FALSE TV13 "Download custom Android 13 TV image - thanks SupeChicken666 for the build instructions!" \
+		TRUE A11_GAPPS "Download Android 11 image with Google Play Store."\
+		FALSE A11_NO_GAPPS "Download Android 11 image without Google Play Store."\
+  		FALSE A13_NO_GAPPS "Download Android 13 image without Google Play Store."\
+		FALSE TV11_NO_GAPPS "Download Android 11 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
+  		FALSE TV13_NO_GAPPS "Download Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -324,7 +325,7 @@ else
 			echo User pressed CANCEL / EXIT. Goodbye!
 			cleanup_exit
 
-		elif [ "$Choice" == "GAPPS" ]
+		elif [ "$Choice" == "A11_GAPPS" ]
 		then
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
@@ -333,7 +334,7 @@ else
 			echo Install libndk, widevine and fingerprint spoof
 			install_android_extras
 
-		elif [ "$Choice" == "NO_GAPPS" ]
+		elif [ "$Choice" == "A11_NO_GAPPS" ]
 		then
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init
@@ -342,14 +343,14 @@ else
 			echo Install libndk, widevine and fingerprint spoof
    			install_android_extras
 
-		elif [ "$Choice" == "TV11" ]
+		elif [ "$Choice" == "TV11_NO_GAPPS" ]
 		then
 			echo Downloading Android 11 TV image
 			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android11tv.zip $ANDROID11_TV_IMG -L
-			hash=$(md5sum "/home/deck/waydroid/custom/android11tv.zip" | awk '{print $1}')
-			# Verify the MD5 hash
-			if [[ "$hash" != "$ANDROID11_TV_IMG_MD5" ]]; then
-				echo MD5 hash mismatch for Android 11 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
+			hash=$(sha256sum "/home/deck/waydroid/custom/android11tv.zip" | awk '{print $1}')
+			# Verify the hash
+			if [[ "$hash" != "$ANDROID11_TV_IMG_HASH" ]]; then
+				echo sha256 hash mismatch for Android 11 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
 				cleanup_exit
 			fi
 
@@ -364,14 +365,14 @@ else
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
    
-		elif [ "$Choice" == "TV13" ]
+		elif [ "$Choice" == "TV13_NO_GAPPS" ]
 		then
 			echo Downloading Android 13 TV image
 			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13tv.zip $ANDROID13_TV_IMG -L
-			hash=$(md5sum "/home/deck/waydroid/custom/android13tv.zip" | awk '{print $1}')
-			# Verify the MD5 hash
-			if [[ "$hash" != "$ANDROID13_TV_IMG_MD5" ]]; then
-				echo MD5 hash mismatch for Android 13 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
+			hash=$(sha256sum "/home/deck/waydroid/custom/android13tv.zip" | awk '{print $1}')
+			# Verify the hash
+			if [[ "$hash" != "$ANDROID13_TV_IMG_HASH" ]]; then
+				echo sha256 hash mismatch for Android 13 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
 				cleanup_exit
 			fi
 
@@ -381,6 +382,25 @@ else
 
 			echo Applying fix for Leanback Keyboard
 			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
+
+			echo Initializing Waydroid
+ 			echo -e "$current_password\n" | sudo -S waydroid init
+			check_waydroid_init
+
+		elif [ "$Choice" == "A13_NO_GAPPS" ]
+		then
+			echo Downloading Android 13 image
+			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13.zip $ANDROID13_IMG -L
+			hash=$(sha256sum "/home/deck/waydroid/custom/android13.zip" | awk '{print $1}')
+			# Verify the hash
+			if [[ "$hash" != "$ANDROID13_TV_IMG_HASH" ]]; then
+				echo sha256 hash mismatch for Android 13 image, indicating a corrupted download. This might be due to a network error, you can try again.
+				cleanup_exit
+			fi
+
+			echo Extracting Archive
+			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android13 -d ~/waydroid/custom
+			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android13.zip
 
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
