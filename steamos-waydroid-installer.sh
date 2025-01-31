@@ -24,6 +24,7 @@ AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
 DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
+PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 
 # define functions here
 cleanup_exit () {
@@ -151,6 +152,24 @@ else
 	echo Sudo password is blank! Setup a sudo password first and then re-run script!
 	passwd
 	exit
+fi
+
+# sanity check - is Decky Loader installed?
+if [ -f $PLUGIN_LOADER ]
+then
+	echo Decky Loader detected! This may cause issues with the SteamOS Waydroid installer script!
+	echo Temporary disabling the Decky Loader plugin loader service.
+	echo -e "$current_password\n" | sudo -S systemctl stop plugin_loader.service
+	
+	if [ $? -eq 0 ]
+	then
+		echo Decky Loader Plugin Loader service successfully disabled.
+		echo Once the script has finished installing Waydroid, reboot the Steam Deck to re-activate the Decky Loader Plugin Loader service.
+	else
+		echo Error ecountered when stopping the Decky Loader Plugin Loader service.
+		echo Exiting immediately.
+		exit
+	fi
 fi
 
 # sanity checks are all good. lets go!
