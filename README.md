@@ -244,11 +244,17 @@ Re-run the script again but if the SteamOS update contains a new kernel version 
 Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
 
 # Mini-guides for Steam Deck Android Waydroid
-This mini guides are tailor-fitted for the Steam Deck that uses the script provided in this repo. \
-[How to Sideload APKs](https://youtu.be/LglEbSdRc0M) \
-[How to Upgrade the Android Image](https://youtu.be/lfwoZZxXh7I) \
-[How to Configure Fake Wi-Fi](https://youtu.be/LtMGmSSB52g) \
-[How to Configure Fake Touchscreen / Configure Mouse Clicks as Touchscreen Input](https://youtu.be/Xt2ceq8ZUJ8) \
+This mini guides are tailor-fitted for the Steam Deck that uses the script provided in this repo.
+
+| [How to Sideload APKs](https://youtu.be/LglEbSdRc0M) | [How to Upgrade the Android Image](https://youtu.be/lfwoZZxXh7I) |
+| ------------- | ------------- |
+| [![image](https://github.com/user-attachments/assets/e50286c3-391e-4189-ac86-47428a9577d2)](https://youtu.be/LglEbSdRc0M) | [![image](https://github.com/user-attachments/assets/4fe9d79d-0ac9-4ac4-983a-ba1fc66e820c)](https://youtu.be/lfwoZZxXh7I) |
+
+| [How to Configure Fake Touchscreen](https://youtu.be/Xt2ceq8ZUJ8) | [How to Configure Fake Wi-Fi](https://youtu.be/LtMGmSSB52g) |
+| ------------- | ------------- |
+| [![image](https://github.com/user-attachments/assets/19bdadf4-2c3c-4cec-a247-715eccd91529)](https://youtu.be/Xt2ceq8ZUJ8) | [![image](https://github.com/user-attachments/assets/9f07c032-8814-448d-a782-a7ff5185b136)](https://youtu.be/LtMGmSSB52g) |
+
+
 [How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg) \
 [Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30) \
 [Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) \
