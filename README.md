@@ -254,14 +254,17 @@ This mini guides are tailor-fitted for the Steam Deck that uses the script provi
 | ------------- | ------------- |
 | [![image](https://github.com/user-attachments/assets/19bdadf4-2c3c-4cec-a247-715eccd91529)](https://youtu.be/Xt2ceq8ZUJ8) | [![image](https://github.com/user-attachments/assets/9f07c032-8814-448d-a782-a7ff5185b136)](https://youtu.be/LtMGmSSB52g) |
 
+| [How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM) | [Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) |
+| ------------- | ------------- |
+| [![image](https://github.com/user-attachments/assets/932154be-89a2-4c04-8587-2e6f363c5337)](https://youtu.be/pkRtPHfa_EM) | [![image](https://github.com/user-attachments/assets/a0075785-528b-4d62-8ba1-9e36483d86f7)](https://youtu.be/Q4QzzjkfZeI) |
 
-[How to Launch APKs Directly in Game Mode](https://youtu.be/pkRtPHfa_EM?si=broimKF1menbRxGg) \
-[Configure for 1080p When in Docked Mode](https://youtu.be/D9ODCpjDK30) \
-[Configure sdcard as Main Storage for Waydroid](https://youtu.be/Q4QzzjkfZeI) \
-[Activate and Configure Mantis Gamepad Pro](https://youtu.be/icVOh7IIfE0) \
-[How to Configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl) \
-[How to Access the OBB Folder / How to Root](https://youtu.be/RurH-XTTSDQ) \
-[How to Rotate Waydroid](https://youtu.be/OxApPDhZn9I)
+| [How to Configure Roblox](https://youtu.be/-czisFuKoTM) | [How to Access the OBB Folder / How to Root](https://youtu.be/RurH-XTTSDQ) |
+| ------------- | ------------- |
+| [![image](https://github.com/user-attachments/assets/4c188006-a0f1-44cb-8104-0c553e3eb944)](https://youtu.be/-czisFuKoTM) | [![image](https://github.com/user-attachments/assets/5e3e358f-a0f8-45fc-a92e-7348262a7d4a)](https://youtu.be/RurH-XTTSDQ) |
+
+| [How to Rotate Waydroid](https://youtu.be/OxApPDhZn9I) |
+| ------------- |
+| [![image](https://github.com/user-attachments/assets/87d2f8bc-0ea7-4a11-8e57-76bac5237aff)](https://youtu.be/OxApPDhZn9I) |
 
 # Games Tested By Me on Android Waydroid Steam Deck
 [Geekbench Benchmark Result Between Steam Deck OLED and Steam Deck LCD on SteamOS Android Waydroid](https://youtu.be/56YGZsU5j74) - Feb 11 2024 \
