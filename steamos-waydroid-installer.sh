@@ -308,7 +308,7 @@ else
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
 
 
-	Choice=$(zenity --width 800 --height 280 --list --radiolist --multiple \
+	Choice=$(zenity --width 1040 --height 300 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
 		--column "Select One" \
 		--column "Option" \
@@ -393,7 +393,7 @@ else
 			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13.zip $ANDROID13_IMG -L
 			hash=$(sha256sum "/home/deck/waydroid/custom/android13.zip" | awk '{print $1}')
 			# Verify the hash
-			if [[ "$hash" != "$ANDROID13_TV_IMG_HASH" ]]; then
+			if [[ "$hash" != "$ANDROID13_IMG_HASH" ]]; then
 				echo sha256 hash mismatch for Android 13 image, indicating a corrupted download. This might be due to a network error, you can try again.
 				cleanup_exit
 			fi
