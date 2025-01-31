@@ -56,7 +56,7 @@ install_android_extras () {
 		echo Casualsnek script done.
 		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
 
-  		# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
+		# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
 		{ echo -e "$current_password\n" ; cat extras/waydroid_base.prop ; } | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop
 	else
 		echo Error with casualsnek script. Run the script again.
@@ -89,7 +89,7 @@ then
 	echo Script is running in Desktop Mode.
 else
  	echo Script is NOT running in Desktop Mode.
-  	echo Please run the script in Desktop Mode as mentioned in the README. Goodbye!
+	echo Please run the script in Desktop Mode as mentioned in the README. Goodbye!
 	exit
 fi
 
@@ -160,7 +160,7 @@ then
 	echo Decky Loader detected! This may cause issues with the SteamOS Waydroid installer script!
 	echo Temporary disabling the Decky Loader plugin loader service.
 	echo -e "$current_password\n" | sudo -S systemctl stop plugin_loader.service
-	
+
 	if [ $? -eq 0 ]
 	then
 		echo Decky Loader Plugin Loader service successfully disabled.
@@ -334,9 +334,9 @@ else
 		--column="Description - Read this carefully!"\
 		TRUE A11_GAPPS "Download Android 11 image with Google Play Store."\
 		FALSE A11_NO_GAPPS "Download Android 11 image without Google Play Store."\
-  		FALSE A13_NO_GAPPS "Download Android 13 image without Google Play Store."\
+		FALSE A13_NO_GAPPS "Download Android 13 image without Google Play Store."\
 		FALSE TV11_NO_GAPPS "Download Android 11 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
-  		FALSE TV13_NO_GAPPS "Download Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
+		FALSE TV13_NO_GAPPS "Download Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -348,7 +348,7 @@ else
 		then
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
-   			check_waydroid_init
+			check_waydroid_init
 
 			echo Install libndk, widevine and fingerprint spoof
 			install_android_extras
@@ -357,10 +357,10 @@ else
 		then
 			echo Initializing Waydroid
 			echo -e "$current_password\n" | sudo -S waydroid init
-   			check_waydroid_init
+			check_waydroid_init
 
 			echo Install libndk, widevine and fingerprint spoof
-   			install_android_extras
+			install_android_extras
 
 		elif [ "$Choice" == "TV11_NO_GAPPS" ]
 		then
@@ -383,7 +383,7 @@ else
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-   
+
 		elif [ "$Choice" == "TV13_NO_GAPPS" ]
 		then
 			echo Downloading Android 13 TV image
@@ -424,7 +424,7 @@ else
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-   		fi
+		fi
 
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
