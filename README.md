@@ -4,7 +4,16 @@ A collection of tools that is packaged into an easy to use script that is stream
 * The main program that does all the heavy lifting is [Waydroid - a container-based approach to boot a full Android system on a regular GNU/Linux system.](https://github.com/waydroid/waydroid)
 * Waydroid Toolbox to easily toggle some configuration settings for Waydroid.
 * [waydroid_script](https://github.com/casualsnek/waydroid_script) to easily add the libndk ARM translation layer and widevine.
-* ~~[libndk-fixer](https://github.com/Slappy826/libndk-fixer) is a fixed / improved libndk translation layer specific for Roblox [(demo guide here)](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl).~~ we don't need libndk-fixer anymore for Roblox - [demo here](https://youtu.be/8lDD7mQYEas)
+
+**Script has gone through several updates - this now allows you to install Android 11 / Android 13 and their TV counterparts - Android 11 TV / Android 13 TV!**
+![image](https://github.com/user-attachments/assets/a9bc05cc-87ea-43f3-a628-56b0250ae88d)
+
+**Android 13**
+![image](https://github.com/user-attachments/assets/cc9d408b-b4af-4d39-8dd3-0507e15ef8a7)
+![image](https://github.com/user-attachments/assets/a3ac44b6-68bf-4a1f-bf1a-e880b320dcf0)
+
+**Android 13 TV**
+![image](https://github.com/user-attachments/assets/141c2ec6-9918-40e8-bf87-2e199fbbb3f9)
 
 > [!NOTE]
 > If you are going to use this script for a video tutorial, PLEASE reference on your video where you got the script! This will make the support process easier!
