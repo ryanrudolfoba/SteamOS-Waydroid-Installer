@@ -46,6 +46,28 @@ cleanup_exit () {
 	exit
 }
 
+download_image () {
+	local src=$1
+	local src_hash=$2
+	local dest=$3
+	local dest_zip="$dest.zip"
+	local name=$4
+	local hash
+
+	echo Downloading $name image
+	echo -e "$current_password\n" | sudo -S curl -o $dest_zip $src -L
+	hash=$(sha256sum "$dest_zip" | awk '{print $1}')
+	# Verify the hash
+	if [[ "$hash" != "$src_hash" ]]; then
+		echo sha256 hash mismatch for $name image, indicating a corrupted download. This might be due to a network error, you can try again.
+		cleanup_exit
+	fi
+
+	echo Extracting Archive
+	echo -e "$current_password\n" | sudo -S unzip -o $dest -d ~/waydroid/custom
+	echo -e "$current_password\n" | sudo -S rm $dest_zip
+}
+
 install_android_extras () {
 	# casualsnek script
 	python3 -m venv $DIR_CASUALSNEK/venv
@@ -364,18 +386,7 @@ else
 
 		elif [ "$Choice" == "TV11_NO_GAPPS" ]
 		then
-			echo Downloading Android 11 TV image
-			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android11tv.zip $ANDROID11_TV_IMG -L
-			hash=$(sha256sum "/home/deck/waydroid/custom/android11tv.zip" | awk '{print $1}')
-			# Verify the hash
-			if [[ "$hash" != "$ANDROID11_TV_IMG_HASH" ]]; then
-				echo sha256 hash mismatch for Android 11 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
-				cleanup_exit
-			fi
-
-			echo Extracting Archive
-			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android11tv -d ~/waydroid/custom
-			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android11tv.zip
+			download_image $ANDROID11_TV_IMG $ANDROID11_TV_IMG_HASH ~/waydroid/custom/android11tv "Android 11 TV"
 
 			echo Applying fix for Leanback Keyboard
 			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
@@ -386,18 +397,7 @@ else
    
 		elif [ "$Choice" == "TV13_NO_GAPPS" ]
 		then
-			echo Downloading Android 13 TV image
-			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13tv.zip $ANDROID13_TV_IMG -L
-			hash=$(sha256sum "/home/deck/waydroid/custom/android13tv.zip" | awk '{print $1}')
-			# Verify the hash
-			if [[ "$hash" != "$ANDROID13_TV_IMG_HASH" ]]; then
-				echo sha256 hash mismatch for Android 13 TV image, indicating a corrupted download. This might be due to a network error, you can try again.
-				cleanup_exit
-			fi
-
-			echo Extracting Archive
-			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android13tv -d ~/waydroid/custom
-			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android13tv.zip
+			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH ~/waydroid/custom/android13tv "Android 13 TV"
 
 			echo Applying fix for Leanback Keyboard
 			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
@@ -408,18 +408,7 @@ else
 
 		elif [ "$Choice" == "A13_NO_GAPPS" ]
 		then
-			echo Downloading Android 13 image
-			echo -e "$current_password\n" | sudo -S curl -o ~/waydroid/custom/android13.zip $ANDROID13_IMG -L
-			hash=$(sha256sum "/home/deck/waydroid/custom/android13.zip" | awk '{print $1}')
-			# Verify the hash
-			if [[ "$hash" != "$ANDROID13_IMG_HASH" ]]; then
-				echo sha256 hash mismatch for Android 13 image, indicating a corrupted download. This might be due to a network error, you can try again.
-				cleanup_exit
-			fi
-
-			echo Extracting Archive
-			echo -e "$current_password\n" | sudo -S unzip -o ~/waydroid/custom/android13 -d ~/waydroid/custom
-			echo -e "$current_password\n" | sudo -S rm ~/waydroid/custom/android13.zip
+			download_image $ANDROID13_IMG $ANDROID13_IMG_HASH ~/waydroid/custom/android13 "Android 13"
 
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
