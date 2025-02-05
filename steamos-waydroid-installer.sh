@@ -441,3 +441,7 @@ else
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
 fi
+
+if zenity --question --text="Do you Want to Return to Gaming Mode?"; then
+	qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
+fi
