@@ -46,6 +46,14 @@ cleanup_exit () {
 	exit
 }
 
+prepare_custom_image_location () {
+# call this function when deploying a custom Android image
+# custom Android images needs to be placed in /etc/waydroid-extra/images
+# this will create a symlink to /etc/waydroid-extra/images
+echo -e "$current_password\n" | sudo mkdir /etc/waydroid-extra &> /dev/null
+echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
+}
+
 download_image () {
 	local src=$1
 	local src_hash=$2
@@ -326,9 +334,7 @@ else
 	# lets initialize waydroid
 	mkdir -p ~/waydroid/{images,custom,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
-	echo -e "$current_password\n" | sudo mkdir /etc/waydroid-extra &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
 
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
@@ -386,6 +392,7 @@ else
 
 		elif [ "$Choice" == "TV11_NO_GAPPS" ]
 		then
+			prepare_custom_image_location
 			download_image $ANDROID11_TV_IMG $ANDROID11_TV_IMG_HASH ~/waydroid/custom/android11tv "Android 11 TV"
 
 			echo Applying fix for Leanback Keyboard
@@ -397,6 +404,7 @@ else
 
 		elif [ "$Choice" == "TV13_NO_GAPPS" ]
 		then
+			prepare_custom_image_location
 			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH ~/waydroid/custom/android13tv "Android 13 TV"
 
 			echo Applying fix for Leanback Keyboard
@@ -408,6 +416,7 @@ else
 
 		elif [ "$Choice" == "A13_NO_GAPPS" ]
 		then
+			prepare_custom_image_location
 			download_image $ANDROID13_IMG $ANDROID13_IMG_HASH ~/waydroid/custom/android13 "Android 13"
 
 			echo Initializing Waydroid
