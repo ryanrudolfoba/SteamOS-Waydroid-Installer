@@ -1,0 +1,25 @@
+##########################################################################
+### start of custom build prop - you can safely delete if this causes issue
+### this is from slynobody - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/238
+
+ro.product.brand = Philips
+ro.product.manufacturer = Philips
+ro.system.build.product = PH7M_EU_5596
+ro.product.name = PH7M_EU_5596
+ro.product.device = PH7M_EU_5596
+ro.product.model = TPM171E
+ro.system.build.flavor=PH7M_EU_5596-user
+ro.build.fingerprint = Philips/PH7M_EU_5596/PH7M_EU_5596:7.0/NTG46/276:user/release-keys
+ro.system.build.description = PH7M_EU_5596-user 7.0 NTG46 276 release-keys
+ro.bootimage.build.fingerprint = Philips/PH7M_EU_5596/PH7M_EU_5596:7.0/NTG46/276:user/release-keys
+ro.build.display.id = NTG46 release-key
+ro.build.tags = release-keys
+ro.build.description = PH7M_EU_5596-user 7.0 NTG46 276 release-keys
+ro.vendor.build.fingerprint = Philips/PH7M_EU_5596/PH7M_EU_5596:7.0/NTG46/276:user/release-keys
+ro.vendor.build.id = NTG46
+ro.vendor.build.tags = release-keys
+ro.vendor.build.type = user
+ro.odm.build.tags = release-keys
+
+### end of custom build prop - you can safely delete if this causes issue
+##########################################################################
