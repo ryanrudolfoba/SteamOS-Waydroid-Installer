@@ -210,7 +210,7 @@ This layout also tweaks the trackpad inputs.
 
 **Configure Android Start Menu Shortcuts to Work in Desktop Mode** \
 NOTE: This is purely optional and doesn't affect the functionality of Waydroid if you don't do the steps.\
-Personally I don't need it but for those that do then [this is what you need.](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/143) Thanks to DanielLester83 for the instructions!
+Personally I don't need it but for those that do then [this is what you need.](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/144) Thanks to DanielLester83 for the instructions!
 
 **Controller Not Being Detected** \
 The script has been updated so that the controller detection will get triggered once Android has completed the boot process. This makes the controller detection more accurate and the boot sequence to be faster.
