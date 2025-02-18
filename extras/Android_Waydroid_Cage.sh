@@ -4,9 +4,9 @@
 if [ ! -f /usr/bin/waydroid ]
 then
 	kdialog --sorry "Cannot start Waydroid. Waydroid does not exist! \
-	\nIf you recently performed a SteamOS update, then you also need to re-install Waydroid! \
-	\nLaunch the Waydroid install script again to re-install Waydroid! \
-	\nSteamOS version: $(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \
+	\nIf you recently performed a SteamOS update, then you also need to re-install / update Waydroid! \
+  \n\nFollow the Waydroid upgrade guide here - https://youtu.be/CJAMwIb_oI0 \
+	\n\nSteamOS version: $(cat /etc/os-release | grep -i VERSION_ID | cut -d "=" -f 2) \
 	\nKernel version: $(uname -r | cut -d "-" -f 1-5)"
 	exit
 fi
