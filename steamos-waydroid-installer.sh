@@ -29,19 +29,32 @@ PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 # define functions here
 cleanup_exit () {
 	# call this function to perform cleanup when a sanity check fails
+	
 	# remove binder kernel module
 	echo Something went wrong! Performing cleanup. Run the script again to install waydroid.
 	echo -e "$current_password\n" | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst &> /dev/null
+	
 	# remove installed packages
 	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc &> /dev/null
+	
 	# delete the waydroid directories
 	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/AUR &> /dev/null
+	
 	# delete waydroid config and scripts
 	echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid* &> /dev/null
+	
 	# delete cage binaries
 	echo -e "$current_password\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr &> /dev/null
 	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid &> /dev/null
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable &> /dev/null
+	
+	# re-enable Decky Loader Plugin Loader service
+	if [ -f $PLUGIN_LOADER ]
+	then
+		echo Re-enabling the Decky Loader plugin loader service.
+		echo -e "$current_password\n" | sudo -S systemctl start plugin_loader.service
+	fi
+	
 	echo Cleanup completed. Please open an issue on the GitHub repo or leave a comment on the YT channel - 10MinuteSteamDeckGamer.
 	exit
 }
@@ -194,7 +207,8 @@ then
 	if [ $? -eq 0 ]
 	then
 		echo Decky Loader Plugin Loader service successfully disabled.
-		echo Once the script has finished installing Waydroid, reboot the Steam Deck to re-activate the Decky Loader Plugin Loader service.
+		echo Once the script has finished installing Waydroid, the Decky Loader Plugin Loader service will be re-enabled.
+	  echo You can also reboot the Steam Deck to re-activate the Decky Loader Plugin Loader service.
 	else
 		echo Error ecountered when stopping the Decky Loader Plugin Loader service.
 		echo Exiting immediately.
@@ -354,7 +368,6 @@ else
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
 
-
 	Choice=$(zenity --width 1040 --height 300 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
 		--column "Select One" \
@@ -438,6 +451,13 @@ else
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
+fi
+
+# sanity check - re-enable decky loader service if it's installed.
+if [ -f $PLUGIN_LOADER ]
+then
+	echo Re-enabling the Decky Loader plugin loader service.
+	echo -e "$current_password\n" | sudo -S systemctl start plugin_loader.service
 fi
 
 if zenity --question --text="Do you Want to Return to Gaming Mode?"; then
