@@ -98,12 +98,24 @@ install_android_extras () {
 	then
 		echo Casualsnek script done.
 		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
-
-		# lets change the fingerprint so waydroid shows up as a Pixel 5 - Redfin
-		{ echo -e "$current_password\n" ; cat extras/waydroid_base.prop ; } | sudo -S tee -a /var/lib/waydroid/waydroid_base.prop
 	else
 		echo Error with casualsnek script. Run the script again.
 		cleanup_exit
+	fi
+}
+
+install_android_spoof () {
+	# waydroid_base.prop - controller config and disable root
+	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+
+	# check if A11 or A13 and apply the spoof accordingly
+	if [ "$Choice" == "A11_NO_GAPPS" ] || [ "$Choice" == "A11_GAPPS" ] || [ "$Choice" == "A13_NO_GAPPS" ]
+	then
+		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+
+	elif [ "$Choice" == "TV11_NO_GAPPS" ] || [ "$Choice" == "TV13_NO_GAPPS" ]
+	then
+		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 	fi
 }
 
@@ -393,6 +405,9 @@ else
 
 			echo Install libndk, widevine and fingerprint spoof
 			install_android_extras
+			
+			echo Applying appropriate spoof
+			install_android_spoof
 
 		elif [ "$Choice" == "A11_NO_GAPPS" ]
 		then
@@ -402,6 +417,9 @@ else
 
 			echo Install libndk, widevine and fingerprint spoof
 			install_android_extras
+			
+			echo Applying appropriate spoof
+			install_android_spoof
 
 		elif [ "$Choice" == "TV11_NO_GAPPS" ]
 		then
@@ -415,6 +433,9 @@ else
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 
+			echo Applying appropriate spoof
+			install_android_spoof
+
 		elif [ "$Choice" == "TV13_NO_GAPPS" ]
 		then
 			prepare_custom_image_location
@@ -426,6 +447,9 @@ else
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
+			
+			echo Applying appropriate spoof
+			install_android_spoof
 
 		elif [ "$Choice" == "A13_NO_GAPPS" ]
 		then
@@ -435,6 +459,9 @@ else
 			echo Initializing Waydroid
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
+			
+			echo Applying appropriate spoof
+			install_android_spoof
 		fi
 
 	# change GPU rendering to use minigbm_gbm_mesa
