@@ -8,6 +8,7 @@ echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
 # define variables here
+script_version_sha=$(git rev-parse HEAD)
 steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.1.52-valve16-1-neptune-61
@@ -136,6 +137,8 @@ check_waydroid_init () {
 		cleanup_exit
 	fi
 }
+
+echo script version: $script_version_sha
 
 # sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
 xdpyinfo &> /dev/null
