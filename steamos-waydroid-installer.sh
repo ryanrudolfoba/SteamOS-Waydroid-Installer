@@ -330,13 +330,12 @@ echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scrip
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
-# waydroid launcher - cage
-cp extras/Android_Waydroid_Cage.sh ~/Android_Waydroid/Android_Waydroid_Cage.sh
-
 # custom configs done. lets move them to the correct location
-cp $PWD/extras/Waydroid-Toolbox.sh $PWD/extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
+cp extras/Android_Waydroid_Cage.sh extras/Waydroid-Toolbox.sh extras/Waydroid-Updater.sh extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
+# desktop shortcuts for toolbox + updater
 ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
+ln -s ~/Android_Waydroid/Waydroid-Updater.sh ~/Desktop/Waydroid-Updater &> /dev/null
 
 # lets copy cage and wlr-randr to the correct folder
 echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
