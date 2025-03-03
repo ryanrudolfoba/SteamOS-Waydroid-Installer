@@ -174,7 +174,8 @@ else
 fi
 
 # sanity check - is this a reinstall?
-grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
+# this sanity check will go away once the var trick is completed
+grep redfin /var/lib/waydroid/waydroid_base.prop || grep PH7M_EU_5596 &> /dev/null
 if [ $? -eq 0 ]
 then
 	echo This seems to be a reinstall. var sanity check not needed.
@@ -342,7 +343,7 @@ echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-randr
 
 # lets check if this is a reinstall
-grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null
+grep redfin /var/lib/waydroid/waydroid_base.prop || grep PH7M_EU_5596 &> /dev/null
 if [ $? -eq 0 ]
 then
 	echo This seems to be a reinstall. No further config needed.
