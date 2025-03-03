@@ -258,11 +258,8 @@ else
 	fi
 fi
 
-# disable the SteamOS readonly
-echo -e "$current_password\n" | sudo -S steamos-readonly disable
-
-# initialize the keyring
-echo -e "$current_password\n" | sudo -S pacman-key --init && echo -e "$current_password\n" | sudo -S pacman-key --populate
+# disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
+echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt
 
 if [ $? -eq 0 ]
 then
