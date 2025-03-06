@@ -1,4 +1,5 @@
-echo This will clone the later version of the SteamOS Waydroid Installer script and perform an update.
+#!/bin/bash
+echo This will clone the latest version of the SteamOS Waydroid Installer script and perform an update.
 sleep 5
 cd ~/
 rm -rf ~/steamos-waydroid-installer
