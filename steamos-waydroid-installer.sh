@@ -260,7 +260,7 @@ else
 fi
 
 # disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
-echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt
+echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
 
 if [ $? -eq 0 ]
 then
