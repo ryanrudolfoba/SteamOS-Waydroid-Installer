@@ -268,8 +268,8 @@ else
 fi
 
 # check if steamos-devmode command exists
-which steamos-devmode &> /dev/null
-if [ $? -eq 0 ]
+devmode_exists=$(which steamos-devmode &> /dev/null; echo $?)
+if [ "$devmode_exists" -eq 0 ]
 then
 	# disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
 	echo steamos-devmode command exists. Using steamos-devmode to unlock the readonly and initialize the keyring
@@ -282,14 +282,18 @@ fi
 if [ $? -eq 0 ]
 then
 	echo pacman keyring has been initialized!
-else
-	echo Error initializing keyring! Trying fallback.
+elif [ "$devmode_exists" -eq 0 ]
+then
+	echo Error initializing keyring!
 	devmode_fallback
 	if [ $? -eq 0 ]
 	then
 		echo Error initializing keyring with fallback!
 		cleanup_exit
 	fi
+else
+	echo Error initializing keyring with fallback!
+	cleanup_exit
 fi
 
 # lets install and enable the binder module so we can start waydroid right away
