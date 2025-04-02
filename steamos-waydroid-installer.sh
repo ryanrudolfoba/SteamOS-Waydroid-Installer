@@ -259,9 +259,21 @@ else
 	fi
 fi
 
-# disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
-echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
-
+# check if steamos-devmode command exists
+which steamos-devmode &> /dev/null
+if [ $? -eq 0 ]
+then
+	# disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
+	echo steamos-devmode command exists. Using steamos-devmode to unlock the readonly and initialize the keyring
+	echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
+else
+	# disable the SteamOS readonly and initialize the keyring using the older method
+	echo steamos-devmode command does not exists. using the older method to unlock the readonly and initialize the keyring
+	echo -e "$current_password\n" | sudo -S steamos-readonly disable && \
+	echo -e "$current_password\n" | sudo -S pacman-key --init && \
+	echo -e "$current_password\n" | sudo -S pacman-key --populate
+fi
+	
 if [ $? -eq 0 ]
 then
 	echo pacman keyring has been initialized!
