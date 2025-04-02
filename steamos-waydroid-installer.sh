@@ -138,6 +138,14 @@ check_waydroid_init () {
 	fi
 }
 
+# disable the SteamOS readonly and initialize the keyring using the older method
+devmode_fallback () {
+	echo Using the older method to unlock the readonly and initialize the keyring.
+	echo -e "$current_password\n" | sudo -S steamos-readonly disable && \
+	echo -e "$current_password\n" | sudo -S pacman-key --init && \
+	echo -e "$current_password\n" | sudo -S pacman-key --populate
+}
+
 echo script version: $script_version_sha
 
 # sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
@@ -260,25 +268,31 @@ else
 fi
 
 # check if steamos-devmode command exists
-which steamos-devmode &> /dev/null
-if [ $? -eq 0 ]
+devmode_exists=$(which steamos-devmode &> /dev/null; echo $?)
+if [ "$devmode_exists" -eq 0 ]
 then
 	# disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
 	echo steamos-devmode command exists. Using steamos-devmode to unlock the readonly and initialize the keyring
 	echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
 else
-	# disable the SteamOS readonly and initialize the keyring using the older method
-	echo steamos-devmode command does not exists. using the older method to unlock the readonly and initialize the keyring
-	echo -e "$current_password\n" | sudo -S steamos-readonly disable && \
-	echo -e "$current_password\n" | sudo -S pacman-key --init && \
-	echo -e "$current_password\n" | sudo -S pacman-key --populate
+	echo steamos-devmode command does not exist. Trying fallback.
+	devmode_fallback
 fi
-	
+
 if [ $? -eq 0 ]
 then
 	echo pacman keyring has been initialized!
+elif [ "$devmode_exists" -eq 0 ]
+then
+	echo Error initializing keyring!
+	devmode_fallback
+	if [ $? -eq 0 ]
+	then
+		echo Error initializing keyring with fallback!
+		cleanup_exit
+	fi
 else
-	echo Error initializing keyring! Run the script again to install waydroid.
+	echo Error initializing keyring with fallback!
 	cleanup_exit
 fi
 
