@@ -167,7 +167,7 @@ if [ $? -eq 0 ]
 then
 	echo pacman keyring has been initialized!
 else
-	echo Error initializing keyring with fallback!
+	echo Error initializing keyring!
 	cleanup_exit
 fi
 
