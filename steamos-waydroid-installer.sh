@@ -30,14 +30,6 @@ PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 # define functions here
 source ./functions.sh
 
-# disable the SteamOS readonly and initialize the keyring using the older method
-devmode_fallback () {
-	echo Using the older method to unlock the readonly and initialize the keyring.
-	echo -e "$current_password\n" | sudo -S steamos-readonly disable && \
-	echo -e "$current_password\n" | sudo -S pacman-key --init && \
-	echo -e "$current_password\n" | sudo -S pacman-key --populate
-}
-
 echo script version: $script_version_sha
 
 # sanity check - are you running this in Desktop Mode or ssh / virtual tty session?
@@ -159,30 +151,21 @@ else
 	fi
 fi
 
-# check if steamos-devmode command exists
-devmode_exists=$(which steamos-devmode &> /dev/null; echo $?)
-if [ "$devmode_exists" -eq 0 ]
-then
-	# disable the SteamOS readonly and initialize the keyring using the steamos-devmode command
-	echo steamos-devmode command exists. Using steamos-devmode to unlock the readonly and initialize the keyring
-	echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
-else
-	echo steamos-devmode command does not exist. Trying fallback.
-	devmode_fallback
-fi
+# check SteamOS version - use older method if on 3.5, use devmode method if on 3.6 and above
+case $steamos_version in
+	*3.5*)
+		echo SteamOS 3.5 detected. Using the older method to unlock readonly and initialize keyring
+		devmode_fallback
+		;;
+	*3.6*)
+		echo SteamOS 3.6 detected. Using the devmode method to unlock readonly and initialize keyring
+		echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
+		;;
+esac
 
 if [ $? -eq 0 ]
 then
 	echo pacman keyring has been initialized!
-elif [ "$devmode_exists" -eq 0 ]
-then
-	echo Error initializing keyring!
-	devmode_fallback
-	if [ $? -eq 0 ]
-	then
-		echo Error initializing keyring with fallback!
-		cleanup_exit
-	fi
 else
 	echo Error initializing keyring with fallback!
 	cleanup_exit
