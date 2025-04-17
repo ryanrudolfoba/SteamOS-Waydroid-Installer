@@ -34,7 +34,7 @@ source functions.sh
 
 # run the sanity checks
 source sanity-checks.sh
-vi st	
+
 # sanity checks are all good. lets go!
 # create AUR directory where casualsnek script will be saved
 mkdir -p ~/AUR/waydroid &> /dev/null
