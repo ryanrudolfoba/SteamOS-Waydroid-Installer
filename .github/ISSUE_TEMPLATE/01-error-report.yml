@@ -1,11 +1,20 @@
 name: Error report
 description: If you got an error while running the script
 body:
+  # larger description of what this template's intended usage is
+  - type: markdown
+    attributes:
+      value: |
+        Before opening a new issue, please do a [search of existing issues](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues?q=is%3Aissue) and make sure you are on the latest version of the script by following the [Upgrade Guide](https://www.youtube.com/watch?v=CJAMwIb_oI0).
+        If a relevant open issue exists, you should :+1: upvote it instead.
+        If a relevant closed issue exists, please follow the directions of the closing comments.
+        Please _do not_ open duplicates of existing issues or issues about older versions of the script.
+
   # require that users are on the latest version
   - type: checkboxes
     attributes:
       label: Are you on the latest version of the script?
-      description: Please make sure you have cloned the latest version of the script
+      description: Please make sure you have cloned the latest version of the script and followed the [Upgrade Guide](https://www.youtube.com/watch?v=CJAMwIb_oI0)
       options:
         - label: I am on the latest version of the script
           required: true
@@ -14,7 +23,7 @@ body:
   - type: checkboxes
     attributes:
       label: Have you searched the existing issues?
-      description: Please search to see if an issue already exists for the problem you encountered
+      description: Please [search](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues?q=is%3Aissue) to see if an issue already exists for the problem you encountered
       options:
         - label: I have searched the existing issues
           required: true
@@ -23,7 +32,7 @@ body:
   - type: textarea
     attributes:
       label: What specific error did you get?
-      description: Copy and paste the logs from the script below
+      description: Copy and paste the **full** logs from the script below
       render: text # render as a ```text code block
       # example output of the script when a kernel version is not supported
       # this is to clue them in about which specific log to copy + paste
