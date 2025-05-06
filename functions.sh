@@ -12,11 +12,15 @@ cleanup_exit () {
 	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc &> /dev/null
 	
 	# delete the waydroid directories
-	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid ~/AUR &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid &> /dev/null
 	
 	# delete waydroid config and scripts
 	echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid* &> /dev/null
-	
+
+	# delete Waydroid Toolbox and Waydroid Update symlinks
+	rm ~/Desktop/Waydroid-Updater
+	rm ~/Desktop/Waydroid-Toolbox
+
 	# delete cage binaries
 	echo -e "$current_password\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr &> /dev/null
 	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid &> /dev/null
@@ -64,25 +68,27 @@ download_image () {
 }
 
 install_android_extras () {
-	# casualsnek script
-	python3 -m venv $DIR_CASUALSNEK/venv
-	$DIR_CASUALSNEK/venv/bin/pip install -r $DIR_CASUALSNEK/requirements.txt &> /dev/null
-	echo -e "$current_password\n" | sudo -S $DIR_CASUALSNEK/venv/bin/python3 $DIR_CASUALSNEK/main.py install {libndk,widevine}
-	if [ $? -eq 0 ]
-	then
-		echo Casualsnek script done.
-		echo -e "$current_password\n" | sudo -S rm -rf ~/AUR
-	else
-		echo Error with casualsnek script. Run the script again.
-		cleanup_exit
-	fi
-}
+	# casualsnek / aleasto waydroid_script - install libndk and widevine
+	python3 -m venv $DIR_WAYDROID_SCRIPT/venv
+	$DIR_WAYDROID_SCRIPT/venv/bin/pip install -r $DIR_WAYDROID_SCRIPT/requirements.txt &> /dev/null
 
-install_android_spoof () {
+
+	if [ "$Choice" == "A11_NO_GAPPS" ] || [ "$Choice" == "A11_GAPPS" ]
+	then
+		echo -e "$current_password\n" | sudo -S $DIR_WAYDROID_SCRIPT/venv/bin/python3 $DIR_WAYDROID_SCRIPT/main.py -a11 install {libndk,widevine}
+
+	elif [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ]
+	then
+		echo -e "$current_password\n" | sudo -S $DIR_WAYDROID_SCRIPT/venv/bin/python3 $DIR_WAYDROID_SCRIPT/main.py -a13 install {libndk,widevine}
+	fi
+
+	echo casualsnek / aleasto waydroid_script done.
+	echo -e "$current_password\n" | sudo -S rm -rf $DIR_WAYDROID_SCRIPT
+	
 	# waydroid_base.prop - controller config and disable root
 	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
-	# check if A11 or A13 and apply the spoof accordingly
+	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
 	if [ "$Choice" == "A11_NO_GAPPS" ] || [ "$Choice" == "A11_GAPPS" ] || [ "$Choice" == "A13_NO_GAPPS" ]
 	then
 		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
