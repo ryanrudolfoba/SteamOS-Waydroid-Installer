@@ -14,18 +14,25 @@ kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.1.52-valve16-1-neptune-61
 stable_kernel2=6.5.0-valve22-1-neptune-65
 beta_kernel1=6.5.0-valve23-1-neptune-65
-ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
-ANDROID11_TV_IMG_HASH=680971aaeb9edc64d9d79de628bff0300c91e86134f8daea1bbc636a2476e2a7
-ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
-ANDROID13_TV_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
-ANDROID13_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13/lineage-20-20250121-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
-ANDROID13_IMG_HASH=833be8279a605285cc2b9c85425511a100320102c7ff8897f254fcfdf3929bb1
-AUR_CASUALSNEK=https://github.com/casualsnek/waydroid_script.git
-AUR_CASUALSNEK2=https://github.com/ryanrudolfoba/waydroid_script.git
-DIR_CASUALSNEK=~/AUR/waydroid/waydroid_script
+WAYDROID_SCRIPT=https://github.com/aleasto/waydroid_script.git
+DIR_WAYDROID_SCRIPT=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
+
+# android builds
+ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
+ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
+ANDROID13_GAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-GAPPS-waydroid_x86_64-system.zip/download#
+ANDROID13_NOGAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-VANILLA-waydroid_x86_64-system.zip/download#
+ANDROID13_VENDOR_IMG=https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20-20250503-MAINLINE-waydroid_x86_64-vendor.zip/download#
+
+# android hash
+ANDROID11_TV_IMG_HASH=680971aaeb9edc64d9d79de628bff0300c91e86134f8daea1bbc636a2476e2a7
+ANDROID13_TV_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
+ANDROID13_GAPPS_IMG_HASH=3c6eb7235e2bb4c4568194a33147017b6ab2e136467e8c5864b30a3e3e09e39e
+ANDROID13_NOGAPPS_IMG_HASH=60e2bbb7b821132b4518c9fa22581845742e09edd858831465e91a8a6b9c4087
+ANDROID13_VENDOR_IMG_HASH=e5331c517553873620b547e02fd972df40cf060ddad37856fa15f22442ae87f3
 
 echo script version: $script_version_sha
 
@@ -40,26 +47,19 @@ source sanity-checks.sh
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone but lets cleanup first in case the directory is not empty
-echo Cloning casualsnek repo.
+echo Cloning casualsnek / aleasto waydroid_script repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
-echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone --depth=1 $AUR_CASUALSNEK $DIR_CASUALSNEK &> /dev/null
+git clone --depth=1 $WAYDROID_SCRIPT $DIR_WAYDROID_SCRIPT &> /dev/null
 
 if [ $? -eq 0 ]
 then
-	echo Casualsnek repo has been successfully cloned!
+	echo casualsnek / aleasto waydroid_script repo has been successfully cloned!
 else
-	echo Error cloning Casualsnek repo! Trying to clone again using backup repo.
-	echo -e "$current_password\n" | sudo -S rm -rf ~/AUR/waydroid*  &> /dev/null && git clone --depth=1 $AUR_CASUALSNEK2 $DIR_CASUALSNEK &> /dev/null
-
-	if [ $? -eq 0 ]
-	then
-		echo Casualsnek repo has been successfully cloned!
-	else
-		echo Error cloning Casualsnek repo! This failed twice already! Maybe your internet connection is the problem?
-		cleanup_exit
-	fi
+	echo Error cloning casualsnek / aleasto waydroid_script repo!
+	rm -rf $DIR_WAYDROID_SCRIPT
+	cleanup_exit
 fi
 
 # check SteamOS version - use older method if on 3.5, use devmode method if on 3.6 and above
@@ -192,16 +192,17 @@ else
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
 
-	Choice=$(zenity --width 1040 --height 300 --list --radiolist --multiple \
+	Choice=$(zenity --width 1040 --height 320 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
 		--column "Select One" \
 		--column "Option" \
 		--column="Description - Read this carefully!"\
-		TRUE A11_GAPPS "Download Android 11 image with Google Play Store."\
-		FALSE A11_NO_GAPPS "Download Android 11 image without Google Play Store."\
-		FALSE A13_NO_GAPPS "Download Android 13 image without Google Play Store."\
-		FALSE TV11_NO_GAPPS "Download Android 11 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
-		FALSE TV13_NO_GAPPS "Download Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
+		TRUE A13_GAPPS "Download official Android 13 image with Google Play Store."\
+		FALSE A11_GAPPS "Download official Android 11 image with Google Play Store."\
+		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
+		FALSE A11_NO_GAPPS "Download official Android 11 image without Google Play Store."\
+		FALSE TV13_NO_GAPPS "Download unofficial Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
+		FALSE TV11_NO_GAPPS "Download unofficial Android 11 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -211,70 +212,64 @@ else
 
 		elif [ "$Choice" == "A11_GAPPS" ]
 		then
-			echo Initializing Waydroid
+			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
 			check_waydroid_init
 
-			echo Install libndk, widevine and fingerprint spoof
-			install_android_extras
-			
-			echo Applying appropriate spoof
-			install_android_spoof
-
 		elif [ "$Choice" == "A11_NO_GAPPS" ]
 		then
-			echo Initializing Waydroid
+			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-
-			echo Install libndk, widevine and fingerprint spoof
-			install_android_extras
-			
-			echo Applying appropriate spoof
-			install_android_spoof
 
 		elif [ "$Choice" == "TV11_NO_GAPPS" ]
 		then
 			prepare_custom_image_location
 			download_image $ANDROID11_TV_IMG $ANDROID11_TV_IMG_HASH ~/waydroid/custom/android11tv "Android 11 TV"
 
-			echo Applying fix for Leanback Keyboard
+			echo Applying fix for Leanback Keyboard.
 			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
 
-			echo Initializing Waydroid
+			echo Initializing Waydroid.
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-
-			echo Applying appropriate spoof
-			install_android_spoof
 
 		elif [ "$Choice" == "TV13_NO_GAPPS" ]
 		then
 			prepare_custom_image_location
 			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH ~/waydroid/custom/android13tv "Android 13 TV"
 
-			echo Applying fix for Leanback Keyboard
+			echo Applying fix for Leanback Keyboard.
 			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
 
-			echo Initializing Waydroid
+			echo Initializing Waydroid.
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 			
-			echo Applying appropriate spoof
-			install_android_spoof
-
 		elif [ "$Choice" == "A13_NO_GAPPS" ]
 		then
 			prepare_custom_image_location
-			download_image $ANDROID13_IMG $ANDROID13_IMG_HASH ~/waydroid/custom/android13 "Android 13"
+			download_image $ANDROID13_NOGAPPS_IMG $ANDROID13_NOGAPPS_IMG_HASH ~/waydroid/custom/a13_nogapps "Android 13 NOGAPPS System"
+			download_image $ANDROID13_VENDOR_IMG $ANDROID13_VENDOR_IMG_HASH ~/waydroid/custom/a13_vendor "Android 13 Vendor"
 
-			echo Initializing Waydroid
+			echo Initializing Waydroid.
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 			
-			echo Applying appropriate spoof
-			install_android_spoof
+		elif [ "$Choice" == "A13_GAPPS" ]
+		then
+			prepare_custom_image_location
+			download_image $ANDROID13_GAPPS_IMG $ANDROID13_GAPPS_IMG_HASH ~/waydroid/custom/a13_gapps "Android 13 GAPPS system"
+			download_image $ANDROID13_VENDOR_IMG $ANDROID13_VENDOR_IMG_HASH ~/waydroid/custom/a13_vendor "Android 13 vendor"
+
+			echo Initializing Waydroid.
+ 			echo -e "$current_password\n" | sudo -S waydroid init
+			check_waydroid_init
 		fi
+	
+	# run casualsnek / aleasto waydroid_script
+	echo Install libndk, widevine and fingerprint spoof.
+	install_android_extras
 
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
