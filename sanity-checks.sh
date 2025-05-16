@@ -35,7 +35,7 @@ fi
 
 # sanity check - is this a reinstall?
 # this sanity check will go away once the var trick is completed
-grep redfin /var/lib/waydroid/waydroid_base.prop || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
+grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
 then
 	echo This seems to be a reinstall. var sanity check not needed.

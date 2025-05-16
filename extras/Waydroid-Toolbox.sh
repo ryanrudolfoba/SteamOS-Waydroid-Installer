@@ -285,8 +285,9 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		# delete cage binaries
 		echo -e "$PASSWORD\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr
 
-		# delete Waydroid Toolbox symlink
+		# delete Waydroid Toolbox and Waydroid Updatersymlink
 		rm ~/Desktop/Waydroid-Toolbox
+		rm ~/Desktop/Waydroid-Updater
 	
 		# delete contents of ~/Android_Waydroid
 		rm -rf ~/Android_Waydroid/
