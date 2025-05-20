@@ -54,6 +54,19 @@ A collection of tools that is packaged into an easy to use script that is stream
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of May 16 2025)
+1. Official Android 13 images (GAPPS and NOGAPPS)
+2. Working LIBNDK ARM translation layer for Android 13
+
+# What's New (as of Feb 28 2025)
+1. Spoof Android TV to Philips TV
+
+# What's New (as of Jan 21 2025)
+1. Initial support for Android 13 - NOGAPPS
+
+# What's New (as of Jan 20 2025)
+1. Initial support for Android 13 TV
+
 # What's New (as of Jan 16 2025)
 1. Initial support for Android 11 TV
 
