@@ -25,7 +25,7 @@ if [ $(CheckHex $1 $2 $3) = "1" ]; then
 elif [ $(CheckHex $1 $2 $4) = "1" ]; then
     echo "Already patched"
 else
-    echo "Hex mismatch!"
+    echo "Hex mismatch! This patcher is for Android 11 LIBNDK only!"
 fi
 }
 
