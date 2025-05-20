@@ -18,8 +18,8 @@ cleanup_exit () {
 	echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid* &> /dev/null
 
 	# delete Waydroid Toolbox and Waydroid Update symlinks
-	rm ~/Desktop/Waydroid-Updater
-	rm ~/Desktop/Waydroid-Toolbox
+	rm ~/Desktop/Waydroid-Updater &> /dev/null
+	rm ~/Desktop/Waydroid-Toolbox &> /dev/null
 
 	# delete cage binaries
 	echo -e "$current_password\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr &> /dev/null
