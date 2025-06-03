@@ -14,7 +14,7 @@ kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.1.52-valve16-1-neptune-61
 stable_kernel2=6.5.0-valve22-1-neptune-65
 beta_kernel1=6.5.0-valve23-1-neptune-65
-WAYDROID_SCRIPT=https://github.com/aleasto/waydroid_script.git
+WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 DIR_WAYDROID_SCRIPT=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
