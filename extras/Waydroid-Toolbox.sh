@@ -355,9 +355,6 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid-fix-controllers \
 			/usr/bin/waydroid-container-stop /usr/bin/waydroid-container-start
 	
-		# delete cage binaries
-		echo -e "$PASSWORD\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr
-
 		# delete Waydroid Toolbox symlink
 		rm ~/Desktop/Waydroid-Toolbox
 	
