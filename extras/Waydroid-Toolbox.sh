@@ -25,7 +25,7 @@ if [ $(CheckHex $1 $2 $3) = "1" ]; then
 elif [ $(CheckHex $1 $2 $4) = "1" ]; then
     echo "Already patched"
 else
-    echo "Hex mismatch!"
+    echo "Hex mismatch! This patcher is for Android 11 LIBNDK only!"
 fi
 }
 
@@ -50,6 +50,7 @@ Choice=$(zenity --width 850 --height 400 --list --radiolist --multiple --title "
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
  	FALSE LIBNDK "Use custom LIBNDK patches or the original LIBNDK."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
+	FALSE ADD_APPS "Select individual Waydroid apps to add to Game Mode."\
 	FALSE NETWORK "Reinitialize firewall configuration - use this when WIFI is not working."\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
@@ -222,6 +223,110 @@ then
 	steamos-add-to-steam /home/deck/Android_Waydroid/Android_Waydroid_Cage.sh
 	sleep 5
 	zenity --warning --title "Waydroid Toolbox" --text "Android Waydroid Cage launcher has been added to Game Mode!" --width 450 --height 75
+
+
+elif [ "$Choice" == "ADD_APPS" ]; then
+    logged_in_home="$HOME"
+    applications_dir="${logged_in_home}/.local/share/applications"
+    temp_dir=$(mktemp -d)
+
+    ignored_files=(
+        "waydroid.com.android.inputmethod.latin.desktop"
+        "waydroid.com.android.gallery3d.desktop"
+        "waydroid.com.android.documentsui.desktop"
+        "waydroid.com.android.settings.desktop"
+        "waydroid.org.lineageos.eleven.desktop"
+        "waydroid.com.android.calculator2.desktop"
+        "waydroid.com.android.contacts.desktop"
+        "waydroid.org.lineageos.etar.desktop"
+        "waydroid.org.lineageos.jelly.desktop"
+        "waydroid.com.android.camera2.desktop"
+        "waydroid.com.android.deskclock.desktop"
+        "waydroid.org.lineageos.recorder.desktop"
+    )
+
+    is_ignored() {
+        local filename="$1"
+        for ignored in "${ignored_files[@]}"; do
+            if [[ "$filename" == "$ignored" ]]; then
+                return 0
+            fi
+        done
+        return 1
+    }
+
+    if [[ ! -d "$applications_dir" ]]; then
+        zenity --error --title "Waydroid Toolbox" --text "Waydroid .desktop directory not found!" --width 400 --height 100
+        exit 1  # Exit the script if the directory is not found
+    fi
+
+    desktop_choices=()
+    for file_path in "$applications_dir"/*.desktop; do
+        file_name=$(basename "$file_path")
+        if is_ignored "$file_name"; then
+            continue
+        fi
+        if ! grep -qi "waydroid" "$file_path"; then
+            continue
+        fi
+        display_name=$(grep -i "^Name=" "$file_path" | head -n1 | cut -d'=' -f2-)
+        exec_cmd=$(grep -i "^Exec=" "$file_path" | head -n1 | cut -d'=' -f2-)
+        if [[ -z "$display_name" || "$exec_cmd" != *"waydroid app launch"* ]]; then
+            continue
+        fi
+        desktop_choices+=("FALSE" "$file_name" "$display_name")
+    done
+
+    if [[ ${#desktop_choices[@]} -eq 0 ]]; then
+        zenity --info --title "Waydroid Toolbox" --text "No user apps found to add to Steam." --width 350 --height 75
+    else
+        selected=$(zenity --list --title="Select apps to add to Steam" \
+            --width=700 --height=400 \
+            --text="Select one or more Waydroid apps to add to Steam Game Mode." \
+            --checklist \
+            --column "Select" --column "File" --column "App Name" \
+            "${desktop_choices[@]}")
+
+        if [ -n "$selected" ]; then
+            IFS="|" read -ra selected_files <<< "$selected"
+            for entry in "${selected_files[@]}"; do
+                original_path="${applications_dir}/${entry}"
+                display_name=$(grep -i "^Name=" "$original_path" | head -n1 | cut -d'=' -f2-)
+                exec_cmd=$(grep -i "^Exec=" "$original_path" | head -n1 | cut -d'=' -f2-)
+
+                # Ensure exec_cmd is not empty and contains the expected value
+                if [[ -z "$exec_cmd" ]]; then
+                    continue
+                fi
+
+                read -ra parts <<< "$exec_cmd"
+                app_name="${parts[-1]}"
+
+                # Create temporary custom launcher in the temp directory
+                launcher_file="${temp_dir}/waydroid_${app_name}.desktop"
+                cat > "$launcher_file" <<EOF
+[Desktop Entry]
+Name=$display_name
+Exec=${HOME}/Android_Waydroid/Android_Waydroid_Cage.sh $app_name
+Path=${HOME}/Android_Waydroid
+Type=Application
+Terminal=false
+Icon=application-default-icon
+EOF
+
+                steamos-add-to-steam "$launcher_file"
+            done
+
+            zenity --info --title "Waydroid Toolbox" --text "Selected apps added to Steam!" --width 400 --height 100
+
+            # Remove the temporary desktop files after use
+            rm -rf "$temp_dir"
+        else
+            zenity --info --title "Waydroid Toolbox" --text "No apps selected." --width 300 --height 75
+        fi
+    fi
+
+
 
 elif [ "$Choice" == "UNINSTALL" ]
 then
