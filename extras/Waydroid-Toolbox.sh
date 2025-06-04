@@ -346,7 +346,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		# remove the kernel module and packages installed
 		echo -e "$PASSWORD\n" | sudo -S systemctl stop waydroid-container
 		echo -e "$PASSWORD\n" | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst
-		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc cage wlr-randr
+		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr
 	
 		# delete the waydroid directories and config
 		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/AUR
@@ -375,7 +375,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		# remove the kernel module and packages installed
 		echo -e "$PASSWORD\n" | sudo -S systemctl stop waydroid-container
 		echo -e "$PASSWORD\n" | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst
-		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc cage wlr-randr
+		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr
 	
 		# delete the waydroid directories and config
 		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
