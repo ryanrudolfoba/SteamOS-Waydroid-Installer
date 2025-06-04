@@ -5,6 +5,18 @@ A collection of tools that is packaged into an easy to use script that is stream
 * Waydroid Toolbox to easily toggle some configuration settings for Waydroid.
 * [waydroid_script](https://github.com/casualsnek/waydroid_script) to easily add the libndk ARM translation layer and widevine.
 
+**NOTE - this repository uses `main` and `testing` branches.**
+
+**`testing`** - this is where new updates / features are pushed and sits for 1-2 weeks to make sure that bugs are squashed and eliminated. You can access it via this command -
+```
+git clone --depth=1 -b testing https://github.com/ryanrudolfoba/steamos-waydroid-installer
+```
+
+**`main`** this is updated after 1-2 weeks in `testing` branch. You can access it via this command -
+```
+git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
+```
+
 **Script has gone through several updates - this now allows you to install Android 11 / Android 13 and their TV counterparts - Android 11 TV / Android 13 TV!**
 
 | [SteamOS Waydroid Android Install Guide](https://www.youtube.com/watch?v=06T-h-jPVx8) | [SteamOS Waydroid Android Upgrade Guide](https://youtu.be/CJAMwIb_oI0) |
@@ -53,6 +65,11 @@ A collection of tools that is packaged into an easy to use script that is stream
 <p align="center">
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
+
+# What's New (as of June 03 2025)
+1. `testing` branch works on latest SteamOS stable 3.7.8 and latest SteamOS beta 3.7.9.
+2. Updated waydroid from 1.4.3 to 1.5.1
+3. Updated official Android 13 GAPPS / NOGAPPS image. This uses latest build as of May 31 2025
 
 # What's New (as of May 16 2025)
 1. Official Android 13 images (GAPPS and NOGAPPS)
@@ -184,10 +201,16 @@ SteamOS has been stuck on 6.1.52-valve16-1 for several releases now so I think t
 **How to Use and Install the Script**
 1. Go into Desktop Mode and open a `konsole` terminal.
 2. Clone the github repo.
-
+	To clone the `main` branch -
    ```sh
    cd ~/
    git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
+   ```
+
+	To clone the `testing` branch where new features / updates are being tested before it goes to `main` -
+	```sh
+   cd ~/
+   git clone --depth=1 -b testing https://github.com/ryanrudolfoba/steamos-waydroid-installer
    ```
 
 3. Execute the script! \
