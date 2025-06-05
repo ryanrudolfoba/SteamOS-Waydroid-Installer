@@ -226,7 +226,7 @@ then
 
 
 
-elif [[ "$Choice" == "ADD_APPS" ]]; then
+elif [ "$Choice" == "ADD_APPS" ]; then
     logged_in_user=$(whoami)
     logged_in_uid=$(id -u "$logged_in_user")
     logged_in_home=$(eval echo "~$logged_in_user")
@@ -276,8 +276,6 @@ elif [[ "$Choice" == "ADD_APPS" ]]; then
     fi
 
     shortcuts_file="${logged_in_home}/.steam/root/userdata/$steamid3/config/shortcuts.vdf"
-
-    mkdir -p "$launcher_dir"
 
     ignored_files=(
         "waydroid.com.android.inputmethod.latin.desktop"
