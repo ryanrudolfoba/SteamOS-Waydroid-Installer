@@ -225,10 +225,59 @@ then
 	zenity --warning --title "Waydroid Toolbox" --text "Android Waydroid Cage launcher has been added to Game Mode!" --width 450 --height 75
 
 
-elif [ "$Choice" == "ADD_APPS" ]; then
-    logged_in_home="$HOME"
+
+elif [[ "$Choice" == "ADD_APPS" ]]; then
+    logged_in_user=$(whoami)
+    logged_in_uid=$(id -u "$logged_in_user")
+    logged_in_home=$(eval echo "~$logged_in_user")
     applications_dir="${logged_in_home}/.local/share/applications"
+    icons_dir="${logged_in_home}/.local/share/waydroid/data/icons"
     temp_dir=$(mktemp -d)
+    launcher_script="${logged_in_home}/Android_Waydroid/Android_Waydroid_Cage.sh"
+
+    if [[ -f "${logged_in_home}/.steam/root/config/loginusers.vdf" ]] || [[ -f "${logged_in_home}/.local/share/Steam/config/loginusers.vdf" ]]; then
+        if [[ -f "${logged_in_home}/.steam/root/config/loginusers.vdf" ]]; then
+            file_path="${logged_in_home}/.steam/root/config/loginusers.vdf"
+        else
+            file_path="${logged_in_home}/.local/share/Steam/config/loginusers.vdf"
+        fi
+
+        most_recent_user=$(sed -n '/"users"/,/"MostRecent" "1"/p' "$file_path")
+
+        max_timestamp=0
+        current_user=""
+        current_steamid=""
+
+        while IFS="," read -r steamid account timestamp; do
+            if (( timestamp > max_timestamp )); then
+                max_timestamp=$timestamp
+                current_user=$account
+                current_steamid=$steamid
+            fi
+        done < <(echo "$most_recent_user" | awk -v RS='}\n' -F'\n' '
+        {
+            for(i=1;i<=NF;i++){
+                if($i ~ /[0-9]{17}/){
+                    split($i,a, "\""); steamid=a[2];
+                }
+                if($i ~ /"AccountName"/){
+                    split($i,b, "\""); account=b[4];
+                }
+                if($i ~ /"Timestamp"/){
+                    split($i,c, "\""); timestamp=c[4];
+                }
+            }
+            print steamid "," account "," timestamp
+        }')
+
+        steamid3=$((current_steamid - 76561197960265728))
+    else
+        echo "Steam config not found. Skipping Steam integration."
+    fi
+
+    shortcuts_file="${logged_in_home}/.steam/root/userdata/$steamid3/config/shortcuts.vdf"
+
+    mkdir -p "$launcher_dir"
 
     ignored_files=(
         "waydroid.com.android.inputmethod.latin.desktop"
@@ -245,85 +294,166 @@ elif [ "$Choice" == "ADD_APPS" ]; then
         "waydroid.org.lineageos.recorder.desktop"
     )
 
+    declare -A exception_files=(
+        ["com.google.android.videos"]="Google TV"
+        # Add more exceptions if needed
+    )
+
     is_ignored() {
-        local filename="$1"
-        for ignored in "${ignored_files[@]}"; do
-            if [[ "$filename" == "$ignored" ]]; then
-                return 0
-            fi
+        local entry="$1"
+        for ignore in "${ignored_files[@]}"; do
+            [[ "$ignore" == "$entry" ]] && return 0
         done
         return 1
     }
 
-    if [[ ! -d "$applications_dir" ]]; then
-        zenity --error --title "Waydroid Toolbox" --text "Waydroid .desktop directory not found!" --width 400 --height 100
-        exit 1  # Exit the script if the directory is not found
-    fi
-
     desktop_choices=()
-    for file_path in "$applications_dir"/*.desktop; do
-        file_name=$(basename "$file_path")
-        if is_ignored "$file_name"; then
+
+    # Build the list of Waydroid apps for selection
+    for icon in "$icons_dir"/*.png; do
+        package_name=$(basename "$icon" .png)
+        desktop_file="waydroid.${package_name}.desktop"
+        full_path="${applications_dir}/${desktop_file}"
+
+        if is_ignored "$desktop_file" || [[ "$package_name" =~ ^org\.lineageos\..* ]]; then
             continue
         fi
-        if ! grep -qi "waydroid" "$file_path"; then
+
+        if [[ -n "${exception_files[$package_name]}" ]]; then
+            display_name="${exception_files[$package_name]}"
+        elif [[ -f "$full_path" ]]; then
+            display_name=$(grep -i "^Name=" "$full_path" | head -n1 | cut -d'=' -f2-)
+            [[ -z "$display_name" || "$display_name" == "App Settings" ]] && continue
+        else
             continue
         fi
-        display_name=$(grep -i "^Name=" "$file_path" | head -n1 | cut -d'=' -f2-)
-        exec_cmd=$(grep -i "^Exec=" "$file_path" | head -n1 | cut -d'=' -f2-)
-        if [[ -z "$display_name" || "$exec_cmd" != *"waydroid app launch"* ]]; then
-            continue
-        fi
-        desktop_choices+=("FALSE" "$file_name" "$display_name")
+
+        desktop_choices+=("FALSE" "$package_name" "$display_name")
     done
 
     if [[ ${#desktop_choices[@]} -eq 0 ]]; then
         zenity --info --title "Waydroid Toolbox" --text "No user apps found to add to Steam." --width 350 --height 75
-    else
-        selected=$(zenity --list --title="Select apps to add to Steam" \
-            --width=700 --height=400 \
-            --text="Select one or more Waydroid apps to add to Steam Game Mode." \
-            --checklist \
-            --column "Select" --column "File" --column "App Name" \
-            "${desktop_choices[@]}")
+        exit 0
+    fi
 
-        if [ -n "$selected" ]; then
-            IFS="|" read -ra selected_files <<< "$selected"
-            for entry in "${selected_files[@]}"; do
-                original_path="${applications_dir}/${entry}"
-                display_name=$(grep -i "^Name=" "$original_path" | head -n1 | cut -d'=' -f2-)
-                exec_cmd=$(grep -i "^Exec=" "$original_path" | head -n1 | cut -d'=' -f2-)
+    selected=$(zenity --list --title="Select Waydroid apps to add to Steam" \
+        --width=700 --height=400 \
+        --text="Select one or more Waydroid apps to add to Steam Game Mode." \
+        --checklist \
+        --column "Select" --column "Package" --column "App Name" \
+        "${desktop_choices[@]}")
 
-                # Ensure exec_cmd is not empty and contains the expected value
-                if [[ -z "$exec_cmd" ]]; then
-                    continue
+    if [[ -n "$selected" ]]; then
+        games=()
+        launch_opts=()
+        if [[ -f "$shortcuts_file" ]]; then
+            # Parse shortcuts.vdf: replace nulls with newlines, remove empty lines
+            mapfile -t lines < <(tr '\0\1\2' '\n\n\n' < "$shortcuts_file" | grep -v '^$')
+            for ((i=0; i < ${#lines[@]} - 1; i++)); do
+                if [[ "${lines[i],,}" == "appname" ]]; then
+                    appname="${lines[i+1]}"
+                    # Trim whitespace
+                    appname="${appname#"${appname%%[![:space:]]*}"}"
+                    appname="${appname%"${appname##*[![:space:]]}"}"
+
+                    launchopt=""
+                    for ((j=i+1; j < ${#lines[@]} - 1; j++)); do
+                        if [[ "${lines[j],,}" == "launchoptions" ]]; then
+                            launchopt="${lines[j+1]}"
+                            # Trim quotes and whitespace
+                            launchopt="${launchopt%\"}"
+                            launchopt="${launchopt#\"}"
+                            launchopt="${launchopt#"${launchopt%%[![:space:]]*}"}"
+                            launchopt="${launchopt%"${launchopt##*[![:space:]]}"}"
+                            break
+                        fi
+                        [[ "${lines[j],,}" == "appname" ]] && break
+                    done
+
+                    if [[ -n "$appname" ]]; then
+                        games+=("$appname")
+                        launch_opts+=("$launchopt")
+                    fi
                 fi
+            done
+        else
+            echo "Warning: shortcuts.vdf not found. Duplicate check will be skipped."
+        fi
 
-                read -ra parts <<< "$exec_cmd"
-                app_name="${parts[-1]}"
+        IFS="|" read -ra selected_packages <<< "$selected"
 
-                # Create temporary custom launcher in the temp directory
-                launcher_file="${temp_dir}/waydroid_${app_name}.desktop"
-                cat > "$launcher_file" <<EOF
+        if [[ ! -x "$launcher_script" ]]; then
+            zenity --error --title "Waydroid Toolbox" --text "Launcher script not found or not executable:\n$launcher_script" --width 400 --height 100
+            exit 1
+        fi
+
+        apps_added=false
+
+        for pkg in "${selected_packages[@]}"; do
+            desktop_path="${applications_dir}/waydroid.${pkg}.desktop"
+            if [[ -f "$desktop_path" ]]; then
+                name=$(grep -i "^Name=" "$desktop_path" | head -n1 | cut -d'=' -f2-)
+            else
+                name="${exception_files[$pkg]}"
+            fi
+
+            [[ -z "$name" ]] && name="$pkg"
+
+            # Check if app already exists in shortcuts.vdf by matching name and package (launch options)
+            already_exists=false
+            launcher_cmd="${launcher_script} $pkg"
+
+            for ((idx=0; idx < ${#games[@]}; idx++)); do
+                # Normalize existing launch options for comparison
+                existing_launchopt="${launch_opts[$idx]}"
+                existing_launchopt="${existing_launchopt%\"}"
+                existing_launchopt="${existing_launchopt#\"}"
+                existing_launchopt="${existing_launchopt#"${existing_launchopt%%[![:space:]]*}"}"
+                existing_launchopt="${existing_launchopt%"${existing_launchopt##*[![:space:]]}"}"
+
+                if [[ "${games[$idx]}" == "$name" && "$existing_launchopt" == "$pkg" ]]; then
+                    already_exists=true
+                    break
+                fi
+            done
+
+            if $already_exists; then
+                echo "Skipping: $name is already in your Steam library."
+                zenity --info --title "Waydroid Toolbox" \
+                    --text="$name is already in your Steam library." \
+                    --width 400 --height 75
+                continue
+            fi
+
+            # Create temporary desktop file for this app
+            launcher_file="${temp_dir}/waydroid_${pkg}.desktop"
+            cat > "$launcher_file" <<EOF
 [Desktop Entry]
-Name=$display_name
-Exec=${HOME}/Android_Waydroid/Android_Waydroid_Cage.sh $app_name
-Path=${HOME}/Android_Waydroid
+Name=$name
+Exec=${launcher_script} $pkg
+Path=${logged_in_home}/Android_Waydroid
 Type=Application
 Terminal=false
 Icon=application-default-icon
 EOF
 
-                steamos-add-to-steam "$launcher_file"
-            done
+            steamos-add-to-steam "$launcher_file"
+            sleep 1
 
-            zenity --info --title "Waydroid Toolbox" --text "Selected apps added to Steam!" --width 400 --height 100
+            rm -f "$launcher_file"
 
-            # Remove the temporary desktop files after use
-            rm -rf "$temp_dir"
+            apps_added=true
+        done
+
+        rmdir "$temp_dir"
+
+        if $apps_added; then
+            zenity --info --title "Waydroid Toolbox" --text "Waydroid app(s) successfully added to Steam!" --width 400 --height 100
         else
-            zenity --info --title "Waydroid Toolbox" --text "No apps selected." --width 300 --height 75
+            zenity --info --title "Waydroid Toolbox" --text "No new Waydroid apps were added. All selected apps are already in your Steam library." --width 400 --height 100
         fi
+    else
+        zenity --info --title "Waydroid Toolbox" --text "No apps selected." --width 300 --height 75
     fi
 
 
