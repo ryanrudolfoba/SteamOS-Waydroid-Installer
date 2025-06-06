@@ -146,9 +146,11 @@ echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-sta
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-stop /usr/bin/waydroid-container-stop
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
 
-# waydroid startup scripts
+# waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-shutdown-scripts
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
