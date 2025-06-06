@@ -59,7 +59,7 @@ else
 fi
 
 # Reset cage so it doesn't nuke the display environment variable on exit
-while [ -n "\$(pgrep cage)" ]
+while [ -n "$(pgrep cage)" ]
 do
 	sleep 1
 done
