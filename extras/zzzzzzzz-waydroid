@@ -1,3 +1,4 @@
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-stop
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-container-start
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-startup-scripts
+deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-shutdown-scripts

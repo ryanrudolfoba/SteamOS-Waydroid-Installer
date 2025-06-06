@@ -98,10 +98,10 @@ else
 		/usr/bin/waydroid show-full-ui &'
 fi
 
-# Reset cage so it doesn't nuke the display environment variable on exit
+# run shutdown scripts to cleanup when waydroid exits
 while [ -n "$(pgrep cage)" ]
 do
 	sleep 1
 done
 
-cage -- bash -c 'wlr-randr'
+sudo /usr/bin/waydroid-shutdown-scripts
