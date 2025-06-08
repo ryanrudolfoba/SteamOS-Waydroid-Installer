@@ -11,24 +11,11 @@ then
 	exit
 fi
 
-# Try to kill cage gracefully using SIGTERM
-timeout 5s killall -15 cage -w &> /dev/null
-if [ $? -eq 124 ]
-then
-	# Timed out, process still active, let's force some more using SIGINT
-	timeout 5s killall -2 cage -w &> /dev/null
-	if [ $? -eq 124 ]
-	then
-		# Timed out again, this will shut it down for good using SIGKILL
-		timeout 5s killall -9 cage -w &> /dev/null
-	fi
-fi
-
 export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 
-# stop and start the waydroid container
-sudo /usr/bin/waydroid-container-stop
-sudo /usr/bin/waydroid-container-start
+# start the waydroid container
+sudo /usr/bin/systemctl start waydroid-container.service
+
 systemctl status waydroid-container.service | grep -i running
 if [ $? -ne 0 ]
 then
