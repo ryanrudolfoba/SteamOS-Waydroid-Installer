@@ -138,27 +138,23 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
 
-# waydroid start service
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-start /usr/bin/waydroid-container-start
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
-
-# waydroid stop service
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-stop /usr/bin/waydroid-container-stop
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
+# waydroid binder configuration file
+echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
+echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
 
 # waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-shutdown-scripts
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
-# custom configs done. lets move them to the correct location
+# waydroid launcher, toolbox and updater
 cp extras/Android_Waydroid_Cage.sh extras/Waydroid-Toolbox.sh extras/Waydroid-Updater.sh extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
+
 # desktop shortcuts for toolbox + updater
 ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
 ln -s ~/Android_Waydroid/Waydroid-Updater.sh ~/Desktop/Waydroid-Updater &> /dev/null
