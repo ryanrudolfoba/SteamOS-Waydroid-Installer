@@ -1,4 +1,0 @@
-#!/bin/bash
-modprobe binder-linux device=binder,hwbinder,vndbinder
-systemctl start waydroid-container.service
-sleep 5
