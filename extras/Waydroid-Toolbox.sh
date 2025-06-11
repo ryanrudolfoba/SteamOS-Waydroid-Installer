@@ -290,6 +290,8 @@ elif [ "$Choice" == "ADD_APPS" ]; then
         "waydroid.com.android.camera2.desktop"
         "waydroid.com.android.deskclock.desktop"
         "waydroid.org.lineageos.recorder.desktop"
+				"waydroid.com.google.android.apps.messaging.desktop"
+        "waydroid.com.google.android.contacts.desktop"
     )
 
     declare -A exception_files=(
