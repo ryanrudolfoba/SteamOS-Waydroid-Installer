@@ -235,6 +235,118 @@ elif [ "$Choice" == "ADD_APPS" ]; then
     temp_dir=$(mktemp -d)
     launcher_script="${logged_in_home}/Android_Waydroid/Android_Waydroid_Cage.sh"
 
+    # Function to batch update icon paths in Steam shortcuts.vdf using embedded Python
+    update_all_icon_paths() {
+        local shortcuts_file="${logged_in_home}/.steam/root/userdata/${steamid3}/config/shortcuts.vdf"
+        declare -n icon_map=$1
+
+        python3 - <<EOF
+import os
+import struct
+import sys
+
+shortcuts_file = "${shortcuts_file}"
+updates = {
+$(for app in "${!icon_map[@]}"; do
+    printf '    "%s": "%s",\n' "$app" "${icon_map[$app]}"
+done)
+}
+
+def read_cstring(fp):
+    chars = []
+    while (c := fp.read(1)) and c != b'\x00':
+        chars.append(c)
+    return b''.join(chars).decode('utf-8', errors='replace')
+
+def parse_binary_vdf(fp):
+    stack = [{}]
+    while True:
+        type_byte = fp.read(1)
+        if not type_byte:
+            break
+        if type_byte == b'\x08':
+            if len(stack) > 1:
+                stack.pop()
+            else:
+                break
+            continue
+        key = read_cstring(fp)
+        current_dict = stack[-1]
+        if type_byte == b'\x00':
+            new_dict = {}
+            current_dict[key] = new_dict
+            stack.append(new_dict)
+        elif type_byte == b'\x01':
+            current_dict[key] = read_cstring(fp)
+        elif type_byte == b'\x02':
+            current_dict[key] = struct.unpack('<i', fp.read(4))[0]
+        elif type_byte == b'\x03':
+            current_dict[key] = struct.unpack('<f', fp.read(4))[0]
+        elif type_byte == b'\x07':
+            current_dict[key] = struct.unpack('<Q', fp.read(8))[0]
+        elif type_byte == b'\x0A':
+            current_dict[key] = struct.unpack('<q', fp.read(8))[0]
+        else:
+            raise ValueError(f"Unsupported type byte: {type_byte} for key {key}")
+    return stack[0]
+
+def write_cstring(fp, s):
+    fp.write(s.encode('utf-8') + b'\x00')
+
+def write_binary_vdf(fp, d):
+    for key, val in d.items():
+        if isinstance(val, dict):
+            fp.write(b'\x00')
+            write_cstring(fp, key)
+            write_binary_vdf(fp, val)
+            fp.write(b'\x08')
+        elif isinstance(val, str):
+            fp.write(b'\x01')
+            write_cstring(fp, key)
+            write_cstring(fp, val)
+        elif isinstance(val, int):
+            fp.write(b'\x02')
+            write_cstring(fp, key)
+            fp.write(struct.pack('<i', val))
+        elif isinstance(val, float):
+            fp.write(b'\x03')
+            write_cstring(fp, key)
+            fp.write(struct.pack('<f', val))
+        else:
+            raise ValueError(f"Unsupported value type: {type(val)} for key {key}")
+
+if not os.path.exists(shortcuts_file):
+    print(f"❌ shortcuts.vdf not found: {shortcuts_file}", file=sys.stderr)
+    sys.exit(1)
+
+with open(shortcuts_file, 'rb') as f:
+    data = parse_binary_vdf(f)
+
+shortcuts = data.get("shortcuts", data)
+updated = False
+
+for app, icon in updates.items():
+    for sc in shortcuts.values():
+        if isinstance(sc, dict):
+            # Check for both "AppName" and "appname" (case-insensitive)
+            app_name = sc.get("AppName") or sc.get("appname")
+            exe_path = sc.get("Exe") or sc.get("exe")  # Look for Exe or exe
+
+            # Check if AppName (or appname) matches and if Exe contains the substring 'Android_Waydroid_Cage.sh'
+            if app_name == app and exe_path and "Android_Waydroid_Cage.sh" in exe_path:
+                sc["icon"] = icon
+                print(f"✅ Icon updated for {app} with matching Exe path")
+                updated = True
+                break
+
+
+if updated:
+    with open(shortcuts_file, 'wb') as f:
+        write_binary_vdf(f, data)
+        f.write(b'\x08')
+EOF
+    }
+
     if [[ -f "${logged_in_home}/.steam/root/config/loginusers.vdf" ]] || [[ -f "${logged_in_home}/.local/share/Steam/config/loginusers.vdf" ]]; then
         if [[ -f "${logged_in_home}/.steam/root/config/loginusers.vdf" ]]; then
             file_path="${logged_in_home}/.steam/root/config/loginusers.vdf"
@@ -290,9 +402,8 @@ elif [ "$Choice" == "ADD_APPS" ]; then
         "waydroid.com.android.camera2.desktop"
         "waydroid.com.android.deskclock.desktop"
         "waydroid.org.lineageos.recorder.desktop"
-				"waydroid.com.google.android.apps.messaging.desktop"
+        "waydroid.com.google.android.apps.messaging.desktop"
         "waydroid.com.google.android.contacts.desktop"
-				"waydroid.org.lineageos.aperture.desktop"
     )
 
     declare -A exception_files=(
@@ -389,6 +500,7 @@ elif [ "$Choice" == "ADD_APPS" ]; then
         fi
 
         apps_added=false
+        declare -A icon_updates=()
 
         for pkg in "${selected_packages[@]}"; do
             desktop_path="${applications_dir}/waydroid.${pkg}.desktop"
@@ -441,21 +553,70 @@ EOF
             steamos-add-to-steam "$launcher_file"
             sleep 1
 
+
+            icon_file="${icons_dir}/${pkg}.png"
+            if [[ -f "$icon_file" ]]; then
+                icon_updates["$name"]="$icon_file"
+                sleep 1
+            else
+                echo "Icon for $pkg not found at $icon_file, skipping icon update."
+            fi
+
+
+            zenity --info \
+                --title="Waydroid Toolbox" \
+                --text="'$name' has been successfully added to Steam!" \
+                --width=400 --height=100 \
+                --timeout=1
+
+            echo "✅ Added '$name' to Steam successfully!"
+            apps_added=true
             rm -f "$launcher_file"
 
-            apps_added=true
         done
+        if (( ${#icon_updates[@]} > 0 )); then
+            update_all_icon_paths icon_updates
+        fi
 
+        # Remove temp_dir after all apps processed
         rmdir "$temp_dir"
 
         if $apps_added; then
-            zenity --info --title "Waydroid Toolbox" --text "Waydroid app(s) successfully added to Steam!" --width 400 --height 100
+            zenity --info \
+                --title="Waydroid Toolbox" \
+                --text="Waydroid app(s) were successfully added to Steam.\n\n In order to refresh the icons, Steam must be restarted..." \
+                --width=400 --height=120
+
+            CHOICE=$(zenity --list \
+                --title="Post-Installation Options" \
+                --text="What would you like to do next?" \
+                --radiolist \
+                --column "Select" --column "Action" \
+                TRUE "Restart Steam" \
+                FALSE "Enter Game Mode" \
+                FALSE "Exit" \
+                --width=350 --height=200)
+
+            case "$CHOICE" in
+                "Restart Steam")
+                    pkill steam 2>/dev/null
+                    while pgrep -x steam >/dev/null; do sleep 1; done
+                    nohup /usr/bin/steam %U &>/dev/null & disown
+                    ;;
+
+                "Enter Game Mode")
+                    qdbus org.kde.Shutdown /Shutdown org.kde.Shutdown.logout
+                    ;;
+            esac
+
         else
-            zenity --info --title "Waydroid Toolbox" --text "No new Waydroid apps were added. All selected apps are already in your Steam library." --width 400 --height 100
+            zenity --info \
+                --title="Waydroid Toolbox" \
+                --text="No new Waydroid apps were added. All selected apps are already in your Steam library." \
+                --width=400 --height=100
         fi
-    else
-        zenity --info --title "Waydroid Toolbox" --text "No apps selected." --width 300 --height 75
     fi
+
 
 
 
