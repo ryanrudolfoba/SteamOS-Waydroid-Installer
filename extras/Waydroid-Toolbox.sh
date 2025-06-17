@@ -404,6 +404,7 @@ EOF
         "waydroid.org.lineageos.recorder.desktop"
         "waydroid.com.google.android.apps.messaging.desktop"
         "waydroid.com.google.android.contacts.desktop"
+				"waydroid.org.lineageos.aperture.desktop"
     )
 
     declare -A exception_files=(
