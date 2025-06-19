@@ -9,7 +9,7 @@ cleanup_exit () {
 	echo -e "$current_password\n" | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst &> /dev/null
 	
 	# remove installed packages
-	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots dnsmasq lxc &> /dev/null
+	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr &> /dev/null
 	
 	# delete the waydroid directories
 	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid &> /dev/null
@@ -21,8 +21,7 @@ cleanup_exit () {
 	rm ~/Desktop/Waydroid-Updater &> /dev/null
 	rm ~/Desktop/Waydroid-Toolbox &> /dev/null
 
-	# delete cage binaries
-	echo -e "$current_password\n" | sudo -S rm /usr/bin/cage /usr/bin/wlr-randr &> /dev/null
+	# delete Android_Waydroid folder and enable the readonly
 	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid &> /dev/null
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable &> /dev/null
 	
@@ -115,12 +114,4 @@ check_waydroid_init () {
 
 		cleanup_exit
 	fi
-}
-
-# disable the SteamOS readonly and initialize the keyring using the older method
-devmode_fallback () {
-	echo Using the older method to unlock the readonly and initialize the keyring.
-	echo -e "$current_password\n" | sudo -S steamos-readonly disable && \
-	echo -e "$current_password\n" | sudo -S pacman-key --init && \
-	echo -e "$current_password\n" | sudo -S pacman-key --populate
 }

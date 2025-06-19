@@ -11,28 +11,47 @@ sleep 2
 script_version_sha=$(git rev-parse --short HEAD)
 steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 kernel_version=$(uname -r | cut -d "-" -f 1-5 )
-stable_kernel1=6.1.52-valve16-1-neptune-61
-stable_kernel2=6.5.0-valve22-1-neptune-65
-beta_kernel1=6.5.0-valve23-1-neptune-65
+stable_kernel1=6.11.11-valve14-1-neptune-611
+beta_kernel1=6.11.11-valve17-1-neptune-611
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 DIR_WAYDROID_SCRIPT=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 
-# android builds
+# android TV builds
 ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
 ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
-ANDROID13_GAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-GAPPS-waydroid_x86_64-system.zip/download#
-ANDROID13_NOGAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-VANILLA-waydroid_x86_64-system.zip/download#
-ANDROID13_VENDOR_IMG=https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20-20250503-MAINLINE-waydroid_x86_64-vendor.zip/download#
 
-# android hash
+# old android 13 builds as of May 03 2025
+#ANDROID13_GAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-GAPPS-waydroid_x86_64-system.zip/download#
+
+#ANDROID13_NOGAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-VANILLA-waydroid_x86_64-system.zip/download#
+
+#ANDROID13_VENDOR_IMG=https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20-20250503-MAINLINE-waydroid_x86_64-vendor.zip/download#
+
+# new android 13 builds as of May 31 2025
+ANDROID13_GAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20.0-20250531-GAPPS-waydroid_x86_64-system.zip/download#
+ANDROID13_NOGAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20.0-20250531-VANILLA-waydroid_x86_64-system.zip/download#
+ANDROID13_VENDOR_IMG=https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20.0-20250531-MAINLINE-waydroid_x86_64-vendor.zip/download#
+
+# android TV hash
 ANDROID11_TV_IMG_HASH=680971aaeb9edc64d9d79de628bff0300c91e86134f8daea1bbc636a2476e2a7
 ANDROID13_TV_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
-ANDROID13_GAPPS_IMG_HASH=3c6eb7235e2bb4c4568194a33147017b6ab2e136467e8c5864b30a3e3e09e39e
-ANDROID13_NOGAPPS_IMG_HASH=60e2bbb7b821132b4518c9fa22581845742e09edd858831465e91a8a6b9c4087
-ANDROID13_VENDOR_IMG_HASH=e5331c517553873620b547e02fd972df40cf060ddad37856fa15f22442ae87f3
+
+# old android 13 hash for build date as of May 03 2025
+#ANDROID13_GAPPS_IMG_HASH=3c6eb7235e2bb4c4568194a33147017b6ab2e136467e8c5864b30a3e3e09e39e
+
+#ANDROID13_NOGAPPS_IMG_HASH=60e2bbb7b821132b4518c9fa22581845742e09edd858831465e91a8a6b9c4087
+
+#ANDROID13_VENDOR_IMG_HASH=e5331c517553873620b547e02fd972df40cf060ddad37856fa15f22442ae87f3
+
+# new android 13 hash for build date as of May 31 2025
+ANDROID13_GAPPS_IMG_HASH=2f1b81436de172658f5008adae16ef429339d09348fd713e9f3029130ac72467
+
+ANDROID13_NOGAPPS_IMG_HASH=e01fbdcaa17369c6373c52e40110e38a1e80bd481b1694bbe94c513683ee8070
+
+ANDROID13_VENDOR_IMG_HASH=4e99d932ffb34ec4d69eda41ee484c19d43dcc7e35ac3ef4ec4a66cf7671f915
 
 echo script version: $script_version_sha
 
@@ -62,17 +81,8 @@ else
 	cleanup_exit
 fi
 
-# check SteamOS version - use older method if on 3.5, use devmode method if on 3.6 and above
-case $steamos_version in
-	*3.5*)
-		echo SteamOS 3.5 detected. Using the older method to unlock readonly and initialize keyring
-		devmode_fallback
-		;;
-	*3.6*)
-		echo SteamOS 3.6 detected. Using the devmode method to unlock readonly and initialize keyring
-		echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
-		;;
-esac
+# unlock the readonly and initialize keyring using the devmode method
+echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
 
 if [ $? -eq 0 ]
 then
@@ -103,10 +113,11 @@ else
 	echo Binder kernel module already loaded and up to date! No need to reinstall binder!
 fi
 
-# ok lets install waydroid and cage
-echo -e "$current_password\n" | sudo -S pacman -U cage/wlroots-0.16.2-1-x86_64.pkg.tar.zst waydroid/dnsmasq-2.89-1-x86_64.pkg.tar.zst \
-	waydroid/lxc-1\:5.0.3-1-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.74-1-x86_64.pkg.tar.zst waydroid/libgbinder-1.1.35-1-x86_64.pkg.tar.zst \
-	waydroid/python-gbinder-1.1.2-1-x86_64.pkg.tar.zst waydroid/waydroid-1.4.3-1-any.pkg.tar.zst --noconfirm --overwrite "*" &> /dev/null
+# ok lets install precompiled waydroid
+echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder-1.1.42-2-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.80-1-x86_64.pkg.tar.zst waydroid/python-gbinder-1.1.2-3-x86_64.pkg.tar.zst waydroid/waydroid-1.5.1-1-any.pkg.tar.zst > /dev/null && \
+
+# ok lets install additional packages from pacman repo
+echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr > /dev/null
 
 if [ $? -eq 0 ]
 then
@@ -127,38 +138,37 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
 
-# waydroid start service
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-start /usr/bin/waydroid-container-start
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-start
+# waydroid binder configuration file
+echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
+echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
 
-# waydroid stop service
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-container-stop /usr/bin/waydroid-container-stop
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-container-stop
-
-# waydroid startup scripts
+# waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
-# custom configs done. lets move them to the correct location
+# waydroid launcher, toolbox and updater
 cp extras/Android_Waydroid_Cage.sh extras/Waydroid-Toolbox.sh extras/Waydroid-Updater.sh extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
+
 # desktop shortcuts for toolbox + updater
 ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
 ln -s ~/Android_Waydroid/Waydroid-Updater.sh ~/Desktop/Waydroid-Updater &> /dev/null
-
-# lets copy cage and wlr-randr to the correct folder
-echo -e "$current_password\n" | sudo -S cp cage/cage cage/wlr-randr /usr/bin
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/cage /usr/bin/wlr-randr
 
 # lets check if this is a reinstall
 grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
 then
-	echo This seems to be a reinstall. No further config needed.
+	echo This seems to be a reinstall. Lets just make sure the symlinks are in place!
+	if [ ! -d /etc/waydroid-extra ]
+	then
+		echo -e "$current_password\n" | sudo -S mkdir /etc/waydroid-extra
+		echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
+	fi
 
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
