@@ -13,7 +13,8 @@ fi
 
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
-if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $beta_kernel1 ]
+if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $beta_kernel1 ] \
+	|| [ $kernel_version = $beta_kernel2 ]
 then
 	echo SteamOS $steamos_version - kernel version $kernel_version is supported. Proceed to next step.
 else
