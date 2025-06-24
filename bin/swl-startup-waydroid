@@ -10,7 +10,7 @@ source /usr/lib/swl/setup-logging.sh
 
 echo "[$(date)] Starting Waydroid startup script..." | tee -a "$LOGFILE"
 
-sudo /usr/lib/swl/start-waydroid-container 2>&1 | tee -a "$LOGFILE"
+script -q -f -c "sudo /usr/lib/swl/start-waydroid-container" /dev/null | tee -a "$LOGFILE"
 
 # Start the Waydroid session if not already running
 if ! pgrep -f "waydroid session start" > /dev/null; then
@@ -21,8 +21,8 @@ else
 fi
 
 # Set kernel.pid_max using a separate script (optional, requires sudoers config)
-sudo /usr/lib/swl/set-maxpid 2>&1 | tee -a "$LOGFILE"
+script -q -f -c "sudo /usr/lib/swl/set-maxpid" /dev/null | tee -a "$LOGFILE"
 
-sudo /usr/lib/swl/wait-for-boot 2>&1 | tee -a "$LOGFILE"
+script -q -f -c "sudo /usr/lib/swl/wait-for-boot" /dev/null | tee -a "$LOGFILE"
 
 echo "[$(date)] Waydroid boot completed." | tee -a "$LOGFILE"

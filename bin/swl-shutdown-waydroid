@@ -10,12 +10,12 @@ source /usr/lib/swl/setup-logging.sh
 
 echo "[$(date)] Starting Waydroid shutdown script..." | tee -a "$LOGFILE"
 
-sudo /usr/lib/swl/reset-maxpid 2>&1 | tee -a "$LOGFILE"
+script -q -f -c "sudo /usr/lib/swl/reset-maxpid" /dev/null | tee -a "$LOGFILE"
 
 # reset cage
 echo "[$(date)] Resetting cage..." | tee -a "$LOGFILE"
 cage -- bash -c 'wlr-randr'
 
-sudo /usr/lib/swl/stop-waydroid-container 2>&1 | tee -a "$LOGFILE"
+script -q -f -c "sudo /usr/lib/swl/stop-waydroid-container" /dev/null | tee -a "$LOGFILE"
 
 echo "[$(date)] Waydroid shutdown script completed." | tee -a "$LOGFILE"
