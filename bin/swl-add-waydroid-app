@@ -6,8 +6,8 @@ SWL_DESKTOP_DIR="$HOME/.local/share/swl/applications"
 
 mkdir -p "$SWL_DESKTOP_DIR"
 
-# Find all Waydroid .desktop files
-mapfile -t desktop_files < <(find "$WAYDROID_DESKTOP_DIR" -maxdepth 1 -name 'waydroid.*.desktop')
+# Find all Waydroid .desktop files (including Waydroid.desktop)
+mapfile -t desktop_files < <(find "$WAYDROID_DESKTOP_DIR" -maxdepth 1 \( -name 'waydroid.*.desktop' -o -name 'Waydroid.desktop' \))
 
 if [ ${#desktop_files[@]} -eq 0 ]; then
     kdialog --error "No Waydroid apps found!"
@@ -18,7 +18,12 @@ fi
 entries=()
 for file in "${desktop_files[@]}"; do
     name=$(grep -m1 '^Name=' "$file" | cut -d= -f2-)
-    package=$(basename "$file" .desktop | cut -d. -f2-)
+    # Special case: if file is Waydroid.desktop, use "Waydroid" as package
+    if [[ "$(basename "$file")" == "Waydroid.desktop" ]]; then
+        package="Waydroid"
+    else
+        package=$(basename "$file" .desktop | cut -d. -f2-)
+    fi
     entries+=("$package|$name|$file")
 done
 
