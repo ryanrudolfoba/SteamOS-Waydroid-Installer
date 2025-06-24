@@ -1,15 +1,5 @@
 #!/bin/bash
 
-LOGFILE="/var/log/swl.log"
-# Ensure the log file exists and is writable
-if ! sudo touch "$LOGFILE" || ! sudo chown "$(whoami)" "$LOGFILE"; then
-    echo "Cannot create or write to $LOGFILE. Exiting."
-    exit 1
-fi
-exec >> "$LOGFILE" 2>&1
-
-echo "[$(date)] Starting swl-launch..."
-
 export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 if [ -z "$RESOLUTION" ]; then
     echo "Failed to detect screen resolution. Exiting."
@@ -21,12 +11,12 @@ if [ -z "$1" ]
 then
     # launch option not provided. launch Waydroid via cage and show the full ui right away
     cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
-        sudo /usr/bin/waydroid-startup-scripts ; \
+        sudo /usr/bin/swl-startup-waydroid ; \
         /usr/bin/waydroid show-full-ui &'
 else
     # launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
     cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
-        sudo /usr/bin/waydroid-startup-scripts ; \
+        sudo /usr/bin/swl-startup-waydroid ; \
 
         sleep 1 ; \
         /usr/bin/waydroid app launch $PACKAGE & \
@@ -35,12 +25,10 @@ else
         /usr/bin/waydroid show-full-ui &'
 fi
 
-trap 'sudo /usr/bin/waydroid-shutdown-scripts' EXIT
+trap 'sudo /usr/bin/swl-shutdown-waydroid' EXIT
 
 # run shutdown scripts to cleanup when waydroid exits
 while [ -n "$(pgrep cage)" ]
 do
     sleep 1
 done
-
-echo "[$(date)] swl-launch completed."

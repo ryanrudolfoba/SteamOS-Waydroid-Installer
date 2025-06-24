@@ -1,8 +1,14 @@
 #!/bin/bash
 
+# Ensure the script is run with sudo/root
+if [ "$EUID" -ne 0 ]; then
+    echo "This script must be run as root (with sudo)."
+    exit 1
+fi
+
 LOGFILE="/var/log/swl.log"
 # Ensure the log file exists and is writable
-if ! sudo touch "$LOGFILE" || ! sudo chown "$(whoami)" "$LOGFILE"; then
+if ! touch "$LOGFILE"; then
     echo "Cannot create or write to $LOGFILE. Exiting."
     exit 1
 fi
