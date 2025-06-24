@@ -5,4 +5,4 @@ Exec=swl-add-waydroid-app
 Icon=utilities-terminal
 Categories=Utility;
 Comment=Add a Waydroid app to Steam
-Terminal=true
+Terminal=false

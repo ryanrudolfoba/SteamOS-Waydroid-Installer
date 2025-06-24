@@ -5,4 +5,4 @@ Exec=swl-launch
 Icon=utilities-terminal
 Categories=Utility;
 Comment=Launch a caged Waydroid session
-Terminal=true
+Terminal=false
