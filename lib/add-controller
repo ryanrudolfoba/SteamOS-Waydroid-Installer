@@ -3,3 +3,4 @@
 for f in /sys/devices/virtual/input/input*/event*/uevent; do
   echo add | tee "$f"
 done
+echo "[$(date)] Controllers added to Waydroid input devices."

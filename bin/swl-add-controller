@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# This script adds a controller to Waydroid by writing "add" to the uevent files of input devices.
+
+if [ "$(id -u)" -eq 0 ]; then
+    echo "ERROR: Do not run this script as root. Please run as a regular user."
+    exit 1
+fi
+
+if [ -z "$SWL_LOGGING_SETUP" ]; then
+    source /usr/lib/swl/setup-logging.sh
+    export SWL_LOGGING_SETUP=1
+fi
+
+echo "[$(date)] Starting Waydroid controller addition script..."
+sudo /usr/lib/swl/add-controller
