@@ -6,6 +6,7 @@ fi
 
 LOGDIR="$HOME/.local/share/swl"
 LOGFILE="$LOGDIR/swl.log"
+export LOGFILE
 MAXSIZE=$((1024 * 1024)) # 1MB
 
 mkdir -p "$LOGDIR"
@@ -21,4 +22,3 @@ if ! touch "$LOGFILE"; then
     echo "Cannot create or write to $LOGFILE. Exiting."
     exit 1
 fi
-exec >> "$LOGFILE" 2>&1

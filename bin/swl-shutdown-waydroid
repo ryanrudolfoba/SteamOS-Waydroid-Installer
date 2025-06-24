@@ -2,20 +2,20 @@
 
 # Prevent running as root
 if [ "$(id -u)" -eq 0 ]; then
-    echo "ERROR: Do not run this script as root. Please run as a regular user."
+    echo "ERROR: Do not run this script as root. Please run as a regular user." | tee -a "$LOGFILE"
     exit 1
 fi
 
 source /usr/lib/swl/setup-logging.sh
 
-echo "[$(date)] Starting Waydroid shutdown script..."
+echo "[$(date)] Starting Waydroid shutdown script..." | tee -a "$LOGFILE"
 
-sudo /usr/lib/swl/reset-maxpid
+sudo /usr/lib/swl/reset-maxpid | tee -a "$LOGFILE"
 
 # reset cage
-echo "[$(date)] Resetting cage..."
+echo "[$(date)] Resetting cage..." | tee -a "$LOGFILE"
 cage -- bash -c 'wlr-randr'
 
-sudo /usr/lib/swl/stop-waydroid-container
+sudo /usr/lib/swl/stop-waydroid-container | tee -a "$LOGFILE"
 
-echo "[$(date)] Waydroid shutdown script completed."
+echo "[$(date)] Waydroid shutdown script completed." | tee -a "$LOGFILE"
