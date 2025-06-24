@@ -6,15 +6,15 @@ SWL_DESKTOP_DIR="$HOME/.local/share/swl/applications"
 
 mkdir -p "$SWL_DESKTOP_DIR"
 
-# Alle Waydroid .desktop Dateien finden
+# Find all Waydroid .desktop files
 mapfile -t desktop_files < <(find "$WAYDROID_DESKTOP_DIR" -maxdepth 1 -name 'waydroid.*.desktop')
 
 if [ ${#desktop_files[@]} -eq 0 ]; then
-    kdialog --error "Keine Waydroid Apps gefunden!"
+    kdialog --error "No Waydroid apps found!"
     exit 1
 fi
 
-# Liste für kdialog vorbereiten: package|name|file
+# Prepare list for kdialog: package|name|file
 entries=()
 for file in "${desktop_files[@]}"; do
     name=$(grep -m1 '^Name=' "$file" | cut -d= -f2-)
@@ -22,7 +22,7 @@ for file in "${desktop_files[@]}"; do
     entries+=("$package|$name|$file")
 done
 
-# Nach Name alphabetisch sortieren
+# Sort alphabetically by name
 IFS=$'\n' sorted_entries=($(printf "%s\n" "${entries[@]}" | sort -t'|' -k2,2))
 entries=("${sorted_entries[@]}")
 
@@ -33,11 +33,11 @@ for entry in "${entries[@]}"; do
     dialog_args+=("$package" "$name" "off")
 done
 
-choice=$(kdialog --radiolist "Wähle eine Waydroid App aus:" "${dialog_args[@]}")
+choice=$(kdialog --radiolist "Select a Waydroid app:" "${dialog_args[@]}")
 
 [ -z "$choice" ] && exit 0
 
-# Finde die gewählte Datei
+# Find the selected file
 for entry in "${entries[@]}"; do
     IFS='|' read -r package name file <<< "$entry"
     if [[ "$package" == "$choice" ]]; then
@@ -49,14 +49,14 @@ done
 
 icon=$(grep -m1 '^Icon=' "$selected_file" | cut -d= -f2-)
 
-# Sonderfall für Waydroid.desktop
+# Special case for Waydroid.desktop
 if [[ "$(basename "$selected_file")" == "Waydroid.desktop" ]]; then
     exec_cmd="swl-launch"
 else
     exec_cmd="swl-launch $choice"
 fi
 
-# Neue .desktop Datei erstellen
+# Create new .desktop file
 swl_desktop="$SWL_DESKTOP_DIR/swl.$choice.desktop"
 cat > "$swl_desktop" <<EOF
 [Desktop Entry]
@@ -69,4 +69,4 @@ EOF
 
 steamos-add-to-steam "$swl_desktop"
 
-kdialog --msgbox "App '$selected_name' wurde zu Steam hinzugefügt!"
+kdialog --msgbox "App '$selected_name' was
