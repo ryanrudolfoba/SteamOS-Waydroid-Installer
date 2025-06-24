@@ -22,36 +22,36 @@ trap /usr/bin/swl-shutdown-waydroid EXIT
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "$1" ]
 then
-    if [  -n "$WAYLAND_DISPLAY" ]; then
+    if [ -z "$WAYLAND_DISPLAY" ]; then
         echo "[$(date)] Launching Waydroid with full UI inside cage..."
-        cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
+        cage -- bash -c "wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
             /usr/bin/swl-startup-waydroid ; \
-            /usr/bin/waydroid show-full-ui &'
+            /usr/bin/waydroid show-full-ui &"
     else
         echo "[$(date)] Launching Waydroid with full UI..."
-        bash -c '/usr/bin/swl-startup-waydroid ; \
-            /usr/bin/waydroid show-full-ui &'
+        bash -c "/usr/bin/swl-startup-waydroid ; \
+            /usr/bin/waydroid show-full-ui &"
     fi
 else
-    if [  -n "$WAYLAND_DISPLAY"  ]; then
+    if [ -z "$WAYLAND_DISPLAY"  ]; then
         echo "[$(date)] Launching Waydroid app $1 inside cage..."
-        cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
+        cage -- env PACKAGE="$1" bash -c "wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
             /usr/bin/swl-startup-waydroid ; \
             sleep 1 ; \
-            echo "[$(date)] Launching Waydroid app: $PACKAGE ..." ; \
-            /usr/bin/waydroid app launch $PACKAGE & \
+            echo \"[\$(date)] Launching Waydroid app: \$PACKAGE ...\" ; \
+            /usr/bin/waydroid app launch \$PACKAGE & \
             sleep 1 ; \
-            echo "[$(date)] Launching Waydroid full UI..." ; \
-            /usr/bin/waydroid show-full-ui &'
+            echo \"[\$(date)] Launching Waydroid full UI...\" ; \
+            /usr/bin/waydroid show-full-ui &"
     else
         echo "[$(date)] Launching Waydroid app $1..."
-        env PACKAGE="$1" bash -c '/usr/bin/swl-startup-waydroid ; \
+        env PACKAGE="$1" bash -c "/usr/bin/swl-startup-waydroid ; \
             sleep 1 ; \
-            echo "[$(date)] Launching Waydroid app: $PACKAGE ..." ; \
-            /usr/bin/waydroid app launch $PACKAGE & \
+            echo \"[\$(date)] Launching Waydroid app: \$PACKAGE ...\" ; \
+            /usr/bin/waydroid app launch \$PACKAGE & \
             sleep 1 ; \
-            echo "[$(date)] Launching Waydroid full UI..." ; \
-            /usr/bin/waydroid show-full-ui &'
+            echo \"[\$(date)] Launching Waydroid full UI...\" ; \
+            /usr/bin/waydroid show-full-ui &"
     fi
 fi
 
