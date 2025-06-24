@@ -22,6 +22,10 @@ for file in "${desktop_files[@]}"; do
     entries+=("$package|$name|$file")
 done
 
+# Nach Name alphabetisch sortieren
+IFS=$'\n' sorted_entries=($(printf "%s\n" "${entries[@]}" | sort -t'|' -k2,2))
+entries=("${sorted_entries[@]}")
+
 # kdialog radiolist: ID Label off
 dialog_args=()
 for entry in "${entries[@]}"; do
