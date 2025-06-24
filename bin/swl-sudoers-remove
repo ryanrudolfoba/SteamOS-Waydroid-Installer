@@ -3,6 +3,12 @@
 SUDOERS_DST="/etc/sudoers.d/99-swl"
 USERNAME="$(whoami)"
 
+# Prevent running as root
+if [ "$(id -u)" -eq 0 ]; then
+    echo "ERROR: Do not run this script as root. Please run as a regular user."
+    exit 1
+fi
+
 if [ ! -f "$SUDOERS_DST" ]; then
     echo "No sudoers file found at $SUDOERS_DST"
     exit 0

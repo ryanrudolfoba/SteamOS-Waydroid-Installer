@@ -2,13 +2,19 @@
 
 LOGFILE="/var/log/swl.log"
 # Ensure the log file exists and is writable
-sudo touch "$LOGFILE"
-sudo chown "$(whoami)" "$LOGFILE"
+if ! sudo touch "$LOGFILE" || ! sudo chown "$(whoami)" "$LOGFILE"; then
+    echo "Cannot create or write to $LOGFILE. Exiting."
+    exit 1
+fi
 exec >> "$LOGFILE" 2>&1
 
 echo "[$(date)] Starting swl-launch..."
 
 export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
+if [ -z "$RESOLUTION" ]; then
+    echo "Failed to detect screen resolution. Exiting."
+    exit 1
+fi
 
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "$1" ]

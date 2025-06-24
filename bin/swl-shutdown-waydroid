@@ -2,16 +2,22 @@
 
 LOGFILE="/var/log/swl.log"
 # Ensure the log file exists and is writable
-sudo touch "$LOGFILE"
-sudo chown "$(whoami)" "$LOGFILE"
+if ! sudo touch "$LOGFILE" || ! sudo chown "$(whoami)" "$LOGFILE"; then
+    echo "Cannot create or write to $LOGFILE. Exiting."
+    exit 1
+fi
 exec >> "$LOGFILE" 2>&1
 
 echo "[$(date)] Starting Waydroid shutdown script..."
 
 # restore the kernel.pid_max to the default value and then delete the temp file created
-echo "[$(date)] Restoring kernel.pid_max..."
-sysctl -w kernel.pid_max=$(cat /home/deck/Android_Waydroid/orig_kernel.pid_max)
-rm -f /home/deck/Android_Waydroid/orig_kernel.pid_max
+if [ -f /home/deck/Android_Waydroid/orig_kernel.pid_max ]; then
+    echo "[$(date)] Restoring kernel.pid_max..."
+    sysctl -w kernel.pid_max=$(cat /home/deck/Android_Waydroid/orig_kernel.pid_max)
+    rm -f /home/deck/Android_Waydroid/orig_kernel.pid_max
+else
+    echo "[$(date)] WARNING: orig_kernel.pid_max not found, skipping restore."
+fi
 
 # reset cage
 echo "[$(date)] Resetting cage..."
