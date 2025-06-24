@@ -6,6 +6,12 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# Ensure SUDO_USER is set
+if [ -z "$SUDO_USER" ]; then
+    echo "ERROR: SUDO_USER not set. Please run this script with sudo from a regular user."
+    exit 1
+fi
+
 LOGFILE="/var/log/swl.log"
 MAXSIZE=$((1024 * 1024)) # 1MB
 
@@ -44,8 +50,8 @@ fi
 
 # Start the Waydroid session if not already running
 if ! pgrep -f "waydroid session start" > /dev/null; then
-    echo "[$(date)] Starting waydroid session..."
-    /usr/bin/waydroid session start &
+    echo "[$(date)] Starting waydroid session as user $SUDO_USER..."
+    sudo -u "$SUDO_USER" /usr/bin/waydroid session start &
     sleep 1
 else
     echo "[$(date)] Waydroid session already running."
