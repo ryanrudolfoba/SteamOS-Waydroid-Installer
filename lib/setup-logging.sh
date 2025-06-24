@@ -22,3 +22,4 @@ if ! touch "$LOGFILE"; then
     echo "Cannot create or write to $LOGFILE. Exiting."
     exit 1
 fi
+exec > >(tee -a "$LOGFILE") 2>&1

@@ -2,27 +2,27 @@
 
 # Prevent running as root
 if [ "$(id -u)" -eq 0 ]; then
-    echo "ERROR: Do not run this script as root. Please run as a regular user." | tee -a "$LOGFILE"
+    echo "ERROR: Do not run this script as root. Please run as a regular user."
     exit 1
 fi
 
 source /usr/lib/swl/setup-logging.sh
 
-echo "[$(date)] Starting Waydroid startup script..." | tee -a "$LOGFILE"
+echo "[$(date)] Starting Waydroid startup script..."
 
-script -q -f -c "sudo /usr/lib/swl/start-waydroid-container" /dev/null | tee -a "$LOGFILE"
+sudo /usr/lib/swl/start-waydroid-container
 
 # Start the Waydroid session if not already running
 if ! pgrep -f "waydroid session start" > /dev/null; then
-    /usr/bin/waydroid session start & echo "[$(date)] Started waydroid session." | tee -a "$LOGFILE"
+    /usr/bin/waydroid session start & echo "[$(date)] Started waydroid session."
     sleep 1
 else
-    echo "[$(date)] Waydroid session already running." | tee -a "$LOGFILE"
+    echo "[$(date)] Waydroid session already running."
 fi
 
 # Set kernel.pid_max using a separate script (optional, requires sudoers config)
-script -q -f -c "sudo /usr/lib/swl/set-maxpid" /dev/null | tee -a "$LOGFILE"
+sudo /usr/lib/swl/set-maxpid"
 
-script -q -f -c "sudo /usr/lib/swl/wait-for-boot" /dev/null | tee -a "$LOGFILE"
+sudo /usr/lib/swl/wait-for-boot"
 
-echo "[$(date)] Waydroid boot completed." | tee -a "$LOGFILE"
+echo "[$(date)] Waydroid boot completed."
