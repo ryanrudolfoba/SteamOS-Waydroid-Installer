@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Check if waydroid exists
+if [ ! -f /usr/bin/waydroid ]; then
+    echo "[$(date)] ERROR: Waydroid does not exist!"
+    kdialog --sorry "Cannot start Waydroid. Waydroid does not exist!"
+    exit 1
+fi
+
+# Start the waydroid-container service
+echo "[$(date)] Starting waydroid-container.service..."
+/usr/bin/systemctl start waydroid-container.service
+
+systemctl status waydroid-container.service | grep -i running
+if [ $? -ne 0 ]; then
+    echo "[$(date)] ERROR: Waydroid container did not initialize correctly."
+    kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
+    exit 1
+fi

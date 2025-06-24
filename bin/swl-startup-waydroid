@@ -1,73 +1,28 @@
 #!/bin/bash
 
-# Ensure the script is run with sudo/root
-if [ "$EUID" -ne 0 ]; then
-    echo "This script must be run as root (with sudo)."
+# Prevent running as root
+if [ "$(id -u)" -eq 0 ]; then
+    echo "ERROR: Do not run this script as root. Please run as a regular user."
     exit 1
 fi
 
-# Ensure SUDO_USER is set
-if [ -z "$SUDO_USER" ]; then
-    echo "ERROR: SUDO_USER not set. Please run this script with sudo from a regular user."
-    exit 1
-fi
-
-LOGFILE="/var/log/swl.log"
-MAXSIZE=$((1024 * 1024)) # 1MB
-
-# Rotate log if too big
-if [ -f "$LOGFILE" ] && [ "$(stat -c%s "$LOGFILE")" -ge "$MAXSIZE" ]; then
-    mv "$LOGFILE" "$LOGFILE.old"
-    touch "$LOGFILE"
-fi
-
-# Ensure the log file exists and is writable
-if ! touch "$LOGFILE"; then
-    echo "Cannot create or write to $LOGFILE. Exiting."
-    exit 1
-fi
-exec >> "$LOGFILE" 2>&1
+source /usr/lib/swl/setup-loggin.sh
 
 echo "[$(date)] Starting Waydroid startup script..."
 
-# Check if waydroid exists
-if [ ! -f /usr/bin/waydroid ]; then
-    echo "[$(date)] ERROR: Waydroid does not exist!"
-    kdialog --sorry "Cannot start Waydroid. Waydroid does not exist!"
-    exit 1
-fi
+sudo /usr/lib/swl/start-waydroid-container
 
-# Start the waydroid-container service
-echo "[$(date)] Starting waydroid-container.service..."
-/usr/bin/systemctl start waydroid-container.service
-
-systemctl status waydroid-container.service | grep -i running
-if [ $? -ne 0 ]; then
-    echo "[$(date)] ERROR: Waydroid container did not initialize correctly."
-    kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
-    exit 1
-fi
-
-# Start the Waydroid session if not already running (as the regular user)
-if ! pgrep -u "$SUDO_USER" -f "waydroid session start" > /dev/null; then
-    sudo -u "$SUDO_USER" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u "$SUDO_USER")/bus" /usr/bin/waydroid session start &
+# Start the Waydroid session if not already running
+if ! pgrep -f "waydroid session start" > /dev/null; then
+    /usr/bin/waydroid session start &
     sleep 1
 else
     echo "[$(date)] Waydroid session already running."
 fi
 
-# capture the existing kernel.pid_max value
-echo "[$(date)] Capturing kernel.pid_max value..."
-sysctl -a 2> /dev/null | grep kernel.pid_max | cut -d " " -f 3 > /home/deck/Android_Waydroid/orig_kernel.pid_max
+# Set kernel.pid_max using a separate script (optional, requires sudoers config)
+sudo /usr/lib/swl/set-maxpid
 
-# set the kernel.pid_max to 65535
-echo "[$(date)] Setting kernel.pid_max to 65535..."
-sysctl -w kernel.pid_max=65535
-
-echo "[$(date)] Waiting for Waydroid to boot..."
-while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
-do
-    sleep 1
-done
+sudo /usr/lib/swl/wait-for-boot
 
 echo "[$(date)] Waydroid boot completed."

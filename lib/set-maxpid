@@ -1,0 +1,13 @@
+#!/bin/bash
+
+STATEDIR="/var/lib/swl"
+ORIG_PID_MAX_FILE="$STATEDIR/orig_kernel.pid_max"
+
+mkdir -p "$STATEDIR"
+
+echo "[$(date)] Capturing kernel.pid_max value..."
+sysctl -a 2>/dev/null | grep kernel.pid_max | cut -d " " -f 3 > "$ORIG_PID_MAX_FILE"
+ORIG_PID_MAX=$(cat "$ORIG_PID_MAX_FILE")
+echo "[$(date)] Original kernel.pid_max: $ORIG_PID_MAX"
+echo "[$(date)] Setting kernel.pid_max to 65535..."
+sysctl -w kernel.pid_max=65535
