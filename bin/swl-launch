@@ -29,8 +29,8 @@ then
             /usr/bin/waydroid show-full-ui &"
     else
         echo "[$(date)] Launching Waydroid with full UI..."
-        bash -c "/usr/bin/swl-startup-waydroid ; \
-            /usr/bin/waydroid show-full-ui &"
+        /usr/bin/swl-startup-waydroid
+        /usr/bin/waydroid show-full-ui
     fi
 else
     if [ -z "$WAYLAND_DISPLAY"  ]; then
@@ -45,18 +45,11 @@ else
             /usr/bin/waydroid show-full-ui &"
     else
         echo "[$(date)] Launching Waydroid app $1..."
-        env PACKAGE="$1" bash -c "/usr/bin/swl-startup-waydroid ; \
-            sleep 1 ; \
-            echo \"[\$(date)] Launching Waydroid app: \$PACKAGE ...\" ; \
-            /usr/bin/waydroid app launch \$PACKAGE & \
-            sleep 1 ; \
-            echo \"[\$(date)] Launching Waydroid full UI...\" ; \
-            /usr/bin/waydroid show-full-ui &"
+        /usr/bin/swl-startup-waydroid
+        sleep 1
+        echo "[\$(date)] Launching Waydroid app: $1 ..."
+        /usr/bin/waydroid app launch $1 & sleep 1
+        echo "[\$(date)] Launching Waydroid full UI..." 
+        /usr/bin/waydroid show-full-ui &"
     fi
 fi
-
-# run shutdown scripts to cleanup when waydroid exits
-while [ -n "$(pgrep cage)" ]
-do
-    sleep 1
-done
