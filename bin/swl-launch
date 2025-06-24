@@ -14,6 +14,8 @@ if [ -z "$RESOLUTION" ]; then
     exit 1
 fi
 
+trap /usr/bin/swl-shutdown-waydroid EXIT
+
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "$1" ]
 then
@@ -33,7 +35,7 @@ else
         /usr/bin/waydroid show-full-ui &'
 fi
 
-trap 'sudo /usr/bin/swl-shutdown-waydroid' EXIT
+trap /usr/bin/swl-shutdown-waydroid EXIT
 
 # run shutdown scripts to cleanup when waydroid exits
 while [ -n "$(pgrep cage)" ]
