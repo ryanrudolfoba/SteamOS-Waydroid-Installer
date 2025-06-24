@@ -28,7 +28,7 @@ then
     echo "[$(date)] Launching Waydroid with full UI..."
     cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
         /usr/bin/swl-startup-waydroid ; \
-        /usr/bin/waydroid show-full-ui'
+        /usr/bin/waydroid show-full-ui &'
 else
     # launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
     echo "[$(date)] Launching Waydroid app: $1 ..."
@@ -39,13 +39,5 @@ else
         /usr/bin/waydroid app launch $PACKAGE & \
         sleep 1 ; \
         echo "[$(date)] Launching Waydroid full UI..." ; \
-        /usr/bin/waydroid show-full-ui'
+        /usr/bin/waydroid show-full-ui &'
 fi
-
-# run shutdown scripts to cleanup when waydroid exits
-while [ -n "$(pgrep cage)" ]
-do
-    sleep 1
-done
-
-/usr/bin/swl-shutdown-waydroid
