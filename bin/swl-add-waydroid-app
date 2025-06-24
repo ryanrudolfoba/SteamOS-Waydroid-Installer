@@ -1,0 +1,54 @@
+#!/bin/bash
+# filepath: /home/hans/CachyOs-Waydroid-Installer/bin/swl-add-waydroid-app
+
+WAYDROID_DESKTOP_DIR="$HOME/.local/share/applications"
+SWL_DESKTOP_DIR="$HOME/.local/share/swl/applications"
+
+mkdir -p "$SWL_DESKTOP_DIR"
+
+# Alle Waydroid .desktop Dateien finden
+mapfile -t desktop_files < <(find "$WAYDROID_DESKTOP_DIR" -maxdepth 1 -name 'waydroid.*.desktop')
+
+if [ ${#desktop_files[@]} -eq 0 ]; then
+    kdialog --error "Keine Waydroid Apps gefunden!"
+    exit 1
+fi
+
+# Liste für kdialog vorbereiten: Name=Pfad
+entries=()
+for file in "${desktop_files[@]}"; do
+    name=$(grep -m1 '^Name=' "$file" | cut -d= -f2-)
+    entries+=("$name=$file")
+done
+
+# App auswählen
+choice=$(kdialog --radiolist "Wähle eine Waydroid App aus:" \
+    $(for entry in "${entries[@]}"; do
+        name="${entry%%=*}"
+        file="${entry#*=}"
+        echo "\"$file\" \"$name\" off"
+    done)
+)
+
+[ -z "$choice" ] && exit 0
+
+# Infos aus der gewählten .desktop Datei extrahieren
+package=$(grep -oP 'waydroid\.([^.]+)\.desktop' <<<"$choice" | cut -d. -f2-)
+name=$(grep -m1 '^Name=' "$choice" | cut -d= -f2-)
+icon=$(grep -m1 '^Icon=' "$choice" | cut -d= -f2-)
+
+# Neue .desktop Datei erstellen
+swl_desktop="$SWL_DESKTOP_DIR/swl.$package.desktop"
+cat > "$swl_desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=$name (Waydroid)
+Exec=swl-launch $package
+Icon=$icon
+Categories=X-WayDroid-App;
+EOF
+
+# Zu Steam hinzufügen
+steamos-add-to-steam "$swl_desktop"
+
+kdialog --msgbox "App '$name' wurde zu Steam hinzugefügt!"
