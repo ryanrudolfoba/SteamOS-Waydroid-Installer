@@ -33,8 +33,10 @@ else
     cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
         /usr/bin/swl-startup-waydroid ; \
         sleep 1 ; \
+        echo "[$(date)] Launching Waydroid app: $PACKAGE ..." ; \
         /usr/bin/waydroid app launch $PACKAGE & \
         sleep 1 ; \
+        echo "[$(date)] Launching Waydroid full UI..." ; \
         /usr/bin/waydroid show-full-ui &'
 fi
 
