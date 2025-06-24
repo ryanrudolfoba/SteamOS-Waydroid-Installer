@@ -78,4 +78,6 @@ EOF
 
 steamos-add-to-steam "$swl_desktop"
 
-kdialog --msgbox "App '$selected_name' was
+kdialog --msgbox "App '$selected_name' was added to Steam!"
+
+exit 0
