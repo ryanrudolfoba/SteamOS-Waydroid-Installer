@@ -47,5 +47,3 @@ while [ -n "$(pgrep cage)" ]
 do
     sleep 1
 done
-
-/usr/bin/swl-shutdown-waydroid

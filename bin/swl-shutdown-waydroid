@@ -13,12 +13,14 @@ fi
 
 echo "[$(date)] Starting Waydroid shutdown script..."
 
+
+
 sudo /usr/lib/swl/reset-maxpid
+
+sudo /usr/lib/swl/stop-waydroid-container
 
 # reset cage
 echo "[$(date)] Resetting cage..."
 cage -- bash -c 'wlr-randr'
-
-sudo /usr/lib/swl/stop-waydroid-container
 
 echo "[$(date)] Waydroid shutdown script completed."
