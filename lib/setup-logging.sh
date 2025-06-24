@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ "$(id -u)" -eq 0 ]; then
+    return 0 2>/dev/null || exit 0
+fi
+
 LOGDIR="$HOME/.local/share/swl"
 LOGFILE="$LOGDIR/swl.log"
 MAXSIZE=$((1024 * 1024)) # 1MB
