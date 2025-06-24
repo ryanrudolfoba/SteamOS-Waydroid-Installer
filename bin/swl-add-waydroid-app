@@ -45,13 +45,20 @@ done
 
 icon=$(grep -m1 '^Icon=' "$selected_file" | cut -d= -f2-)
 
+# Sonderfall für Waydroid.desktop
+if [[ "$(basename "$selected_file")" == "Waydroid.desktop" ]]; then
+    exec_cmd="swl-launch"
+else
+    exec_cmd="swl-launch $choice"
+fi
+
 # Neue .desktop Datei erstellen
 swl_desktop="$SWL_DESKTOP_DIR/swl.$choice.desktop"
 cat > "$swl_desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=$selected_name (Waydroid)
-Exec=swl-launch $choice
+Exec=$exec_cmd
 Icon=$icon
 Categories=X-WayDroid-App;
 EOF
