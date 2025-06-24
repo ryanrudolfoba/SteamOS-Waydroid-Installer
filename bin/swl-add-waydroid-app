@@ -14,41 +14,48 @@ if [ ${#desktop_files[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Liste für kdialog vorbereiten: Name=Pfad
+# Liste für kdialog vorbereiten: package|name|file
 entries=()
 for file in "${desktop_files[@]}"; do
     name=$(grep -m1 '^Name=' "$file" | cut -d= -f2-)
-    entries+=("$name=$file")
+    package=$(basename "$file" .desktop | cut -d. -f2-)
+    entries+=("$package|$name|$file")
 done
 
-# App auswählen
-choice=$(kdialog --radiolist "Wähle eine Waydroid App aus:" \
-    $(for entry in "${entries[@]}"; do
-        name="${entry%%=*}"
-        file="${entry#*=}"
-        echo "\"$file\" \"$name\" off"
-    done)
-)
+# kdialog radiolist: ID Label off
+dialog_args=()
+for entry in "${entries[@]}"; do
+    IFS='|' read -r package name file <<< "$entry"
+    dialog_args+=("$package" "$name" "off")
+done
+
+choice=$(kdialog --radiolist "Wähle eine Waydroid App aus:" "${dialog_args[@]}")
 
 [ -z "$choice" ] && exit 0
 
-# Infos aus der gewählten .desktop Datei extrahieren
-package=$(grep -oP 'waydroid\.([^.]+)\.desktop' <<<"$choice" | cut -d. -f2-)
-name=$(grep -m1 '^Name=' "$choice" | cut -d= -f2-)
-icon=$(grep -m1 '^Icon=' "$choice" | cut -d= -f2-)
+# Finde die gewählte Datei
+for entry in "${entries[@]}"; do
+    IFS='|' read -r package name file <<< "$entry"
+    if [[ "$package" == "$choice" ]]; then
+        selected_file="$file"
+        selected_name="$name"
+        break
+    fi
+done
+
+icon=$(grep -m1 '^Icon=' "$selected_file" | cut -d= -f2-)
 
 # Neue .desktop Datei erstellen
-swl_desktop="$SWL_DESKTOP_DIR/swl.$package.desktop"
+swl_desktop="$SWL_DESKTOP_DIR/swl.$choice.desktop"
 cat > "$swl_desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=$name (Waydroid)
-Exec=swl-launch $package
+Name=$selected_name (Waydroid)
+Exec=swl-launch $choice
 Icon=$icon
 Categories=X-WayDroid-App;
 EOF
 
-# Zu Steam hinzufügen
 steamos-add-to-steam "$swl_desktop"
 
-kdialog --msgbox "App '$name' wurde zu Steam hinzugefügt!"
+kdialog --msgbox "App '$selected_name' wurde zu Steam hinzugefügt!"
