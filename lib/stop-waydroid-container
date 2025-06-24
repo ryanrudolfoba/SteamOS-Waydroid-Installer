@@ -16,3 +16,6 @@ if [ $? -eq 0 ]; then
     echo "[$(date)] ERROR: Waydroid container is still running."
     kdialog --sorry "Something went wrong. Waydroid container is still running."
     exit
+else
+    echo "[$(date)] Waydroid container stopped successfully."
+fi
