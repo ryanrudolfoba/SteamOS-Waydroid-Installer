@@ -1,0 +1,52 @@
+#!/bin/bash
+
+LOGFILE="/var/log/swl.log"
+# Ensure the log file exists and is writable
+sudo touch "$LOGFILE"
+sudo chown "$(whoami)" "$LOGFILE"
+exec >> "$LOGFILE" 2>&1
+
+echo "[$(date)] Starting Waydroid startup script..."
+
+# Check if waydroid exists
+if [ ! -f /usr/bin/waydroid ]; then
+    echo "[$(date)] ERROR: Waydroid does not exist!"
+    kdialog --sorry "Cannot start Waydroid. Waydroid does not exist!"
+    exit 1
+fi
+
+# Start the waydroid container
+echo "[$(date)] Starting waydroid-container.service..."
+/usr/bin/systemctl start waydroid-container.service
+
+systemctl status waydroid-container.service | grep -i running
+if [ $? -ne 0 ]; then
+    echo "[$(date)] ERROR: Waydroid container did not initialize correctly."
+    kdialog --sorry "Something went wrong. Waydroid container did not initialize correctly."
+    exit 1
+fi
+
+# Start the Waydroid session if not already running
+if ! pgrep -f "waydroid session start" > /dev/null; then
+    echo "[$(date)] Starting waydroid session..."
+    /usr/bin/waydroid session start &
+    sleep 1
+else
+    echo "[$(date)] Waydroid session already running."
+fi
+
+# capture the existing kernel.pid_max value
+echo "[$(date)] Capturing kernel.pid_max value..."
+sysctl -a 2> /dev/null | grep kernel.pid_max | cut -d " " -f 3 > /home/deck/Android_Waydroid/orig_kernel.pid_max
+
+# set the kernel.pid_max to 65535
+echo "[$(date)] Setting kernel.pid_max to 65535..."
+sysctl -w kernel.pid_max=65535
+
+echo "[$(date)] Waiting for Waydroid to boot..."
+while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
+do
+    sleep 1
+done
+
+echo "[$(date)] Waydroid boot completed."

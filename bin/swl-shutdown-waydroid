@@ -1,0 +1,24 @@
+#!/bin/bash
+
+LOGFILE="/var/log/swl.log"
+# Ensure the log file exists and is writable
+sudo touch "$LOGFILE"
+sudo chown "$(whoami)" "$LOGFILE"
+exec >> "$LOGFILE" 2>&1
+
+echo "[$(date)] Starting Waydroid shutdown script..."
+
+# restore the kernel.pid_max to the default value and then delete the temp file created
+echo "[$(date)] Restoring kernel.pid_max..."
+sysctl -w kernel.pid_max=$(cat /home/deck/Android_Waydroid/orig_kernel.pid_max)
+rm -f /home/deck/Android_Waydroid/orig_kernel.pid_max
+
+# reset cage
+echo "[$(date)] Resetting cage..."
+cage -- bash -c 'wlr-randr'
+
+# stop the waydroid container
+echo "[$(date)] Stopping waydroid-container.service..."
+/usr/bin/systemctl stop waydroid-container.service
+
+echo "[$(date)] Waydroid shutdown script completed."
