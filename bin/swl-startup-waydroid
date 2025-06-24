@@ -37,7 +37,7 @@ if [ ! -f /usr/bin/waydroid ]; then
     exit 1
 fi
 
-# Start the waydroid container
+# Start the waydroid-container service
 echo "[$(date)] Starting waydroid-container.service..."
 /usr/bin/systemctl start waydroid-container.service
 
@@ -48,10 +48,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Start the Waydroid session if not already running
-if ! pgrep -f "waydroid session start" > /dev/null; then
-    echo "[$(date)] Starting waydroid session as user $SUDO_USER..."
-    sudo -u "$SUDO_USER" /usr/bin/waydroid session start &
+# Start the Waydroid session if not already running (as the regular user)
+if ! pgrep -u "$SUDO_USER" -f "waydroid session start" > /dev/null; then
+    sudo -u "$SUDO_USER" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u "$SUDO_USER")/bus" /usr/bin/waydroid session start &
     sleep 1
 else
     echo "[$(date)] Waydroid session already running."
