@@ -19,7 +19,7 @@ fi
 
 echo "[$(date)] Starting Waydroid launch script with resolution: $RESOLUTION"
 
-trap /usr/bin/swl-shutdown-waydroid EXIT
+# trap /usr/bin/swl-shutdown-waydroid EXIT
 
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "$1" ]
@@ -47,3 +47,5 @@ while [ -n "$(pgrep cage)" ]
 do
     sleep 1
 done
+
+/usr/bin/swl-shutdown-waydroid
