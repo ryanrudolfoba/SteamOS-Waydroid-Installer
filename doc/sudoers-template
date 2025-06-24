@@ -2,4 +2,4 @@
 <username> ALL=(ALL) NOPASSWD: /usr/lib/swl/stop-waydroid-container
 <username> ALL=(ALL) NOPASSWD: /usr/lib/swl/set-maxpid
 <username> ALL=(ALL) NOPASSWD: /usr/lib/swl/reset-maxpid
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/wait-for
+<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/wait-for-boot
