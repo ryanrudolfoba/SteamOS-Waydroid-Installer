@@ -18,11 +18,15 @@ fi
 entries=()
 for file in "${desktop_files[@]}"; do
     name=$(grep -m1 '^Name=' "$file" | cut -d= -f2-)
-    # Special case: if file is Waydroid.desktop, use "Waydroid" as package
     if [[ "$(basename "$file")" == "Waydroid.desktop" ]]; then
         package="Waydroid"
     else
-        package=$(basename "$file" .desktop | cut -d. -f2-)
+        # Extract package name from Exec line
+        package=$(grep -m1 '^Exec=' "$file" | sed -n 's/.*launch\s\+\([^ ]*\).*/\1/p')
+        # Fallback to filename if extraction fails
+        if [[ -z "$package" ]]; then
+            package=$(basename "$file" .desktop | cut -d. -f2-)
+        fi
     fi
     entries+=("$package|$name|$file")
 done
