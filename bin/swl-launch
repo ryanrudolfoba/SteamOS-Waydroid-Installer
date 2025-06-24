@@ -19,18 +19,11 @@ fi
 
 trap /usr/bin/swl-shutdown-waydroid EXIT
 
-# Detect if running inside Wayland and if cage is already running
-if [ -n "$WAYLAND_DISPLAY" ] && pgrep -x cage > /dev/null; then
-    USE_CAGE=0
-else
-    USE_CAGE=1
-fi
-
 # Check if non Steam shortcut has the game / app as the launch option
 if [ -z "$1" ]
 then
     echo "[$(date)] Launching Waydroid with full UI..."
-    if [ "$USE_CAGE" -eq 1 ]; then
+    if [  -n "$WAYLAND_DISPLAY" ]; then
         cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
             /usr/bin/swl-startup-waydroid ; \
             /usr/bin/waydroid show-full-ui &'
@@ -40,7 +33,7 @@ then
     fi
 else
     echo "[$(date)] Launching Waydroid app: $1 ..."
-    if [ "$USE_CAGE" -eq 1 ]; then
+    if [  -n "$WAYLAND_DISPLAY"  ]; then
         cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
             /usr/bin/swl-startup-waydroid ; \
             sleep 1 ; \
