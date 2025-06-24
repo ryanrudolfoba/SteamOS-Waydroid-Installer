@@ -28,4 +28,6 @@ sudo /usr/lib/swl/set-maxpid
 
 sudo /usr/lib/swl/wait-for-boot
 
+sudo /usr/lib/swl/add-controller
+
 echo "[$(date)] Waydroid boot completed."
