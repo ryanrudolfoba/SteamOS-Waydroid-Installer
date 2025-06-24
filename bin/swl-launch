@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Prevent running as root
+if [ "$(id -u)" -eq 0 ]; then
+    echo "ERROR: Do not run this script as root. Please run as a regular user."
+    exit 1
+fi
+
+source /usr/lib/swl/setup-logging.sh
+
 export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 if [ -z "$RESOLUTION" ]; then
     echo "Failed to detect screen resolution. Exiting."
