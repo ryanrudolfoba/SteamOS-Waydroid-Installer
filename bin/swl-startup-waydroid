@@ -21,8 +21,8 @@ else
 fi
 
 # Set kernel.pid_max using a separate script (optional, requires sudoers config)
-sudo /usr/lib/swl/set-maxpid"
+sudo /usr/lib/swl/set-maxpid
 
-sudo /usr/lib/swl/wait-for-boot"
+sudo /usr/lib/swl/wait-for-boot
 
 echo "[$(date)] Waydroid boot completed."

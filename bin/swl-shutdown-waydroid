@@ -16,6 +16,6 @@ sudo /usr/lib/swl/reset-maxpid
 echo "[$(date)] Resetting cage..."
 cage -- bash -c 'wlr-randr'
 
-script -q -f -c "sudo /usr/lib/swl/stop-waydroid-container"
+sudo /usr/lib/swl/stop-waydroid-container
 
 echo "[$(date)] Waydroid shutdown script completed."
