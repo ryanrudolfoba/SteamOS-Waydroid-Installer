@@ -50,6 +50,6 @@ else
         echo "[\$(date)] Launching Waydroid app: $1 ..."
         /usr/bin/waydroid app launch $1 & sleep 1
         echo "[\$(date)] Launching Waydroid full UI..." 
-        /usr/bin/waydroid show-full-ui &"
+        /usr/bin/waydroid show-full-ui &
     fi
 fi
