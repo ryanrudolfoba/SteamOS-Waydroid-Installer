@@ -6,27 +6,27 @@ if [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-if [ -z "$SWL_LOGGING_SETUP" ]; then
+if [ -z "$LOGFILE" ]; then
     source /usr/lib/swl/setup-logging.sh
-    export SWL_LOGGING_SETUP=1
 fi
+
+PACKAGE="$1"
 
 echo "[$(date)] Starting Waydroid startup script..."
 
 sudo /usr/lib/swl/start-waydroid-container
 
-# Start the Waydroid session if not already running
-if ! pgrep -f "waydroid session start" > /dev/null; then
-    /usr/bin/waydroid session start & echo "[$(date)] Started waydroid session."
-    sleep 1
-else
-    echo "[$(date)] Waydroid session already running."
-fi
-
-# Set kernel.pid_max using a separate script (optional, requires sudoers config)
 sudo /usr/lib/swl/set-maxpid
 
+if [ -z "$1" ]; then
+    /usr/bin/waydroid first-launch &
+else
+    /usr/bin/waydroid app launch "$1" &
+fi
+
 sudo /usr/lib/swl/wait-for-boot
+
+/usr/bin/waydroid show-full-ui &
 
 sudo /usr/lib/swl/add-controller
 

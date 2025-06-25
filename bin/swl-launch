@@ -6,38 +6,18 @@ if [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-if [ -z "$SWL_LOGGING_SETUP" ]; then
+if [ -z "$LOGFILE" ]; then
     source /usr/lib/swl/setup-logging.sh
-    export SWL_LOGGING_SETUP=1
 fi
 
-export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
-if [ -z "$RESOLUTION" ]; then
-    echo "Failed to detect screen resolution. Exiting."
-    exit 1
-fi
+export RESOLUTION=$(xrandr | awk '/\*/{print $1; exit}')
 
 echo "[$(date)] Starting Waydroid launch script with resolution: $RESOLUTION"
 
 trap /usr/bin/swl-shutdown-waydroid EXIT
 
-# Check if non Steam shortcut has the game / app as the launch option
-if [ -z "$1" ]
-then
-    # launch option not provided. launch Waydroid via cage and show the full ui right away
-    echo "[$(date)] Launching Waydroid with full UI..."
-    cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
-        /usr/bin/swl-startup-waydroid ; \
-        /usr/bin/waydroid show-full-ui &'
-else
-    # launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
-    echo "[$(date)] Launching Waydroid app: $1 ..."
-    cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
-        /usr/bin/swl-startup-waydroid ; \
-        sleep 1 ; \
-        echo "[$(date)] Launching Waydroid app: $PACKAGE ..." ; \
-        /usr/bin/waydroid app launch $PACKAGE & \
-        sleep 1 ; \
-        echo "[$(date)] Launching Waydroid full UI..." ; \
-        /usr/bin/waydroid show-full-ui &'
-fi
+cage -- bash -c "wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
+    /usr/bin/swl-startup-waydroid $1"
+
+trap - EXIT
+/usr/bin/swl-shutdown-waydroid

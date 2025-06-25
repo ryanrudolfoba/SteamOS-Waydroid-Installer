@@ -6,9 +6,8 @@ if [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-if [ -z "$SWL_LOGGING_SETUP" ]; then
+if [ -z "$LOGFILE" ]; then
     source /usr/lib/swl/setup-logging.sh
-    export SWL_LOGGING_SETUP=1
 fi
 
 echo "[$(date)] Starting Waydroid shutdown script..."
