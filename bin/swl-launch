@@ -18,6 +18,3 @@ trap /usr/bin/swl-shutdown-waydroid EXIT
 
 cage -- bash -c "wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
     /usr/bin/swl-startup-waydroid $1"
-
-trap - EXIT
-/usr/bin/swl-shutdown-waydroid
