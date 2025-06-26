@@ -60,9 +60,9 @@ icon=$(grep -m1 '^Icon=' "$selected_file" | cut -d= -f2-)
 
 # Special case for Waydroid.desktop
 if [[ "$(basename "$selected_file")" == "Waydroid.desktop" ]]; then
-    exec_cmd="swl-launcher"
+    exec_cmd="swl-launch"
 else
-    exec_cmd="swl-launcher app launch $choice"
+    exec_cmd="swl-launch app launch $choice"
 fi
 
 # Create new .desktop file

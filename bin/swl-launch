@@ -2,6 +2,17 @@
 
 set -eux
 
+# Cleanup function
+cleanup() {
+    echo "Cleaning up..."
+    pkexec /usr/lib/swl/waydroid-container-stop
+    # Kill cage if it's still running
+    pkill -f "cage.*launch_waydroid" 2>/dev/null || true
+}
+
+# Set up trap for cleanup on exit, SIGTERM, and SIGINT
+trap cleanup EXIT TERM INT
+
 # Get current resolution using xrandr if WIDTH/HEIGHT is not defined by an external script
 if [ -z "${WAYDROID_WIDTH:-}" ] || [ -z "${WAYDROID_HEIGHT:-}" ]; then
     # Get the primary display resolution more reliably
@@ -37,7 +48,6 @@ fi
 
 launch_waydroid() {
         wlr-randr --output X11-1 --custom-mode "$1"
-        sleep 1
         shift
         exec waydroid "$@" &> /dev/null
 }
@@ -68,9 +78,5 @@ else
 fi
 
 # Waydroid is now live!
-# Wait for exit and then clean up
-while pgrep -x cage > /dev/null 2>&1; do
-    sleep 2  # Check less frequently
-done
-
-pkexec /usr/lib/swl/waydroid-container-stop
+# Wait for cage to finish
+wait
