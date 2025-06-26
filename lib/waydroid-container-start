@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+# Ensure needed props are present and set gralloc in one operation
+prop_file="/var/lib/waydroid/waydroid_base.prop"
+
+# Check and add missing properties atomically
+temp_props=""
+if ! grep -q "persist.waydroid.udev=true" "$prop_file" 2>/dev/null; then
+    temp_props="${temp_props}persist.waydroid.udev=true\n"
+fi
+if ! grep -q "persist.waydroid.uevent=true" "$prop_file" 2>/dev/null; then
+    temp_props="${temp_props}persist.waydroid.uevent=true\n"
+fi
+
+if [ -n "$temp_props" ]; then
+    echo -e "$temp_props" | sudo tee -a "$prop_file" > /dev/null
+fi
+
+# Update gralloc setting
+sudo sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=${WAYDROID_GRALLOC:-minigbm_gbm_mesa}/g" "$prop_file"
+
+# Add controller fixes automatically
+controller_src="/usr/share/swl/Vendor_28de_Product_11ff.kl"
+controller_dst="/var/lib/waydroid/overlay/system/usr/keylayout/"
+if [[ -f "$controller_src" ]]; then
+    sudo mkdir -p "$controller_dst"
+    sudo cp "$controller_src" "$controller_dst"
+fi
+
+sudo systemctl start waydroid-container.service

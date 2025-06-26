@@ -1,5 +1,5 @@
 #!/bin/bash
-# filepath: /home/hans/CachyOs-Waydroid-Installer/bin/swl-add-waydroid-app
+# SteamWaydroidLauncher - Add Waydroid app to Steam
 
 WAYDROID_DESKTOP_DIR="$HOME/.local/share/applications"
 SWL_DESKTOP_DIR="$HOME/.local/share/swl/applications"
@@ -60,14 +60,14 @@ icon=$(grep -m1 '^Icon=' "$selected_file" | cut -d= -f2-)
 
 # Special case for Waydroid.desktop
 if [[ "$(basename "$selected_file")" == "Waydroid.desktop" ]]; then
-    exec_cmd="swl-launch"
+    exec_cmd="waydroid-launcher"
 else
-    exec_cmd="swl-launch $choice"
+    exec_cmd="waydroid-launcher app launch $choice"
 fi
 
 # Create new .desktop file
 swl_desktop="$SWL_DESKTOP_DIR/swl.$choice.desktop"
-cat > "$swl_desktop" <<EOF
+if ! cat > "$swl_desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=$selected_name (Waydroid)
@@ -75,9 +75,23 @@ Exec=$exec_cmd
 Icon=$icon
 Categories=X-WayDroid-App;
 EOF
+then
+    kdialog --error "Failed to create desktop file: $swl_desktop"
+    exit 1
+fi
 
-steamos-add-to-steam "$swl_desktop"
+# Make the desktop file executable
+chmod +x "$swl_desktop"
 
-kdialog --msgbox "App '$selected_name' was added to Steam!"
+steamos-add-to-steam "$swl_desktop" 2>/dev/null || {
+    echo "Note: steamos-add-to-steam not found. Please manually add $swl_desktop to Steam."
+    echo "You can find the desktop file at: $swl_desktop"
+}
+
+if command -v steamos-add-to-steam >/dev/null 2>&1; then
+    kdialog --msgbox "App '$selected_name' was added to Steam!"
+else
+    kdialog --msgbox "Desktop file created: $swl_desktop\n\nTo add to Steam:\n1. Open Steam\n2. Games → Add Non-Steam Game\n3. Browse to: $swl_desktop"
+fi
 
 exit 0

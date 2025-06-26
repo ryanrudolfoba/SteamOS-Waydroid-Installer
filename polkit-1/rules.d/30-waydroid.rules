@@ -1,0 +1,9 @@
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.swl.policykit.waydroid.container.start" || 
+         action.id == "org.swl.policykit.waydroid.container.stop" ||
+         action.id == "org.swl.policykit.waydroid.container.restart" ||
+         action.id == "org.swl.policykit.waydroid.fix.controllers") &&
+         subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-echo "[$(date)] Waiting for Waydroid to boot..."
-while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
-do
-    sleep 1
-done

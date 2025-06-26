@@ -1,6 +1,0 @@
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/start-waydroid-container
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/stop-waydroid-container
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/set-maxpid
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/reset-maxpid
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/wait-for-boot
-<username> ALL=(ALL) NOPASSWD: /usr/lib/swl/add-controller

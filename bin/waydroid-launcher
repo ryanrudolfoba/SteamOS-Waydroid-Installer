@@ -1,0 +1,76 @@
+#!/usr/bin/bash
+
+set -eux
+
+# Get current resolution using xrandr if WIDTH/HEIGHT is not defined by an external script
+if [ -z "${WAYDROID_WIDTH:-}" ] || [ -z "${WAYDROID_HEIGHT:-}" ]; then
+    # Get the primary display resolution more reliably
+    resolution=$(xrandr --current 2>/dev/null | awk '/\*/ {print $1; exit}' | head -1)
+    if [ -n "$resolution" ] && [[ "$resolution" =~ ^[0-9]+x[0-9]+$ ]]; then
+        WAYDROID_WIDTH=${resolution%x*}
+        WAYDROID_HEIGHT=${resolution#*x}
+        echo "Detected resolution: ${WAYDROID_WIDTH}x${WAYDROID_HEIGHT}"
+    else
+        # Fallback to default resolution if xrandr fails
+        WAYDROID_WIDTH=1920
+        WAYDROID_HEIGHT=1080
+        echo "Using default resolution: ${WAYDROID_WIDTH}x${WAYDROID_HEIGHT}"
+    fi
+    export WAYDROID_WIDTH WAYDROID_HEIGHT
+fi
+
+# for backwards compatibility, default to show-full-ui
+if (($# == 0)); then
+	set -- show-full-ui
+fi
+
+# Kill any previous remnants
+if [ "$(systemctl is-active waydroid-container.service)" == 'active' ]; then
+	pkexec /usr/lib/swl/waydroid-container-stop
+fi
+
+# Check if Waydroid is initialized, send user to the docs
+if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
+	xdg-open "https://docs.waydro.id/#usage"
+	exit 1
+fi
+
+launch_waydroid() {
+        wlr-randr --output X11-1 --custom-mode "$1"
+        sleep 1
+        shift
+        exec waydroid "$@" &> /dev/null
+}
+export -f launch_waydroid
+
+# Launch Cage & Waydroid
+if ! pkexec /usr/lib/swl/waydroid-container-start; then
+    echo "Failed to start Waydroid container"
+    exit 1
+fi
+
+if [ -z "$(pgrep wlr-randr)" ]; then
+    cage -- bash -uxc 'launch_waydroid "$@"' _ "${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}" "$@" &
+fi
+
+# Fix controllers, we know Waydroid has started because surfaceflinger is running
+timeout=30
+while [ $timeout -gt 0 ] && [ -z "$(pgrep surfaceflinger)" ]; do
+    sleep 1
+    ((timeout--))
+done
+
+if [ $timeout -eq 0 ]; then
+    echo "Warning: Waydroid surfaceflinger not detected within 30 seconds"
+else
+    sleep 5  # Reduced from 10 seconds
+    pkexec /usr/lib/swl/waydroid-fix-controllers
+fi
+
+# Waydroid is now live!
+# Wait for exit and then clean up
+while pgrep -x cage > /dev/null 2>&1; do
+    sleep 2  # Check less frequently
+done
+
+pkexec /usr/lib/swl/waydroid-container-stop
