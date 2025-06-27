@@ -1,8 +1,25 @@
 #!/bin/bash
 # SteamWaydroidLauncher - Add Waydroid app to Steam
 
+# Waydroid desktop file example:
+# ~/.local/share/waydroid/data/applications/com.android.contacts.desktop
+#
+# [Desktop Entry]
+# Type=Application
+# Name=Contacts
+# Exec=waydroid app launch com.android.contacts
+# Icon=/home/leon/.local/share/waydroid/data/icons/com.android.contacts.png
+# Categories=X-WayDroid-App;
+# X-Purism-FormFactor=Workstation;Mobile;
+# Actions=app_settings;
+#
+# [Desktop Action app_settings]
+# Name=App Settings
+# Exec=waydroid app intent android.settings.APPLICATION_DETAILS_SETTINGS package:com.android.contacts
+# Icon=/home/leon/.local/share/waydroid/data/icons/com.android.settings.png
+
 WAYDROID_DESKTOP_DIR="$HOME/.local/share/applications"
-SWL_DESKTOP_DIR="$HOME/.local/share/swl/applications"
+SWL_DESKTOP_DIR="$HOME/.local/share/applications"
 
 mkdir -p "$SWL_DESKTOP_DIR"
 
@@ -70,10 +87,10 @@ swl_desktop="$SWL_DESKTOP_DIR/swl.$choice.desktop"
 if ! cat > "$swl_desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=$selected_name (Waydroid)
+Name=$selected_name (SWL)
 Exec=$exec_cmd
 Icon=$icon
-Categories=X-WayDroid-App;
+Categories=SteamWaydroidLauncher;
 EOF
 then
     kdialog --error "Failed to create desktop file: $swl_desktop"
@@ -89,7 +106,7 @@ steamos-add-to-steam "$swl_desktop" 2>/dev/null || {
 }
 
 if command -v steamos-add-to-steam >/dev/null 2>&1; then
-    kdialog --msgbox "App '$selected_name (Waydroid)' was added to Steam!"
+    kdialog --msgbox "App '$selected_name (SWL)' was added to Steam!"
 else
     kdialog --msgbox "Desktop file created: $swl_desktop\n\nTo add to Steam:\n1. Open Steam\n2. Games → Add Non-Steam Game\n3. Browse to: $swl_desktop"
 fi

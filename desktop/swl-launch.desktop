@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
 Name=SWL launch caged Waydroid
-Exec=waydroid-launcher
-Icon=utilities-terminal
-Categories=Utility;
+Exec=swl-launch
+Icon=waydroid
+Categories=SteamWaydroidLauncher;
 Comment=Launch a caged Waydroid session
 Terminal=false
