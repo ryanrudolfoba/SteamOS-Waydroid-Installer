@@ -87,10 +87,10 @@ swl_desktop="$SWL_DESKTOP_DIR/swl.$choice.desktop"
 if ! cat > "$swl_desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=$selected_name (SWL)
+Name=SWL: $selected_name
 Exec=$exec_cmd
 Icon=$icon
-Categories=SteamWaydroidLauncher;
+Categories=X-SWL;
 EOF
 then
     kdialog --error "Failed to create desktop file: $swl_desktop"
@@ -106,7 +106,7 @@ steamos-add-to-steam "$swl_desktop" 2>/dev/null || {
 }
 
 if command -v steamos-add-to-steam >/dev/null 2>&1; then
-    kdialog --msgbox "App '$selected_name (SWL)' was added to Steam!"
+    kdialog --msgbox "App 'SWL: $selected_name' was added to Steam!"
 else
     kdialog --msgbox "Desktop file created: $swl_desktop\n\nTo add to Steam:\n1. Open Steam\n2. Games → Add Non-Steam Game\n3. Browse to: $swl_desktop"
 fi
