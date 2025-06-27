@@ -42,7 +42,7 @@ fi
 
 # Check if Waydroid is initialized, send user to the docs
 if grep -qz 'not initialized' <<< $(/usr/bin/waydroid status); then
-	xdg-open "https://docs.waydro.id/#usage"
+	xdg-open "https://docs.waydro.id/"
 	exit 1
 fi
 
@@ -53,14 +53,20 @@ launch_waydroid() {
 }
 export -f launch_waydroid
 
-# Launch Cage & Waydroid
 if ! pkexec /usr/lib/swl/waydroid-container-start; then
     echo "Failed to start Waydroid container"
     exit 1
 fi
 
-if [ -z "$(pgrep wlr-randr)" ]; then
-    cage -- bash -uxc 'launch_waydroid "$@"' _ "${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}" "$@" &
+# Check if we have a Wayland socket available
+if [ -n "${WAYLAND_DISPLAY:-}" ] && [ -S "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}" ]; then
+    # We have a Wayland socket, run directly without cage
+    waydroid "$@" &
+else
+    # No Wayland socket, use cage
+    if [ -z "$(pgrep wlr-randr)" ]; then
+        cage -- bash -uxc 'launch_waydroid "$@"' _ "${WAYDROID_WIDTH:-1280}x${WAYDROID_HEIGHT:-800}" "$@" &
+    fi
 fi
 
 # Fix controllers, we know Waydroid has started because surfaceflinger is running
@@ -73,10 +79,9 @@ done
 if [ $timeout -eq 0 ]; then
     echo "Warning: Waydroid surfaceflinger not detected within 30 seconds"
 else
-    sleep 5  # Reduced from 10 seconds
+    sleep 10
     pkexec /usr/lib/swl/waydroid-fix-controllers
 fi
 
 # Waydroid is now live!
-# Wait for cage to finish
 wait
