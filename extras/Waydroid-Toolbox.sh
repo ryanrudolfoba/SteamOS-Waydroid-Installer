@@ -226,6 +226,7 @@ then
 
 
 
+
 elif [ "$Choice" == "ADD_APPS" ]; then
     logged_in_user=$(whoami)
     logged_in_uid=$(id -u "$logged_in_user")
@@ -316,7 +317,7 @@ def write_binary_vdf(fp, d):
             raise ValueError(f"Unsupported value type: {type(val)} for key {key}")
 
 if not os.path.exists(shortcuts_file):
-    print(f"❌ shortcuts.vdf not found: {shortcuts_file}", file=sys.stderr)
+    print(f"shortcuts.vdf not found: {shortcuts_file}", file=sys.stderr)
     sys.exit(1)
 
 with open(shortcuts_file, 'rb') as f:
@@ -325,91 +326,95 @@ with open(shortcuts_file, 'rb') as f:
 shortcuts = data.get("shortcuts", data)
 updated = False
 
-for app, icon in updates.items():
+for key, icon in updates.items():
+    try:
+        app_name_expected, pkg_expected = key.split("|", 1)
+    except ValueError:
+        app_name_expected = key
+        pkg_expected = None
+
+    matched = False
     for sc in shortcuts.values():
-        if isinstance(sc, dict):
-            # Check for both "AppName" and "appname" (case-insensitive)
-            app_name = sc.get("AppName") or sc.get("appname")
-            exe_path = sc.get("Exe") or sc.get("exe")  # Look for Exe or exe
+        if not isinstance(sc, dict):
+            continue
 
-            # Check if AppName (or appname) matches and if Exe contains the substring 'Android_Waydroid_Cage.sh'
-            if app_name == app and exe_path and "Android_Waydroid_Cage.sh" in exe_path:
-                sc["icon"] = icon
-                print(f"✅ Icon updated for {app} with matching Exe path")
-                updated = True
-                break
+        app_name = sc.get("AppName") or sc.get("appname")
+        exe_path = sc.get("Exe") or sc.get("exe")
+        launch_opts = sc.get("LaunchOptions") or sc.get("launchoptions") or ""
 
+        if (
+            app_name == app_name_expected and
+            exe_path and "Android_Waydroid_Cage.sh" in exe_path and
+            pkg_expected and pkg_expected in launch_opts
+        ):
+            sc["icon"] = icon
+            print(f"Icon applied: {icon}")
+            updated = True
+            matched = True
+            break
 
 if updated:
     with open(shortcuts_file, 'wb') as f:
         write_binary_vdf(f, data)
         f.write(b'\x08')
+    print("Saved updated shortcuts.vdf")
 EOF
-    }
+}
 
-    if [[ -f "${logged_in_home}/.steam/root/config/loginusers.vdf" ]] || [[ -f "${logged_in_home}/.local/share/Steam/config/loginusers.vdf" ]]; then
-        if [[ -f "${logged_in_home}/.steam/root/config/loginusers.vdf" ]]; then
-            file_path="${logged_in_home}/.steam/root/config/loginusers.vdf"
-        else
-            file_path="${logged_in_home}/.local/share/Steam/config/loginusers.vdf"
-        fi
 
-        most_recent_user=$(sed -n '/"users"/,/"MostRecent" "1"/p' "$file_path")
+    #Python to get most recent SteamID3
+    steamid3=$(python3 - <<EOF
+import os
+import re
 
-        max_timestamp=0
-        current_user=""
-        current_steamid=""
+home = os.path.expanduser("~")
+paths = [
+    os.path.join(home, ".steam", "root", "config", "loginusers.vdf"),
+    os.path.join(home, ".local", "share", "Steam", "config", "loginusers.vdf"),
+]
 
-        while IFS="," read -r steamid account timestamp; do
-            if (( timestamp > max_timestamp )); then
-                max_timestamp=$timestamp
-                current_user=$account
-                current_steamid=$steamid
-            fi
-        done < <(echo "$most_recent_user" | awk -v RS='}\n' -F'\n' '
-        {
-            for(i=1;i<=NF;i++){
-                if($i ~ /[0-9]{17}/){
-                    split($i,a, "\""); steamid=a[2];
-                }
-                if($i ~ /"AccountName"/){
-                    split($i,b, "\""); account=b[4];
-                }
-                if($i ~ /"Timestamp"/){
-                    split($i,c, "\""); timestamp=c[4];
-                }
-            }
-            print steamid "," account "," timestamp
-        }')
+vdf_path = next((p for p in paths if os.path.isfile(p)), None)
+if not vdf_path:
+    exit(1)
 
-        steamid3=$((current_steamid - 76561197960265728))
+with open(vdf_path, "r", encoding="utf-8", errors="ignore") as f:
+    content = f.read()
+
+matches = re.findall(r'"(\d{17})"\s*{([^}]+)}', content)
+most_recent = {"steamid64": None, "timestamp": 0}
+
+for steamid, block in matches:
+    ts_match = re.search(r'"Timestamp"\s+"(\d+)"', block)
+    recent_match = re.search(r'"MostRecent"\s+"1"', block)
+    timestamp = int(ts_match.group(1)) if ts_match else 0
+    if recent_match or timestamp > most_recent["timestamp"]:
+        most_recent["steamid64"] = int(steamid)
+        most_recent["timestamp"] = timestamp
+
+if most_recent["steamid64"]:
+    print(most_recent["steamid64"] - 76561197960265728)
+EOF
+)
+
+    if [[ -z "$steamid3" ]]; then
+        echo "Steam config not found or could not determine most recent user. Skipping Steam integration."
     else
-        echo "Steam config not found. Skipping Steam integration."
+        echo "Detected SteamID3: $steamid3"
+        userdata_folder="${logged_in_home}/.steam/root/userdata/${steamid3}"
+        config_dir="${userdata_folder}/config"
+        shortcuts_vdf_path="${config_dir}/shortcuts.vdf"
+
+        shortcuts_file="$shortcuts_vdf_path"
     fi
 
-    shortcuts_file="${logged_in_home}/.steam/root/userdata/$steamid3/config/shortcuts.vdf"
 
+    # Add any app here to ignore if needed
     ignored_files=(
-        "waydroid.com.android.inputmethod.latin.desktop"
-        "waydroid.com.android.gallery3d.desktop"
-        "waydroid.com.android.documentsui.desktop"
-        "waydroid.com.android.settings.desktop"
-        "waydroid.org.lineageos.eleven.desktop"
-        "waydroid.com.android.calculator2.desktop"
-        "waydroid.com.android.contacts.desktop"
-        "waydroid.org.lineageos.etar.desktop"
-        "waydroid.org.lineageos.jelly.desktop"
-        "waydroid.com.android.camera2.desktop"
-        "waydroid.com.android.deskclock.desktop"
-        "waydroid.org.lineageos.recorder.desktop"
-        "waydroid.com.google.android.apps.messaging.desktop"
-        "waydroid.com.google.android.contacts.desktop"
-				"waydroid.org.lineageos.aperture.desktop"
     )
 
     declare -A exception_files=(
         ["com.google.android.videos"]="Google TV"
-        # Add more exceptions if needed
+        # Add more exceptions to allow if needed
     )
 
     is_ignored() {
@@ -557,7 +562,8 @@ EOF
 
             icon_file="${icons_dir}/${pkg}.png"
             if [[ -f "$icon_file" ]]; then
-                icon_updates["$name"]="$icon_file"
+                sleep 1
+                icon_updates["$name|$pkg"]="$icon_file"
                 sleep 1
             else
                 echo "Icon for $pkg not found at $icon_file, skipping icon update."
@@ -570,7 +576,7 @@ EOF
                 --width=400 --height=100 \
                 --timeout=1
 
-            echo "✅ Added '$name' to Steam successfully!"
+            echo "Added '$name' to Steam successfully!"
             apps_added=true
             rm -f "$launcher_file"
 
@@ -602,7 +608,7 @@ EOF
                 "Restart Steam")
                     pkill steam 2>/dev/null
                     while pgrep -x steam >/dev/null; do sleep 1; done
-                    nohup /usr/bin/steam %U &>/dev/null & disown
+                    nohup /usr/bin/steam -silent %U &>/dev/null & disown
                     ;;
 
                 "Enter Game Mode")
@@ -617,7 +623,6 @@ EOF
                 --width=400 --height=100
         fi
     fi
-
 
 
 
