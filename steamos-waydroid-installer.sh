@@ -13,6 +13,7 @@ steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 kernel_version=$(uname -r | cut -d "-" -f 1-5 )
 stable_kernel1=6.11.11-valve14-1-neptune-611
 beta_kernel1=6.11.11-valve17-1-neptune-611
+beta_kernel2=6.11.11-valve19-1-neptune-611
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 DIR_WAYDROID_SCRIPT=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
