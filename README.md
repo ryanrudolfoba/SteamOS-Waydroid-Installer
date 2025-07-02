@@ -66,6 +66,12 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of July 02 2025)
+1. Support for SteamOS stable 3.7.13 (this is same kernel used as 3.7.10 so really nothing changed here)
+
+# What's New (as of June 19 2025)
+1. Support for SteamOS beta 3.7.10
+
 # What's New (as of June 03 2025)
 1. `testing` branch works on latest SteamOS stable 3.7.8 and latest SteamOS beta 3.7.9.
 2. Updated waydroid from 1.4.3 to 1.5.1
