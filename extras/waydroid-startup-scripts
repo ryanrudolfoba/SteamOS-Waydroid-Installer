@@ -14,7 +14,11 @@ done
 # This are the commands to execute once Android boot is completed
 
 # detect and add Steam Deck controller
-echo add > /sys/devices/virtual/input/input*/event*/uevent
+# this broke on SteamOS 3.7.13 so let's try a different method
+# echo add > /sys/devices/virtual/input/input*/event*/uevent
+
+# use this instead for Steam Deck controller to work in Waydroid on SteamOS 3.7.13
+echo add | tee /sys/devices/virtual/input/input*/event*/uevent
 
 # fix for scoped storage permission issue
 waydroid shell sh /system/etc/nodataperm.sh
