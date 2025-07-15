@@ -11,6 +11,16 @@ else
 	exit
 fi
 
+# sanity check - make sure this is running on at least SteamOS 3.6.x or 3.7.x
+echo $steamos_version | grep -e 3.6 -e 3.7
+if [ $? -eq 0 ]
+then
+	echo SteamOS $steamos_version detected. Proceeding with the install.
+else
+	echo SteamOS $steamos_version detected. This is unsupported version.
+	exit
+fi
+
 # sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
 echo Checking if kernel is supported.
 if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $beta_kernel1 ] \
