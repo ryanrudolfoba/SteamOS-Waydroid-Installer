@@ -4,12 +4,12 @@
 cleanup_exit () {
 	# call this function to perform cleanup when a sanity check fails
 	
-	# remove binder kernel module
 	echo Something went wrong! Performing cleanup. Run the script again to install waydroid.
-	echo -e "$current_password\n" | sudo -S rm /lib/modules/$(uname -r)/binder_linux.ko.zst &> /dev/null
 	
 	# remove installed packages
-	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr &> /dev/null
+	echo -e "$current_password\n" | sudo -S pacman -R --noconfirm libglibutil libgbinder \
+		python-gbinder waydroid wlroots cage wlr-randr binder_linux-dkms fakeroot debugedit \
+		dkms plymouth linux-neptune-$(uname -r | cut -d "-" -f5)-headers &> /dev/null
 	
 	# delete the waydroid directories
 	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid &> /dev/null
@@ -68,31 +68,26 @@ download_image () {
 
 install_android_extras () {
 	# casualsnek / aleasto waydroid_script - install libndk and widevine
-	python3 -m venv $DIR_WAYDROID_SCRIPT/venv
-	$DIR_WAYDROID_SCRIPT/venv/bin/pip install -r $DIR_WAYDROID_SCRIPT/requirements.txt &> /dev/null
+	python3 -m venv $WAYDROID_SCRIPT_DIR/venv
+	$WAYDROID_SCRIPT_DIR/venv/bin/pip install -r $WAYDROID_SCRIPT_DIR/requirements.txt &> /dev/null
 
-
-	if [ "$Choice" == "A11_NO_GAPPS" ] || [ "$Choice" == "A11_GAPPS" ]
+	if [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ]
 	then
-		echo -e "$current_password\n" | sudo -S $DIR_WAYDROID_SCRIPT/venv/bin/python3 $DIR_WAYDROID_SCRIPT/main.py -a11 install {libndk,widevine}
-
-	elif [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ]
-	then
-		echo -e "$current_password\n" | sudo -S $DIR_WAYDROID_SCRIPT/venv/bin/python3 $DIR_WAYDROID_SCRIPT/main.py -a13 install {libndk,widevine}
+		echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {libndk,widevine}
 	fi
 
 	echo casualsnek / aleasto waydroid_script done.
-	echo -e "$current_password\n" | sudo -S rm -rf $DIR_WAYDROID_SCRIPT
+	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
 	
 	# waydroid_base.prop - controller config and disable root
 	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
 	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
-	if [ "$Choice" == "A11_NO_GAPPS" ] || [ "$Choice" == "A11_GAPPS" ] || [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ] 
+	if [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ] 
 	then
 		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
-	elif [ "$Choice" == "TV11_NO_GAPPS" ] || [ "$Choice" == "TV13_NO_GAPPS" ]
+	elif [ "$Choice" == "TV13_NO_GAPPS" ]
 	then
 		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 	fi
