@@ -66,6 +66,11 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
 
+# What's New (as of July 28 2025)
+1. Sanity check updated - instead of kernel version check it will check if running on SteamOS stable / SteamOS beta
+2. Auto build the binder kernel module
+3. Cleanup and remove traces of A11. Available options to choose - A13 GAPPS, A13 NO_GAPPS, ATV13 NO_GAPPS
+
 # What's New (as of July 02 2025)
 1. Support for SteamOS stable 3.7.13 (this is same kernel used as 3.7.10 so really nothing changed here)
 
