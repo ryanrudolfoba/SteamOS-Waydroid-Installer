@@ -69,7 +69,7 @@ fi
 # lets install the packages needed to build binder
 echo Installing packages needed to build binder module from source. This can take a while.
 echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot debugedit dkms plymouth \
-	linux-neptune-$(uname -r | cut -d "-" -f5)-headers --overwrite "*" &> /dev/null
+	linux-neptune-$(uname -r | cut -d "-" -f5)-headers --overwrite "*"
 
 if [ $? -eq 0 ]
 then
