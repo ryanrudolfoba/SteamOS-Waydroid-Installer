@@ -10,49 +10,20 @@ sleep 2
 # define variables here
 script_version_sha=$(git rev-parse --short HEAD)
 steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
-kernel_version=$(uname -r | cut -d "-" -f 1-5 )
-stable_kernel1=6.11.11-valve14-1-neptune-611
-beta_kernel1=6.11.11-valve17-1-neptune-611
-beta_kernel2=6.11.11-valve19-1-neptune-611
+WORKING_DIR=$(pwd)
+BINDER_AUR=https://aur.archlinux.org/binder_linux-dkms.git
+BINDER_DIR=$(mktemp -d)/aur_binder
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
-DIR_WAYDROID_SCRIPT=$(mktemp -d)/waydroid_script
+WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 
 # android TV builds
-ANDROID11_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android11TV/lineage-18.1-20241220-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
 ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
 
-# old android 13 builds as of May 03 2025
-#ANDROID13_GAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-GAPPS-waydroid_x86_64-system.zip/download#
-
-#ANDROID13_NOGAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20-20250503-VANILLA-waydroid_x86_64-system.zip/download#
-
-#ANDROID13_VENDOR_IMG=https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20-20250503-MAINLINE-waydroid_x86_64-vendor.zip/download#
-
-# new android 13 builds as of May 31 2025
-ANDROID13_GAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20.0-20250531-GAPPS-waydroid_x86_64-system.zip/download#
-ANDROID13_NOGAPPS_IMG=https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20.0-20250531-VANILLA-waydroid_x86_64-system.zip/download#
-ANDROID13_VENDOR_IMG=https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20.0-20250531-MAINLINE-waydroid_x86_64-vendor.zip/download#
-
 # android TV hash
-ANDROID11_TV_IMG_HASH=680971aaeb9edc64d9d79de628bff0300c91e86134f8daea1bbc636a2476e2a7
 ANDROID13_TV_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
-
-# old android 13 hash for build date as of May 03 2025
-#ANDROID13_GAPPS_IMG_HASH=3c6eb7235e2bb4c4568194a33147017b6ab2e136467e8c5864b30a3e3e09e39e
-
-#ANDROID13_NOGAPPS_IMG_HASH=60e2bbb7b821132b4518c9fa22581845742e09edd858831465e91a8a6b9c4087
-
-#ANDROID13_VENDOR_IMG_HASH=e5331c517553873620b547e02fd972df40cf060ddad37856fa15f22442ae87f3
-
-# new android 13 hash for build date as of May 31 2025
-ANDROID13_GAPPS_IMG_HASH=2f1b81436de172658f5008adae16ef429339d09348fd713e9f3029130ac72467
-
-ANDROID13_NOGAPPS_IMG_HASH=e01fbdcaa17369c6373c52e40110e38a1e80bd481b1694bbe94c513683ee8070
-
-ANDROID13_VENDOR_IMG_HASH=4e99d932ffb34ec4d69eda41ee484c19d43dcc7e35ac3ef4ec4a66cf7671f915
 
 echo script version: $script_version_sha
 
@@ -66,24 +37,26 @@ source sanity-checks.sh
 # create AUR directory where casualsnek script will be saved
 mkdir -p ~/AUR/waydroid &> /dev/null
 
-# perform git clone but lets cleanup first in case the directory is not empty
-echo Cloning casualsnek / aleasto waydroid_script repo.
+# perform git clone of waydroid_script and binder kernel module source
+echo Cloning casualsnek / aleasto waydroid_script repo and binder kenrel module source repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
-git clone --depth=1 $WAYDROID_SCRIPT $DIR_WAYDROID_SCRIPT &> /dev/null
+git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
+	git clone $BINDER_AUR $BINDER_DIR &> /dev/null
 
 if [ $? -eq 0 ]
 then
-	echo casualsnek / aleasto waydroid_script repo has been successfully cloned!
+	echo Repo has been successfully cloned! Proceed to the next step.
 else
-	echo Error cloning casualsnek / aleasto waydroid_script repo!
-	rm -rf $DIR_WAYDROID_SCRIPT
+	echo Error cloning therepo!
+	rm -rf $WAYDROID_SCRIPT_DIR
 	cleanup_exit
 fi
 
 # unlock the readonly and initialize keyring using the devmode method
-echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt > /dev/null
+echo Unlocking SteamOS and initializing keyring via steamos-devmode. This can take a while.
+echo -e "$current_password\n" | sudo -S steamos-devmode enable --no-prompt &> /dev/null
 
 if [ $? -eq 0 ]
 then
@@ -93,29 +66,43 @@ else
 	cleanup_exit
 fi
 
-# lets install and enable the binder module so we can start waydroid right away
-binder_loaded=$(lsmod | grep -q binder; echo $?)
-binder_differs=$(cmp -s binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
-if [ "$binder_loaded" -ne 0 ] || [ "$binder_differs" -ne 0 ]
-then
-	echo Binder kernel module not found or not up to date! Installing binder!
-	echo -e "$current_password\n" | sudo -S cp binder/$kernel_version/binder_linux.ko.zst /lib/modules/$(uname -r) && \
-	echo -e "$current_password\n" | sudo -S depmod -a && \
-	echo -e "$current_password\n" | sudo -S modprobe binder-linux device=binder,hwbinder,vndbinder
+# lets install the packages needed to build binder
+echo Installing packages needed to build binder module from source. This can take a while.
+echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot debugedit dkms plymouth \
+	linux-neptune-$(uname -r | cut -d "-" -f5)-headers --overwrite "*" &> /dev/null
 
-	if [ $? -eq 0 ]
-	then
-		echo Binder kernel module has been installed!
-	else
-		echo Error installing binder kernel module. Run the script again to install waydroid.
-		cleanup_exit
-	fi
+if [ $? -eq 0 ]
+then
+	echo No errors encountered installing packages needed to build binder module.
 else
-	echo Binder kernel module already loaded and up to date! No need to reinstall binder!
+	echo Errors were encountered.
+	echo Performing clean up. Good bye!
+	cleanup_exit
+	exit
+fi
+
+# finally lets build and install binder from source!
+echo Building and installing binder module from source. This can take a while.
+cd $BINDER_DIR && makepkg -f &> /dev/null && \
+	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &> /dev/null && \
+	echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder
+
+if [ $? -eq 0 ]
+then
+	echo No errors encountered building the binder module. Binder module has been loaded.
+else
+	echo Errors were encountered.
+	echo Performing clean up. Good bye!
+	cleanup_exit
+	exit
 fi
 
 # ok lets install precompiled waydroid
-echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder-1.1.42-2-x86_64.pkg.tar.zst waydroid/libglibutil-1.0.80-1-x86_64.pkg.tar.zst waydroid/python-gbinder-1.1.2-3-x86_64.pkg.tar.zst waydroid/waydroid-1.5.1-1-any.pkg.tar.zst > /dev/null && \
+echo Installing waydroid packages. This can take a while.
+cd $WORKING_DIR
+echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder-1.1.42-2-x86_64.pkg.tar.zst \
+	waydroid/libglibutil-1.0.80-1-x86_64.pkg.tar.zst waydroid/python-gbinder-1.1.2-3-x86_64.pkg.tar.zst \
+	waydroid/waydroid-1.5.1-1-any.pkg.tar.zst > /dev/null && \
 
 # ok lets install additional packages from pacman repo
 echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr > /dev/null
@@ -130,11 +117,13 @@ else
 fi
 
 # firewall config for waydroid0 interface to forward packets for internet to work
+# but first lets enable firewalld - some instance of SteamOS this is disabled / stopped?
+echo -e "$current_password\n" | sudo -S systemctl start firewalld
 echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-interface=waydroid0 &> /dev/null
-echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=53/udp &> /dev/null
-echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port=67/udp &> /dev/null
+echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-port={53,67}/udp &> /dev/null
 echo -e "$current_password\n" | sudo -S firewall-cmd --zone=trusted --add-forward &> /dev/null
 echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /dev/null
+echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
@@ -209,11 +198,8 @@ else
 		--column "Option" \
 		--column="Description - Read this carefully!"\
 		TRUE A13_GAPPS "Download official Android 13 image with Google Play Store."\
-		FALSE A11_GAPPS "Download official Android 11 image with Google Play Store."\
 		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
-		FALSE A11_NO_GAPPS "Download official Android 11 image without Google Play Store."\
 		FALSE TV13_NO_GAPPS "Download unofficial Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
-		FALSE TV11_NO_GAPPS "Download unofficial Android 11 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -221,28 +207,16 @@ else
 			echo User pressed CANCEL / EXIT. Goodbye!
 			cleanup_exit
 
-		elif [ "$Choice" == "A11_GAPPS" ]
+		elif [ "$Choice" == "A13_GAPPS" ]
 		then
 			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
 			check_waydroid_init
 
-		elif [ "$Choice" == "A11_NO_GAPPS" ]
+		elif [ "$Choice" == "A13_NO_GAPPS" ]
 		then
 			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init
-			check_waydroid_init
-
-		elif [ "$Choice" == "TV11_NO_GAPPS" ]
-		then
-			prepare_custom_image_location
-			download_image $ANDROID11_TV_IMG $ANDROID11_TV_IMG_HASH ~/waydroid/custom/android11tv "Android 11 TV"
-
-			echo Applying fix for Leanback Keyboard.
-			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
-
-			echo Initializing Waydroid.
- 			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 
 		elif [ "$Choice" == "TV13_NO_GAPPS" ]
@@ -257,25 +231,6 @@ else
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 			
-		elif [ "$Choice" == "A13_NO_GAPPS" ]
-		then
-			prepare_custom_image_location
-			download_image $ANDROID13_NOGAPPS_IMG $ANDROID13_NOGAPPS_IMG_HASH ~/waydroid/custom/a13_nogapps "Android 13 NOGAPPS System"
-			download_image $ANDROID13_VENDOR_IMG $ANDROID13_VENDOR_IMG_HASH ~/waydroid/custom/a13_vendor "Android 13 Vendor"
-
-			echo Initializing Waydroid.
- 			echo -e "$current_password\n" | sudo -S waydroid init
-			check_waydroid_init
-			
-		elif [ "$Choice" == "A13_GAPPS" ]
-		then
-			prepare_custom_image_location
-			download_image $ANDROID13_GAPPS_IMG $ANDROID13_GAPPS_IMG_HASH ~/waydroid/custom/a13_gapps "Android 13 GAPPS system"
-			download_image $ANDROID13_VENDOR_IMG $ANDROID13_VENDOR_IMG_HASH ~/waydroid/custom/a13_vendor "Android 13 vendor"
-
-			echo Initializing Waydroid.
- 			echo -e "$current_password\n" | sudo -S waydroid init
-			check_waydroid_init
 		fi
 	
 	# run casualsnek / aleasto waydroid_script
