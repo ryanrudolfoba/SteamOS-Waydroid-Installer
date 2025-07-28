@@ -12,23 +12,22 @@ else
 fi
 
 # sanity check - make sure this is running on at least SteamOS 3.6.x or 3.7.x
-echo $steamos_version | grep -e 3.6 -e 3.7
-if [ $? -eq 0 ]
+echo $steamos_version | grep -e 3.4 -e 3.5
+if [ $? -ne 0 ]
 then
-	echo SteamOS $steamos_version detected. Proceeding with the install.
+	echo SteamOS $steamos_version detected. Proceed to the next step.
 else
 	echo SteamOS $steamos_version detected. This is unsupported version.
 	exit
 fi
 
-# sanity check - make sure kernel version is supported. exit immediately if not on the supported kernel
-echo Checking if kernel is supported.
-if [ $kernel_version = $stable_kernel1 ] || [ $kernel_version = $beta_kernel1 ] \
-	|| [ $kernel_version = $beta_kernel2 ]
+# sanity check - make sure the update channel is rel (stable) or beta
+steamos-select-branch -c | grep -e rel -e beta &> /dev/null
+if [ $? -eq 0 ]
 then
-	echo SteamOS $steamos_version - kernel version $kernel_version is supported. Proceed to next step.
+	echo SteamOS $(steamos-select-branch -c) branch detected. Proceed to the next step.
 else
-	echo SteamOS $steamos_version - kernel version $kernel_version is NOT supported. Please wait for update from 10MinuteSteamDeckGamer. Check the github repo for updates.  Exiting immediately.
+	echo SteamOS $(steamos-select-branch -c) branch detected. This script is only tested to work with STABLE or BETA branch of SteamOS.
 	exit
 fi
 
