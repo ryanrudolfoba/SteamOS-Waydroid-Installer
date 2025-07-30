@@ -187,6 +187,10 @@ else
 	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc
 	echo -e "$current_password\n" | sudo -S cp extras/hosts /var/lib/waydroid/overlay/system/etc
 
+  # copy PlayStoreOverlay.apk for family sharing link
+	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/product/overlay
+	echo -e "$current_password\n" | sudo -S cp extras/PlayStoreOverlay.apk /var/lib/waydroid/overlay/system/product/overlay
+
 	# copy nodataperm.sh - this is to fix the scoped storage issue in Android 11
 	chmod +x extras/nodataperm.sh
 	echo -e "$current_password\n" | sudo -S cp extras/nodataperm.sh /var/lib/waydroid/overlay/system/etc
