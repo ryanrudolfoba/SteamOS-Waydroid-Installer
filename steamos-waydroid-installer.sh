@@ -100,9 +100,8 @@ fi
 # ok lets install precompiled waydroid
 echo Installing waydroid packages. This can take a while.
 cd $WORKING_DIR
-echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder-1.1.42-2-x86_64.pkg.tar.zst \
-	waydroid/libglibutil-1.0.80-1-x86_64.pkg.tar.zst waydroid/python-gbinder-1.1.2-3-x86_64.pkg.tar.zst \
-	waydroid/waydroid-1.5.1-1-any.pkg.tar.zst > /dev/null && \
+echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder*.zst waydroid/libglibutil*.zst \
+	waydroid/python-gbinder*.zst waydroid/waydroid*.zst > /dev/null && \
 
 # ok lets install additional packages from pacman repo
 echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr > /dev/null
