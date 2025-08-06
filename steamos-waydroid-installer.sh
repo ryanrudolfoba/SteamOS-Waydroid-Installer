@@ -83,8 +83,8 @@ fi
 
 # finally lets build and install binder from source!
 echo Building and installing binder module from source. This can take a while.
-cd $BINDER_DIR && makepkg -f &> binder.log && \
-	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> binder.log && \
+cd $BINDER_DIR && makepkg -f &> $WORKING_DIR/binder.log && \
+	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $WORKING_DIR/binder.log && \
 	echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder
 
 if [ $? -eq 0 ]
