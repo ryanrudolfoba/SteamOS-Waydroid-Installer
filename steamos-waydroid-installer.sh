@@ -38,7 +38,7 @@ source sanity-checks.sh
 mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone of waydroid_script and binder kernel module source
-echo Cloning casualsnek / aleasto waydroid_script repo and binder kenrel module source repo.
+echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
@@ -49,7 +49,7 @@ if [ $? -eq 0 ]
 then
 	echo Repo has been successfully cloned! Proceed to the next step.
 else
-	echo Error cloning therepo!
+	echo Error cloning the repo!
 	rm -rf $WAYDROID_SCRIPT_DIR
 	cleanup_exit
 fi
