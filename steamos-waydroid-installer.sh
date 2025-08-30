@@ -11,6 +11,8 @@ sleep 2
 script_version_sha=$(git rev-parse --short HEAD)
 steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 WORKING_DIR=$(pwd)
+BINDER_AUR=https://aur.archlinux.org/binder_linux-dkms.git
+BINDER_GITHUB=https://github.com/archlinux/aur.git
 BINDER_DIR=$(mktemp -d)/aur_binder
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
@@ -42,9 +44,13 @@ echo This can take a few minutes depending on the speed of the internet connecti
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
 git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
-	git clone --branch binder_linux-dkms --single-branch https://github.com/archlinux/aur.git $BINDER_DIR &> /dev/null
+git clone $BINDER_AUR $BINDER_DIR &> /dev/null
+if [[ $? -ne 0 ]]; then
+	echo "AUR repo failed, falling back to GitHub mirror."
+	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
+fi
 
-if [ $? -eq 0 ]
+if [[ $? -eq 0 ]]
 then
 	echo Repo has been successfully cloned! Proceed to the next step.
 else
