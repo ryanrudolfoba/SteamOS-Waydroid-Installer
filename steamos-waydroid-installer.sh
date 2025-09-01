@@ -12,6 +12,7 @@ script_version_sha=$(git rev-parse --short HEAD)
 steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 WORKING_DIR=$(pwd)
 BINDER_AUR=https://aur.archlinux.org/binder_linux-dkms.git
+BINDER_GITHUB=https://github.com/archlinux/aur.git
 BINDER_DIR=$(mktemp -d)/aur_binder
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
@@ -43,9 +44,13 @@ echo This can take a few minutes depending on the speed of the internet connecti
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
 git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
-	git clone $BINDER_AUR $BINDER_DIR &> /dev/null
+git clone $BINDER_AUR $BINDER_DIR &> /dev/null
+if [[ $? -ne 0 ]]; then
+	echo "AUR repo failed, falling back to GitHub mirror."
+	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
+fi
 
-if [ $? -eq 0 ]
+if [[ $? -eq 0 ]]
 then
 	echo Repo has been successfully cloned! Proceed to the next step.
 else
@@ -83,8 +88,8 @@ fi
 
 # finally lets build and install binder from source!
 echo Building and installing binder module from source. This can take a while.
-cd $BINDER_DIR && makepkg -f &> /dev/null && \
-	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &> /dev/null && \
+cd $BINDER_DIR && makepkg -f &> $WORKING_DIR/binder.log && \
+	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $WORKING_DIR/binder.log && \
 	echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder
 
 if [ $? -eq 0 ]
@@ -100,9 +105,8 @@ fi
 # ok lets install precompiled waydroid
 echo Installing waydroid packages. This can take a while.
 cd $WORKING_DIR
-echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder-1.1.42-2-x86_64.pkg.tar.zst \
-	waydroid/libglibutil-1.0.80-1-x86_64.pkg.tar.zst waydroid/python-gbinder-1.1.2-3-x86_64.pkg.tar.zst \
-	waydroid/waydroid-1.5.1-1-any.pkg.tar.zst > /dev/null && \
+echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder*.zst waydroid/libglibutil*.zst \
+	waydroid/python-gbinder*.zst waydroid/waydroid*.zst > /dev/null && \
 
 # ok lets install additional packages from pacman repo
 echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr > /dev/null
