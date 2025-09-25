@@ -31,3 +31,10 @@ waydroid shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh &
 
 # mantis gamepad pro
 waydroid shell sh /sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh &
+
+# Xbox Wireless Controller spoofing for CoD Mobile to work without 3rd party controller mapping (mantis etc)
+cp /home/deck/Android_Waydroid/spoofing/classes.dex /var/lib/waydroid/overlay/system/bin/classes.dex
+waydroid shell sh /system/bin/spoofing.sh &
+
+exit
+
