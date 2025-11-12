@@ -19,6 +19,7 @@ WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
+ANDROID_INSTALL_CHOICE=''
 
 # android TV builds
 ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
@@ -35,15 +36,13 @@ source functions.sh
 source sanity-checks.sh
 
 # sanity checks are all good. lets go!
+# Clone casualsnek script
+cloning_repo_waydroid_script
+
 # create AUR directory where casualsnek script will be saved
 mkdir -p ~/AUR/waydroid &> /dev/null
 
-# perform git clone of waydroid_script and binder kernel module source
-echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
-echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
-echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
-
-git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
+# Clone binder
 git clone $BINDER_AUR $BINDER_DIR &> /dev/null
 if [[ $? -ne 0 ]]; then
 	echo "AUR repo failed, falling back to GitHub mirror."
@@ -52,7 +51,7 @@ fi
 
 if [[ $? -eq 0 ]]
 then
-	echo Repo has been successfully cloned! Proceed to the next step.
+	echo Repo AUR has been successfully cloned! Proceed to the next step.
 else
 	echo Error cloning the repo!
 	rm -rf $WAYDROID_SCRIPT_DIR
@@ -130,7 +129,7 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 
 # lets install the custom config files
-mkdir ~/Android_Waydroid &> /dev/null
+mkdir -p ~/Android_Waydroid/extras &> /dev/null
 
 # waydroid binder configuration file
 echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
@@ -145,8 +144,20 @@ echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scrip
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
-# waydroid launcher, toolbox and updater
-cp extras/Android_Waydroid_Cage.sh extras/Waydroid-Toolbox.sh extras/Waydroid-Updater.sh extras/Android_Waydroid_Cage-experimental.sh ~/Android_Waydroid
+# waydroid launcher, functions ,toolbox and updater
+cp extras/Android_Waydroid_Cage.sh \
+	extras/Waydroid-Toolbox.sh \
+	extras/Waydroid-Updater.sh \
+	extras/Android_Waydroid_Cage-experimental.sh \
+	functions.sh \
+	~/Android_Waydroid
+
+# copy extras
+cp extras/android_spoof.prop \
+	extras/androidtv_spoof.prop \
+	extras/waydroid_base.prop \
+	~/Android_Waydroid/extras
+
 chmod +x ~/Android_Waydroid/*.sh
 
 # desktop shortcuts for toolbox + updater
@@ -236,10 +247,31 @@ else
 			check_waydroid_init
 			
 		fi
-	
+	# store android install selection
+	ANDROID_INSTALL_CHOICE=$Choice
+
+	# choose your arm translation
+	Choice=$(zenity --width 1040 --height 320 --list --radiolist --multiple \
+		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
+		--column "Select One" \
+		--column "Option" \
+		--column="Description - Read this carefully!"\
+		TRUE libndk "libndk arm translation, better for AMD CPUs (Internet Connection Required)"\
+		FALSE libhoudini "libhoudini arm translation, better for Intel CPUs (Internet Connection Required)"\
+		FALSE EXIT "***** Exit this script *****")
+
+	if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
+		then
+			echo User pressed CANCEL / EXIT. Goodbye!
+			cleanup_exit
+		fi
+
 	# run casualsnek / aleasto waydroid_script
-	echo Install libndk, widevine and fingerprint spoof.
-	install_android_extras
+	echo Install libndk/libhoudini, widevine and fingerprint spoof.
+	install_android_extras "$Choice"
+
+	# copy custom config for root and spoof
+	copy_android_custom_config
 
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
