@@ -1,4 +1,9 @@
 #!/bin/bash
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+# Source functions.sh (using absolute path)
+source "$SCRIPT_DIR/functions.sh"
 
 PASSWORD=$(zenity --password --title "sudo Password Authentication")
 echo -e "$PASSWORD\n" | sudo -S ls &> /dev/null
@@ -21,6 +26,7 @@ Choice=$(zenity --width 850 --height 400 --list --radiolist --multiple --title "
 	FALSE GPU "Change the GPU config - GBM or MINIGBM."\
 	FALSE LAUNCHER "Add Android Waydroid Cage launcher to Game Mode."\
 	FALSE NETWORK "Reinitialize firewall configuration - use this when WIFI is not working."\
+	FALSE ARM_LIB "Change Translation Layer, libhoudini or libndk"\
 	FALSE UNINSTALL "Choose this to uninstall Waydroid and revert any changes made."\
 	TRUE EXIT "***** Exit the Waydroid Toolbox *****")
 
@@ -28,7 +34,70 @@ if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
 then
 	echo User pressed CANCEL / EXIT.
 	exit
+elif [ "$Choice" == "ARM_LIB" ]
+then
+	ARM_Choice=$(zenity --width 900 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
+		TRUE libndk "libndk arm translation, better for AMD CPUs (Internet Connection Required)"\
+		FALSE libhoudini "libhoudini arm translation, better for Intel CPUs (Internet Connection Required)"\
+		FALSE MENU "***** BACK TO MENU *****")
+	if [ $? -eq 1 ] || [ "$ARM_Choice" == "MENU" ]
+	then
+		echo User pressed MENU. Going back to main menu.
+	elif [ "$ARM_Choice" == "libndk" ] || [ "$ARM_Choice" == "libhoudini" ]
+ 	then
 
+		LOG_PIPE="/tmp/zenity_log.pipe"
+		TMP_FOLDER="$(mktemp -d)"
+		rm -f "$LOG_PIPE"
+		mkfifo "$LOG_PIPE"
+
+		# open Zenity text window to display logs
+		zenity --text-info --title="Live Logs" --width=800 --height=400 --auto-scroll < "$LOG_PIPE" &
+
+		# write logs to both console and Zenity
+		exec > >(tee -a "$LOG_PIPE") 2>&1
+		
+		WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
+		WAYDROID_SCRIPT_DIR=$TMP_FOLDER/waydroid_script
+		Choice=$ARM_Choice
+		# perform git clone of waydroid_script and binder kernel module source
+		echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
+		echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
+		echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
+
+		git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
+
+		if [[ $? -eq 0 ]]
+		then
+			echo Repo waydroid script has been successfully cloned! Proceed to the next step.
+		else
+			echo Error cloning the repo!
+			rm -rf $WAYDROID_SCRIPT_DIR
+		fi
+		
+		#located in function.sh
+		INSTALLATION_METHOD=false
+
+		# install casualsnek libhoudini
+		install_android_extras
+
+		#copy custom prop from this repo
+		#TODO: need to check if android is using A13TV or A13_GAPPS
+		ANDROID_INSTALL_CHOICE="A13_GAPPS"
+		copy_android_custom_config
+
+
+		if [[ $? -eq 0 ]]
+		then
+			echo "ARM changed successfully to $ARM_Choice!"
+		else
+			echo "Error occured when changing ARM!"
+		fi
+		rm -f "$LOG_PIPE"
+		rm -rf $WAYDROID_SCRIPT_DIR
+		# Close the log pipe when finished
+		exec >&-
+fi
 elif [ "$Choice" == "NETWORK" ]
 then
 	echo -e "$PASSWORD\n" | sudo -S systemctl start firewalld
@@ -189,57 +258,89 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 
 	elif [ "$UNINSTALL_Choice" == "WAYDROID" ]
 	then
-		# disable the steamos readonly
+
+		LOG_PIPE="/tmp/zenity_log.pipe"
+		rm -f "$LOG_PIPE"
+		mkfifo "$LOG_PIPE"
+
+		# open Zenity text window to display logs
+		zenity --text-info --title="Live Logs" --width=600 --height=400 --auto-scroll < "$LOG_PIPE" &
+
+		# write logs to both console and Zenity
+		exec > >(tee -a "$LOG_PIPE") 2>&1
+
+		echo Disable the steamos readonly
 		echo -e $PASSWORD\n | sudo -S steamos-readonly disable
 	
-		# remove the kernel module and waydroid packages installed
+		echo Remove the kernel module and waydroid packages installed
 		echo -e "$PASSWORD\n" | sudo -S systemctl stop waydroid-container
 		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm binder_linux-dkms fakeroot debugedit dkms plymouth libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr
 	
-		# delete the waydroid directories and config
-		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/AUR
+		echo Delete the waydroid directories and config
+		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid $HOME/.waydroid /etc/waydroid-extra ~/AUR
 	
-		# delete waydroid config and scripts
+		echo Delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf \
 			/usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
 	
-		# delete Waydroid Toolbox symlink
+		echo Delete Waydroid Toolbox symlink
 		rm ~/Desktop/Waydroid-Toolbox
 	
-		# delete contents of ~/Android_Waydroid
+		echo Delete contents of ~/Android_Waydroid
 		rm -rf ~/Android_Waydroid/
 	
-		# re-enable the steamos readonly
+		echo Re-enable the steamos readonly
 		echo -e "$PASSWORD\n" | sudo -S steamos-readonly enable
-	
+		sleep 1
+
+		# Close the log pipe when finished
+		exec >&-
+		rm -f "$LOG_PIPE"
+
 		zenity --warning --title "Waydroid Toolbox" --text "Waydroid has been uninstalled! Goodbye!" --width 600 --height 75
 		exit
 		
 	elif [ "$UNINSTALL_Choice" == "FULL" ]
 	then
-		# disable the steamos readonly
+
+		LOG_PIPE="/tmp/zenity_log.pipe"
+		rm -f "$LOG_PIPE"
+		mkfifo "$LOG_PIPE"
+
+		# open Zenity text window to display logs
+		zenity --text-info --title="Live Logs" --width=600 --height=400 --auto-scroll < "$LOG_PIPE" &
+
+		# write logs to both console and Zenity
+		exec > >(tee -a "$LOG_PIPE") 2>&1
+
+
+		echo Disable the steamos readonly
 		echo -e "$PASSWORD\n" | sudo -S steamos-readonly disable
 		
-		# remove the kernel module and waydroid packages installed
+		echo Remove the kernel module and waydroid packages installed
 		echo -e "$PASSWORD\n" | sudo -S systemctl stop waydroid-container
 		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm binder_linux-dkms fakeroot debugedit dkms plymouth libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr
 			
-		# delete the waydroid directories and config
-		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
+		echo Delete the waydroid directories and config
+		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid $HOME/.waydroid /etc/waydroid-extra ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
 	
-		# delete waydroid config and scripts
+		echo Delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf \
 			/usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
 	
-		# delete Waydroid Toolbox and Waydroid Updatersymlink
+		echo Delete Waydroid Toolbox and Waydroid Updatersymlink
 		rm ~/Desktop/Waydroid-Toolbox
 		rm ~/Desktop/Waydroid-Updater
 	
-		# delete contents of ~/Android_Waydroid
+		echo Delete contents of ~/Android_Waydroid
 		rm -rf ~/Android_Waydroid/
 	
-		# re-enable the steamos readonly
+		echo Re-enable the steamos readonly
 		echo -e "$PASSWORD\n" | sudo -S steamos-readonly enable
+
+		# Close the log pipe when finished
+		exec >&-
+		rm -f "$LOG_PIPE"
 	
 		zenity --warning --title "Waydroid Toolbox" --text "Waydroid and Android user data has been uninstalled! Goodbye!" --width 600 --height 75
 		exit
