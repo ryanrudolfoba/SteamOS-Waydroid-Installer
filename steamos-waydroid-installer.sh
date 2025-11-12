@@ -187,6 +187,16 @@ else
 	# lets initialize waydroid
 	mkdir -p ~/waydroid/{images,custom,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
 	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
+	# Create Symlink for waydroid
+	# HOME is /home/deck default steamos variable
+	echo "Creating symlink to $HOME/.waydroid from /var/lib"
+	echo -e "$current_password\n" | sudo mkdir -p /home/deck/.waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo mkdir -p $HOME/.waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo mv /var/lib/waydroid/* $HOME/.waydroid/ &> /dev/null
+	echo -e "$current_password\n" | sudo rm -rf /var/lib/waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo ln -s $HOME/.waydroid /var/lib/waydroid &> /dev/null
+
+	# Create symlink for waydroid images
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
 	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
 
