@@ -6,35 +6,53 @@ sysctl -a 2> /dev/null | grep kernel.pid_max | cut -d " " -f 3 > /home/deck/Andr
 # set the kernel.pid_max to 65535
 sudo sysctl -w kernel.pid_max=65535
 
+# delay before running scripts
 while [[ -z $(waydroid shell getprop sys.boot_completed) ]]
 do
-	sleep 1
+	sleep 5
 done
 
 # This are the commands to execute once Android boot is completed
 
-# detect and add Steam Deck controller
-# this broke on SteamOS 3.7.13 so let's try a different method
-# echo add > /sys/devices/virtual/input/input*/event*/uevent
-
-# use this instead for Steam Deck controller to work in Waydroid on SteamOS 3.7.13
+# Steam Deck controller to work in Waydroid
 echo add | tee /sys/devices/virtual/input/input*/event*/uevent
-
-# fix for scoped storage permission issue
-waydroid shell sh /system/etc/nodataperm.sh
 
 # disable initial device setup via ADB
 waydroid shell pm disable com.google.android.setupwizard
 
 # shizuku root
-waydroid shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh &
+waydroid shell -- sh -c "if [ -f /storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh ]
+then
+	/storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh
+	fi"
 
 # mantis gamepad pro
-waydroid shell sh /sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh &
+waydroid shell -- sh -c "if [ -f /sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh ]
+then
+	/sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh
+	fi"
+
+# set audio volume to max
+waydroid shell -- cmd media_session volume --stream 3 --set 15
+
+# no data permission hack to circumvent the scoped storage permission issue
+# Thanks to PrimeOS
+waydroid shell -- sh -c "chmod 777 -R /sdcard/Android
+chmod 777 -R /sdcard/Android/obb
+chmod 777 -R /sdcard/Android/data
+chmod 777 -R /data/media/0/Android
+chmod 777 -R /data/media/0/Android/obb
+chmod 777 -R /data/media/0/Android/data"
 
 # Xbox Wireless Controller spoofing for CoD Mobile to work without 3rd party controller mapping (mantis etc)
-cp /home/deck/Android_Waydroid/spoofing/classes.dex /var/lib/waydroid/overlay/system/bin/classes.dex
-waydroid shell sh /system/bin/spoofing.sh &
+if [ -f /home/deck/Android_Waydroid/spoofing/classes.dex ]
+then
+	cp /home/deck/Android_Waydroid/spoofing/classes.dex /var/lib/waydroid/overlay/system/bin/classes.dex
+	waydroid shell -- sh -c "export CLASSPATH=/system/bin/classes.dex ; app_process / com.android.commands.hid.Hid" &
+
+else
+	rm /var/lib/waydroid/overlay/system/bin/classes.dex
+fi
 
 exit
 
