@@ -37,6 +37,30 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 **Android 13 TV**
 ![image](https://github.com/user-attachments/assets/141c2ec6-9918-40e8-bf87-2e199fbbb3f9)
 
+## How to Access the Waydroid Folder in Dolphin File Manager
+1. Launch Waydroid in Desktop Mode via konsole -
+   ```
+   cd ~/Android_Waydroid
+   ./Android_Waydroid_Cage.sh
+   ```
+   
+2. Wait for Waydroid to finish the boot sequence.
+3. Launch Dolphin File Manager. In the address bar go to `/home/deck/.loca/share/waydroid`
+	<img width="750" height="349" alt="image" src="https://github.com/user-attachments/assets/97589bc7-7849-4d2f-91ce-ab100d710a9c" />
+
+4. Right-click empty spot on the right pane and select `Open Dolphin File Manager as Root`
+	<img width="985" height="602" alt="image" src="https://github.com/user-attachments/assets/7f39fbce-7a6d-40d1-979f-fb46f3b80785" />
+
+5. Enter the sudo password when prompted
+	<img width="956" height="470" alt="image" src="https://github.com/user-attachments/assets/9ca3d6c9-0d7a-42a2-bdf4-951eced81965" />
+
+6. A new Dolphin File Manager will spawn that has root access
+	<img width="779" height="321" alt="image" src="https://github.com/user-attachments/assets/aed41c5d-39c8-43a9-8437-dfacdc0d80d4" />
+
+7. From here you can now access the Waydroid folders
+	<img width="779" height="585" alt="image" src="https://github.com/user-attachments/assets/fc51f1b2-20f0-4720-b474-b4a50bfa72e3" />
+
+
 > [!NOTE]
 > If you are going to use this script for a video tutorial, PLEASE reference on your video where you got the script! This will make the support process easier!
 > And don't forget to give a shoutout to [@10MinuteSteamDeckGamer](https://www.youtube.com/@10MinuteSteamDeckGamer/) / ryanrudolf from the Philippines!
@@ -65,6 +89,16 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 <p align="center">
 <a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
 </p>
+
+# What's New (as of Nov 15 2025)
+1. Xbox Wireless Controller spoofing so that Call of Duty CoD Mobile works with the Steam Deck controller
+2. Fixed low audio on fresh install
+3. Latest StevenBlack adblock host file automatically downloaded during install
+4. Added logic to the shizuku and mantis activation
+5. Improved Decky Loader sanity check
+6. Implemented logging
+7. Refactored the python script that adds the waydroid icon for easy readability of the script
+8. Updated uninstall
 
 # What's New (as of July 28 2025)
 1. Sanity check updated - instead of kernel version check it will check if running on SteamOS stable / SteamOS beta
