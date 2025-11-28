@@ -87,7 +87,7 @@ install_android_extras () {
 	then
 		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
-	elif [ "$Choice" == "TV13_NO_GAPPS" ]
+	elif [ "$Choice" == "TV13_GAPPS" ]
 	then
 		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 	fi

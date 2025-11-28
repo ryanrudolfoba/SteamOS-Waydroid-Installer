@@ -21,10 +21,10 @@ FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 
 # android TV builds
-ANDROID13_TV_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13TV/lineage-20-20250117-UNOFFICIAL-10MinuteSteamDeckGamer-WaydroidATV.zip
+ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250913/lineage-20.0-20250913-UNOFFICIAL-WayDroidATV_x86_64.zip
 
 # android TV hash
-ANDROID13_TV_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
+ANDROID13_TV_IMG_HASH=309e0692fed0ea5d6b130858553138521d2e8902754db93a2b5a3ca68ecb28e9
 
 echo script version: $script_version_sha
 
@@ -208,7 +208,7 @@ else
 		--column="Description - Read this carefully!"\
 		TRUE A13_GAPPS "Download official Android 13 image with Google Play Store."\
 		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
-		FALSE TV13_NO_GAPPS "Download unofficial Android 13 TV image without Google Play Store - thanks SupeChicken666 for the build instructions!" \
+		FALSE TV13_GAPPS "Download unofficial Android 13 TV image with Google Play Store - thanks SupeChicken666 for the image!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -228,7 +228,7 @@ else
 			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 
-		elif [ "$Choice" == "TV13_NO_GAPPS" ]
+		elif [ "$Choice" == "TV13_GAPPS" ]
 		then
 			prepare_custom_image_location
 			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH ~/waydroid/custom/android13tv "Android 13 TV"
