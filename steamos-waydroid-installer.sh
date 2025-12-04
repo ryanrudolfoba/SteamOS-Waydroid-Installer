@@ -11,6 +11,7 @@ sleep 2
 SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
 STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
 SUPPORTED_VERSION=3.7
+STEAMOS_BRANCH=$(steamos-select-branch -c)
 WORKING_DIR=$(pwd)
 LOGFILE=$WORKING_DIR/logfile
 BINDER_AUR=https://aur.archlinux.org/binder_linux-dkms.git
@@ -48,11 +49,11 @@ echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module 
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
-git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
-git clone $BINDER_AUR $BINDER_DIR &> /dev/null
+git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR  && \
+git clone $BINDER_AUR $BINDER_DIR 
 if [[ $? -ne 0 ]]; then
 	echo "AUR repo failed, falling back to GitHub mirror."
-	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
+	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR
 fi
 
 if [[ $? -eq 0 ]]
@@ -97,7 +98,7 @@ fi
 echo Building and installing binder module from source. This can take a while.
 echo "*** build and install binder from source ***" &>> $LOGFILE
 cd $BINDER_DIR && makepkg -f &>> $LOGFILE && \
-	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $LOGFILE && \
+	#echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $LOGFILE && \
 	echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder &>> $LOGFILE
 
 if [ $? -eq 0 ]
@@ -106,8 +107,9 @@ then
 else
 	echo Errors were encountered.
 	echo Performing clean up. Good bye!
-	cleanup_exit
-	exit
+	echo $BINDER_DIR
+	# cleanup_exit
+	#exit
 fi
 
 # ok lets install precompiled waydroid
@@ -118,7 +120,7 @@ echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinde
 	waydroid/python-gbinder*.zst waydroid/waydroid*.zst &>> $LOGFILE && \
 
 # ok lets install additional packages from pacman repo
-echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr &>> $LOGFILE
+echo -e "$current_password\n" | sudo -S pacman -S --noconfirm cage wlr-randr &>> $LOGFILE
 
 if [ $? -eq 0 ]
 then
@@ -142,8 +144,8 @@ echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 mkdir ~/Android_Waydroid &> /dev/null
 
 # waydroid binder configuration file
-echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
-echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
+#echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
+#echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
 
 # waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
