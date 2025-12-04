@@ -14,21 +14,35 @@ fi
 # sanity check - make sure this is running on at least SteamOS 3.7.x
 if awk "BEGIN {exit ! ($STEAMOS_VERSION > $SUPPORTED_VERSION)}"
 then
-	echo SteamOS $STEAMOS_VERSION detected. Proceed to the next step.
+	echo SteamOS $STEAMOS_VERSION $STEAMOS_BRANCH detected. Proceed to the next step.
 else
-	echo SteamOS $STEAMOS_VERSION detected. This is unsupported version.
+	echo SteamOS $STEAMOS_VERSION $STEAMOS_BRANCH detected. This is unsupported version.
 	echo Update SteamOS and make sure it is at least on SteamOS 3.7.x.
 	exit
 fi
 
 # sanity check - make sure the update channel is rel (stable) or beta
-steamos-select-branch -c | grep -e rel -e beta &> /dev/null
-if [ $? -eq 0 ]
+
+if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
 then
-	echo SteamOS $(steamos-select-branch -c) branch detected. Proceed to the next step.
-else
-	echo SteamOS $(steamos-select-branch -c) branch detected. This script is only tested to work with STABLE or BETA branch of SteamOS.
+	echo SteamOS $STEAMOS_BRANCH branch detected. Proceed to the next step.
 	exit
+elif [ "$STEAMOS_BRANCH" == "main" ]
+then
+	zenity --question --title "SteamOS Waydroid Installer" --text \
+		"WARNING! SteamOS $STEAMOS_BRANCH branch detected. \
+		\n\nThe script has been tested to work with the STABLE or BETA branch of SteamOS. \
+		\nHowever the script may also work with the MAIN branch of SteamOS. \
+		\n\n\nDo you want to continue with the install?" --width 650 --height 75 &> /dev/null
+
+	if [ $? -eq 1 ]
+	then
+		echo User pressed NO. Exit immediately.
+		exit
+	else
+		echo User pressed YES. Continue with the script.
+		echo SteamOS $STEAMOS_BRANCH detected.
+	fi
 fi
 
 # sanity check - make sure there is enough free space in the home partition (at least 5GB)
