@@ -12,13 +12,12 @@ else
 fi
 
 # sanity check - make sure this is running on at least SteamOS 3.7.x
-# once SteamOS 3.8 goes to stable this sanity check can go away.
-echo $steamos_version | grep -e 3.7 &> /dev/null
-if [ $? -eq 0 ]
+if awk "BEGIN {exit ! ($STEAMOS_VERSION > $SUPPORTED_VERSION)}"
 then
-	echo SteamOS $steamos_version detected. Proceed to the next step.
+	echo SteamOS $STEAMOS_VERSION detected. Proceed to the next step.
 else
-	echo SteamOS $steamos_version detected. This is unsupported version.
+	echo SteamOS $STEAMOS_VERSION detected. This is unsupported version.
+	echo Update SteamOS and make sure it is at least on SteamOS 3.7.x.
 	exit
 fi
 

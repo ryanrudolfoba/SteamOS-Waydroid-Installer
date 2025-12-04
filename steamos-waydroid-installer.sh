@@ -8,8 +8,9 @@ echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
 # define variables here
-script_version_sha=$(git rev-parse --short HEAD)
-steamos_version=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
+SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
+STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
+SUPPORTED_VERSION=3.7
 WORKING_DIR=$(pwd)
 LOGFILE=$WORKING_DIR/logfile
 BINDER_AUR=https://aur.archlinux.org/binder_linux-dkms.git
@@ -21,12 +22,16 @@ FREE_HOME=$(df /home --output=avail | tail -n1)
 FREE_VAR=$(df /var --output=avail | tail -n1)
 
 # android TV builds
-ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250913/lineage-20.0-20250913-UNOFFICIAL-WayDroidATV_x86_64.zip
+#ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250913/lineage-20.0-20250913-UNOFFICIAL-WayDroidATV_x86_64.zip
+
+ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250811/lineage-20.0-20250811-UNOFFICIAL-WayDroidATV_x86_64.zip
 
 # android TV hash
-ANDROID13_TV_IMG_HASH=309e0692fed0ea5d6b130858553138521d2e8902754db93a2b5a3ca68ecb28e9
+#ANDROID13_TV_IMG_HASH=309e0692fed0ea5d6b130858553138521d2e8902754db93a2b5a3ca68ecb28e9
 
-echo script version: $script_version_sha
+ANDROID13_TV_IMG_HASH=0c6cb5f3ccc7edab105d800363c2fe6b457f77f793f04e3fddc6175c0665a2d4
+
+echo script version: $SCRIPT_VERSION_SHA
 
 # define functions here
 source functions.sh
