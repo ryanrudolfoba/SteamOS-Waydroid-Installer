@@ -11,13 +11,13 @@ else
 	exit
 fi
 
-# sanity check - make sure this is running on at least SteamOS 3.6.x or 3.7.x
-echo $steamos_version | grep -e 3.4 -e 3.5
-if [ $? -ne 0 ]
+# sanity check - make sure this is running on at least SteamOS 3.7.x
+if awk "BEGIN {exit ! ($STEAMOS_VERSION > $SUPPORTED_VERSION)}"
 then
-	echo SteamOS $steamos_version detected. Proceed to the next step.
+	echo SteamOS $STEAMOS_VERSION detected. Proceed to the next step.
 else
-	echo SteamOS $steamos_version detected. This is unsupported version.
+	echo SteamOS $STEAMOS_VERSION detected. This is unsupported version.
+	echo Update SteamOS and make sure it is at least on SteamOS 3.7.x.
 	exit
 fi
 
@@ -84,7 +84,8 @@ else
 fi
 
 # sanity check - is Decky Loader installed?
-if [ -f $PLUGIN_LOADER ]
+systemctl is-active --quiet plugin_loader.service
+if [ $? -eq 0 ]
 then
 	echo Decky Loader detected! This may cause issues with the SteamOS Waydroid installer script!
 	echo Temporary disabling the Decky Loader plugin loader service.
@@ -94,7 +95,7 @@ then
 	then
 		echo Decky Loader Plugin Loader service successfully disabled.
 		echo Once the script has finished installing Waydroid, the Decky Loader Plugin Loader service will be re-enabled.
-	  echo You can also reboot the Steam Deck to re-activate the Decky Loader Plugin Loader service.
+	  	echo You can also reboot the Steam Deck to re-activate the Decky Loader Plugin Loader service.
 	else
 		echo Error ecountered when stopping the Decky Loader Plugin Loader service.
 		echo Exiting immediately.
