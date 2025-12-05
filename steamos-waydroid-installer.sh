@@ -49,11 +49,11 @@ echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module 
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
-git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR  && \
-git clone $BINDER_AUR $BINDER_DIR 
+git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
+git clone $BINDER_AUR $BINDER_DIR &> /dev/null
 if [[ $? -ne 0 ]]; then
 	echo "AUR repo failed, falling back to GitHub mirror."
-	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR
+	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
 fi
 
 if [[ $? -eq 0 ]]
@@ -78,38 +78,68 @@ else
 	cleanup_exit
 fi
 
-# lets install the packages needed to build binder
-echo Installing packages needed to build binder module from source. This can take a while.
-echo "*** pacman install dependencies for binder ***" &>> $LOGFILE
-echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot debugedit dkms plymouth \
+if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
+then
+
+	# lets install the packages needed to build binder
+	echo Installing packages needed to build binder module from source. This can take a while.
+	echo "*** pacman install dependencies for binder ***" &>> $LOGFILE
+	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot debugedit dkms plymouth \
 	linux-neptune-$(uname -r | cut -d "-" -f5)-headers --overwrite "*" &>> $LOGFILE
 
-if [ $? -eq 0 ]
-then
-	echo No errors encountered installing packages needed to build binder module.
-else
-	echo Errors were encountered.
-	echo Performing clean up. Good bye!
-	cleanup_exit
-	exit
-fi
+	if [ $? -eq 0 ]
+	then
+		echo No errors encountered installing packages needed to build binder module.
+	else
+		echo Errors were encountered.
+		echo Performing clean up. Good bye!
+		cleanup_exit
+		exit
+	fi
 
-# finally lets build and install binder from source!
-echo Building and installing binder module from source. This can take a while.
-echo "*** build and install binder from source ***" &>> $LOGFILE
-cd $BINDER_DIR && makepkg -f &>> $LOGFILE && \
-	#echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $LOGFILE && \
-	echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder &>> $LOGFILE
+	# finally lets build and install binder from source!
+	echo Building and installing binder module from source. This can take a while.
+	echo "*** build and install binder from source ***" &>> $LOGFILE
+	cd $BINDER_DIR && makepkg -f &>> $LOGFILE && \
+		echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $LOGFILE && \
+		echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder &>> $LOGFILE
 
-if [ $? -eq 0 ]
+	if [ $? -eq 0 ]	
+	then
+		echo No errors encountered building the binder module. Binder module has been loaded.
+	else
+		echo Errors were encountered.
+		echo Performing clean up. Good bye!
+		cleanup_exit
+		exit
+	fi
+
+	# ok lets install additional packages from pacman repo
+	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr &>> $LOGFILE
+
+	if [ $? -eq 0 ]
+	then
+		echo cage has been installed!
+		echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
+	else
+		echo Error installing cage. Run the script again to install waydroid.
+		cleanup_exit
+	fi
+
+elif [ "$STEAMOS_BRANCH" == "main" ]
 then
-	echo No errors encountered building the binder module. Binder module has been loaded.
-else
-	echo Errors were encountered.
-	echo Performing clean up. Good bye!
-	echo $BINDER_DIR
-	# cleanup_exit
-	#exit
+
+	# ok lets install additional packages from pacman repo
+	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm cage wlr-randr &>> $LOGFILE
+
+	if [ $? -eq 0 ]
+	then
+		echo cage has been installed!
+		echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
+	else
+		echo Error installing cage. Run the script again to install waydroid.
+		cleanup_exit
+	fi
 fi
 
 # ok lets install precompiled waydroid
@@ -119,15 +149,12 @@ cd $WORKING_DIR
 echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder*.zst waydroid/libglibutil*.zst \
 	waydroid/python-gbinder*.zst waydroid/waydroid*.zst &>> $LOGFILE && \
 
-# ok lets install additional packages from pacman repo
-echo -e "$current_password\n" | sudo -S pacman -S --noconfirm cage wlr-randr &>> $LOGFILE
-
 if [ $? -eq 0 ]
 then
-	echo waydroid and cage has been installed!
+	echo Waydroid has been installed!
 	echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 else
-	echo Error installing waydroid and cage. Run the script again to install waydroid.
+	echo Error installing waydroid. Run the script again to install waydroid.
 	cleanup_exit
 fi
 
@@ -143,9 +170,17 @@ echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
 
-# waydroid binder configuration file
-#echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
-#echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
+
+if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
+then
+	# waydroid binder configuration file
+	echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
+	echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
+
+elif [ "$STEAMOS_BRANCH" == "main" ]
+then
+	echo Binder confg not needed for MAIN branch.
+fi
 
 # waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
