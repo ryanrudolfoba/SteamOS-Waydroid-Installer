@@ -22,11 +22,9 @@ else
 fi
 
 # sanity check - make sure the update channel is rel (stable) or beta
-
 if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
 then
 	echo SteamOS $STEAMOS_BRANCH branch detected. Proceed to the next step.
-	exit
 elif [ "$STEAMOS_BRANCH" == "main" ]
 then
 	zenity --question --title "SteamOS Waydroid Installer" --text \
