@@ -32,6 +32,12 @@ then
 	/sdcard/Android/data/app.mantispro.gamepad/files/buddyNew.sh
 	fi"
 
+# k2er mapper
+waydroid shell -- sh -c "if [ -f /sdcard/Android/data/com.k2tap.master/files/exe/activate.sh ]
+then
+	/sdcard/Android/data/com.k2tap.master/files/exe/activate.sh
+	fi"
+
 # set audio volume to max
 waydroid shell -- cmd media_session volume --stream 3 --set 15
 
