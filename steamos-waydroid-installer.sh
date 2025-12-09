@@ -9,8 +9,8 @@ sleep 2
 
 # define variables here
 SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
-STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2)
-SUPPORTED_VERSION=3.7
+STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2 | cut -d "." -f1-2)
+BASE_VERSION=3.7
 STEAMOS_BRANCH=$(steamos-select-branch -c)
 WORKING_DIR=$(pwd)
 LOGFILE=$WORKING_DIR/logfile
@@ -78,7 +78,7 @@ else
 	cleanup_exit
 fi
 
-if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
+if awk "BEGIN {exit ! ($STEAMOS_VERSION == $BASE_VERSION)}"
 then
 
 	# lets install the packages needed to build binder
@@ -120,13 +120,17 @@ then
 	if [ $? -eq 0 ]
 	then
 		echo cage has been installed!
-		echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 	else
 		echo Error installing cage. Run the script again to install waydroid.
 		cleanup_exit
 	fi
 
-elif [ "$STEAMOS_BRANCH" == "main" ]
+	# waydroid binder configuration file
+	cd $WORKING_DIR
+	echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
+	echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
+
+elif awk "BEGIN {exit ! ($STEAMOS_VERSION > $BASE_VERSION)}"
 then
 
 	# ok lets install additional packages from pacman repo
@@ -135,7 +139,6 @@ then
 	if [ $? -eq 0 ]
 	then
 		echo cage has been installed!
-		echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 	else
 		echo Error installing cage. Run the script again to install waydroid.
 		cleanup_exit
@@ -169,18 +172,6 @@ echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 
 # lets install the custom config files
 mkdir ~/Android_Waydroid &> /dev/null
-
-
-if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
-then
-	# waydroid binder configuration file
-	echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
-	echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
-
-elif [ "$STEAMOS_BRANCH" == "main" ]
-then
-	echo Binder confg not needed for MAIN branch.
-fi
 
 # waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts

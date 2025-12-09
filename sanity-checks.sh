@@ -12,7 +12,7 @@ else
 fi
 
 # sanity check - make sure this is running on at least SteamOS 3.7.x
-if awk "BEGIN {exit ! ($STEAMOS_VERSION > $SUPPORTED_VERSION)}"
+if awk "BEGIN {exit ! ($STEAMOS_VERSION >= $BASE_VERSION)}"
 then
 	echo SteamOS $STEAMOS_VERSION $STEAMOS_BRANCH detected. Proceed to the next step.
 else
