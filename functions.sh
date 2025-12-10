@@ -4,6 +4,7 @@
 SCRIPT_PATH="$(readlink -f "$0")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 INSTALLATION_METHOD=true
+CLEAR_PREVIOUS_ARM=false
 
 # define functions here
 cleanup_exit () {
@@ -17,7 +18,7 @@ cleanup_exit () {
 		dkms plymouth linux-neptune-$(uname -r | cut -d "-" -f5)-headers &> /dev/null
 	
 	# delete the waydroid directories
-	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid $HOME/.waydroid /var/lib/waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm -rf $HOME/.waydroid /var/lib/waydroid &> /dev/null
 	
 	# delete waydroid config and scripts
 	echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid* &> /dev/null
@@ -46,7 +47,7 @@ prepare_custom_image_location () {
 # custom Android images needs to be placed in /etc/waydroid-extra/images
 # this will create a symlink to /etc/waydroid-extra/images
 echo -e "$current_password\n" | sudo mkdir /etc/waydroid-extra &> /dev/null
-echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
+echo -e "$current_password\n" | sudo -S ln -s $HOME/.waydroid/custom /etc/waydroid-extra/images &> /dev/null
 }
 
 download_image () {
@@ -67,7 +68,7 @@ download_image () {
 	fi
 
 	echo Extracting Archive
-	echo -e "$current_password\n" | sudo -S unzip -o $dest -d ~/waydroid/custom
+	echo -e "$current_password\n" | sudo -S unzip -o $dest -d $HOME/.waydroid/custom
 	echo -e "$current_password\n" | sudo -S rm $dest_zip
 }
 
@@ -123,27 +124,22 @@ copy_android_custom_config () {
 #install arm layer from casualsnek
 install_android_extras () {
 
+	Choice="$1"
+    CLEAR_PREVIOUS_ARM="$2"
 	# casualsnek / aleasto waydroid_script - install libndk and widevine
 	python3 -m venv $WAYDROID_SCRIPT_DIR/venv
 	$WAYDROID_SCRIPT_DIR/venv/bin/pip install -r $WAYDROID_SCRIPT_DIR/requirements.txt &> /dev/null
 
+	if [ "$CLEAR_PREVIOUS_ARM" ];
+	then
+		echo "Removing Previous ARM: $CLEAR_PREVIOUS_ARM"
+		echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 uninstall {$CLEAR_PREVIOUS_ARM,widevine}
+	fi
+	echo "$Choice installation started:"
 	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$Choice,widevine}
 
 	echo casualsnek / aleasto waydroid_script done.
 	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
-	
-	# waydroid_base.prop - controller config and disable root
-	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-
-	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
-	if [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ] 
-	then
-		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-
-	elif [ "$Choice" == "TV13_GAPPS" ]
-	then
-		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-	fi
 }
 
 check_waydroid_init () {

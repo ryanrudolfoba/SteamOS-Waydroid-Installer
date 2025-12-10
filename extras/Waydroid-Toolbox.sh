@@ -36,10 +36,36 @@ then
 	exit
 elif [ "$Choice" == "ARM_LIB" ]
 then
-	ARM_Choice=$(zenity --width 900 --height 220 --list --radiolist --multiple --title "Waydroid Toolbox" --column "Select One" --column "Option" --column="Description - Read this carefully!"\
-		TRUE libndk "libndk arm translation, better for AMD CPUs (Internet Connection Required)"\
-		FALSE libhoudini "libhoudini arm translation, better for Intel CPUs (Internet Connection Required)"\
-		FALSE MENU "***** BACK TO MENU *****")
+	# Path to waydroid base
+	CLEAR_PREVIOUS_ARM=$(sed -n 's/^ro\.dalvik\.vm\.native\.bridge=//p' "$HOME/.waydroid/waydroid_base.prop")
+	
+	if [ "$CLEAR_PREVIOUS_ARM" = "libndk_translation.so" ]; then
+		CLEAR_PREVIOUS_ARM="libndk"
+	elif [ "$CLEAR_PREVIOUS_ARM" = "libhoudini.so" ]; then
+		CLEAR_PREVIOUS_ARM="libhoudini"
+	fi
+
+	OPTIONS=("libndk" "libhoudini" "MENU")
+	OPT_DESCRIPTION=("libndk arm translation, better for AMD CPUs (Internet Connection Required)" "libhoudini arm translation, better for Intel CPUs (Internet Connection Required)" "***** BACK TO MENU *****")
+
+	LIST=()
+	for i in "${!OPTIONS[@]}"; do
+		opt="${OPTIONS[$i]}"
+		desc="${OPT_DESCRIPTION[$i]}"
+
+		if [ "$opt" = "$CLEAR_PREVIOUS_ARM" ]; then
+			LIST+=(TRUE "$opt" "$desc")
+		else
+			LIST+=(FALSE "$opt" "$desc")
+		fi
+	done
+
+	ARM_Choice=$(zenity --width 900 --height 220 \
+	--list --radiolist --multiple \
+	--title "Waydroid Toolbox" \
+	--column "Select One" --column "Option" --column="Description - Read this carefully!"\
+    "${LIST[@]}")
+
 	if [ $? -eq 1 ] || [ "$ARM_Choice" == "MENU" ]
 	then
 		echo User pressed MENU. Going back to main menu.
@@ -77,13 +103,20 @@ then
 		
 		#located in function.sh
 		INSTALLATION_METHOD=false
-
-		# install casualsnek libhoudini
-		install_android_extras
+		
+		CLEAR_PREVIOUS_ARM=$(sed -n 's/^ro\.dalvik\.vm\.native\.bridge=//p' "$HOME/.waydroid/waydroid_base.prop")
+		if [ "$CLEAR_PREVIOUS_ARM" = "libndk_translation.so" ]; then
+			CLEAR_PREVIOUS_ARM="libndk"
+		elif [ "$CLEAR_PREVIOUS_ARM" = "libhoudini.so" ]; then
+			CLEAR_PREVIOUS_ARM="libhoudini"
+		fi
+		# install casualsnek libhoudini/libndk
+		install_android_extras "$Choice" "$CLEAR_PREVIOUS_ARM"
 
 		#copy custom prop from this repo
 		#TODO: need to check if android is using A13TV or A13_GAPPS
 		ANDROID_INSTALL_CHOICE="A13_GAPPS"
+		echo "Copying Android spoof custom config"
 		copy_android_custom_config
 
 
