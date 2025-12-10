@@ -131,6 +131,19 @@ install_android_extras () {
 
 	echo casualsnek / aleasto waydroid_script done.
 	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
+	
+	# waydroid_base.prop - controller config and disable root
+	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+
+	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
+	if [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ] 
+	then
+		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+
+	elif [ "$Choice" == "TV13_GAPPS" ]
+	then
+		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+	fi
 }
 
 check_waydroid_init () {
