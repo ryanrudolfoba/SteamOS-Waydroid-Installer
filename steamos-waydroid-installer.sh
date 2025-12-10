@@ -216,7 +216,7 @@ then
 	if [ ! -d /etc/waydroid-extra ]
 	then
 		echo -e "$current_password\n" | sudo -S mkdir /etc/waydroid-extra
-		echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
+		echo -e "$current_password\n" | sudo -S ln -s $HOME/.waydroid/custom /etc/waydroid-extra/images &> /dev/null
 	fi
 
 	# all done lets re-enable the readonly
@@ -229,20 +229,15 @@ else
 	echo If the downloads are slow due to a slow sourceforge mirror - cancel the script \(CTL-C\) and run it again.
 
 	# lets initialize waydroid
-	mkdir -p ~/waydroid/{images,custom,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
-	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
 	# Create Symlink for waydroid
 	# HOME is /home/deck default steamos variable
 	echo "Creating symlink to $HOME/.waydroid from /var/lib"
-	echo -e "$current_password\n" | sudo mkdir -p /home/deck/.waydroid &> /dev/null
-	echo -e "$current_password\n" | sudo mkdir -p $HOME/.waydroid &> /dev/null
-	echo -e "$current_password\n" | sudo mv /var/lib/waydroid/* $HOME/.waydroid/ &> /dev/null
-	echo -e "$current_password\n" | sudo rm -rf /var/lib/waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo mkdir -p $HOME/.waydroid/{images,custom,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs} &> /dev/null
 	echo -e "$current_password\n" | sudo ln -s $HOME/.waydroid /var/lib/waydroid &> /dev/null
 
 	# Create symlink for waydroid images
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
+	echo -e "$current_password\n" | sudo -S ln -s $HOME/.waydroid/images /var/lib/waydroid/images &> /dev/null
+	echo -e "$current_password\n" | sudo -S ln -s $HOME/.waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
 
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
 	# copy fixed key layout for Steam Controller
@@ -287,7 +282,7 @@ else
 		elif [ "$Choice" == "TV13_GAPPS" ]
 		then
 			prepare_custom_image_location
-			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH ~/waydroid/custom/android13tv "Android 13 TV"
+			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH $HOME/.waydroid/custom/android13tv "Android 13 TV"
 
 			echo Applying fix for Leanback Keyboard.
 			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
