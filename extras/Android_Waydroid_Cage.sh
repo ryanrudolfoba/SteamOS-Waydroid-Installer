@@ -11,6 +11,11 @@ then
 	exit
 fi
 
+# fix for intermittent broken internet connection
+sudo /usr/bin/systemctl start firewalld.service
+sudo /usr/bin/firewall-cmd --zone=trusted --remove-interface=waydroid0
+sudo /usr/bin/firewall-cmd --zone=trusted --add-interface=waydroid0
+
 export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 
 # start the waydroid container
