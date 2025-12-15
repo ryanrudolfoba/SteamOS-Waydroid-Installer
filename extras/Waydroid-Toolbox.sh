@@ -197,7 +197,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm binder_linux-dkms fakeroot debugedit dkms plymouth libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr
 	
 		# delete the waydroid directories and config
-		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/AUR
+		echo -e "$PASSWORD\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid /usr/lib/waydroid /etc/waydroid-extra ~/AUR
 	
 		# delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf \
@@ -225,7 +225,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 		echo -e "$PASSWORD\n" | sudo -S pacman -R --noconfirm binder_linux-dkms fakeroot debugedit dkms plymouth libglibutil libgbinder python-gbinder waydroid wlroots cage wlr-randr
 			
 		# delete the waydroid directories and config
-		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid /etc/waydroid-extra ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
+		echo -e $PASSWORD\n | sudo -S rm -rf ~/waydroid /var/lib/waydroid /usr/lib/waydroid /etc/waydroid-extra ~/.local/share/waydroid ~/.local/share/applications/waydroid* ~/AUR
 	
 		# delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf \
