@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# script for check path
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+INSTALLATION_METHOD=true
+CLEAR_PREVIOUS_ARM=false
+
 # define functions here
 cleanup_exit () {
 	# call this function to perform cleanup when a sanity check fails
@@ -12,7 +18,7 @@ cleanup_exit () {
 		dkms plymouth linux-neptune-$(uname -r | cut -d "-" -f5)-headers &> /dev/null
 	
 	# delete the waydroid directories
-	echo -e "$current_password\n" | sudo -S rm -rf ~/waydroid /var/lib/waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm -rf $HOME/.waydroid /var/lib/waydroid &> /dev/null
 	
 	# delete waydroid config and scripts
 	echo -e "$current_password\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid.conf /usr/bin/waydroid* &> /dev/null
@@ -41,7 +47,7 @@ prepare_custom_image_location () {
 # custom Android images needs to be placed in /etc/waydroid-extra/images
 # this will create a symlink to /etc/waydroid-extra/images
 echo -e "$current_password\n" | sudo mkdir /etc/waydroid-extra &> /dev/null
-echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
+echo -e "$current_password\n" | sudo -S ln -s $HOME/.waydroid/custom /etc/waydroid-extra/images &> /dev/null
 }
 
 download_image () {
@@ -62,35 +68,78 @@ download_image () {
 	fi
 
 	echo Extracting Archive
-	echo -e "$current_password\n" | sudo -S unzip -o $dest -d ~/waydroid/custom
+	echo -e "$current_password\n" | sudo -S unzip -o $dest -d $HOME/.waydroid/custom
 	echo -e "$current_password\n" | sudo -S rm $dest_zip
 }
 
+# Cloning Repo waydroids script from casualsnek
+cloning_repo_waydroid_script () {
+
+	WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
+	WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
+
+	# perform git clone of waydroid_script and binder kernel module source
+	echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
+	echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
+	echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
+
+	git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
+
+	if [[ $? -eq 0 ]]
+	then
+		echo Repo has been successfully cloned! Proceed to the next step.
+	else
+		echo Error cloning the repo!
+		rm -rf $WAYDROID_SCRIPT_DIR
+		if $INSTALLATION; then
+			cleanup_exit
+		fi
+	fi
+}
+
+# copy custom config for controller and such
+copy_android_custom_config () {
+
+	# Controller support
+	{ echo ""; sed -n '/^#CONTROLLER_CONFIG_START/,/^#CONTROLLER_CONFIG_END/p' $SCRIPT_DIR/extras/waydroid_base.prop; } | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+	
+	# ROOT waydroid disabled config
+	{ echo "";sed -n '/^#DISABLED_ROOT_START/,/^#DISABLED_ROOT_END/p' $SCRIPT_DIR/extras/waydroid_base.prop; } | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		
+	# waydroid_base.prop - controller config and disable root NOT USED ANYMORE
+	# cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+
+	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
+	if [ "$ANDROID_INSTALL_CHOICE" == "A13_NO_GAPPS" ] || [ "$ANDROID_INSTALL_CHOICE" == "A13_GAPPS" ]
+	then
+		# sed -n '/^#DISABLED_ROOT_START/,/^#DISABLED_ROOT_END/p' xtras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		cat $SCRIPT_DIR/extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+
+	elif [ "$ANDROID_INSTALL_CHOICE" == "TV13_NO_GAPPS" ]
+	then
+		cat $SCRIPT_DIR/extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+	fi
+}
+
+#install arm layer from casualsnek
 install_android_extras () {
+
+	Choice="$1"
+    CLEAR_PREVIOUS_ARM="$2"
 	# casualsnek / aleasto waydroid_script - install libndk and widevine
 	python3 -m venv $WAYDROID_SCRIPT_DIR/venv
 	$WAYDROID_SCRIPT_DIR/venv/bin/pip install -r $WAYDROID_SCRIPT_DIR/requirements.txt &> /dev/null
 
-	if [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ]
+	if [ "$CLEAR_PREVIOUS_ARM" ];
 	then
-		echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {libndk,widevine}
+		echo "Removing Previous ARM: $CLEAR_PREVIOUS_ARM"
+		echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 uninstall {$CLEAR_PREVIOUS_ARM,widevine}
 	fi
+	echo "$Choice installation started:"
+	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$Choice,widevine}
 
 	echo casualsnek / aleasto waydroid_script done.
 	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
-	
-	# waydroid_base.prop - controller config and disable root
-	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-
-	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
-	if [ "$Choice" == "A13_NO_GAPPS" ] || [ "$Choice" == "A13_GAPPS" ] 
-	then
-		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-
-	elif [ "$Choice" == "TV13_GAPPS" ]
-	then
-		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-	fi
 }
 
 check_waydroid_init () {

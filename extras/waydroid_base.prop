@@ -1,8 +1,12 @@
+#CONTROLLER_CONFIG_START
 # controller config for udev events
 persist.waydroid.udev=true
 persist.waydroid.uevent=true
+#CONTROLLER_CONFIG_END
 
+#DISABLED_ROOT_START
 # disable root
 ro.adb.secure=1
 ro.debuggable=0
 ro.build.selinux=1
+#DISABLED_ROOT_END
