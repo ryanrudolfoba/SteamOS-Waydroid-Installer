@@ -9,3 +9,4 @@ cage -- bash -c 'wlr-randr'
 
 # stop the waydroid container
 sudo /usr/bin/systemctl stop waydroid-container.service
+sudo /usr/bin/systemctl stop firewalld.service
