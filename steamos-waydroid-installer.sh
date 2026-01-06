@@ -26,13 +26,17 @@ ANDROID_INSTALL_CHOICE=''
 
 # android TV builds
 #ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250913/lineage-20.0-20250913-UNOFFICIAL-WayDroidATV_x86_64.zip
-
 ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250811/lineage-20.0-20250811-UNOFFICIAL-WayDroidATV_x86_64.zip
 
 # android TV hash
 #ANDROID13_TV_IMG_HASH=309e0692fed0ea5d6b130858553138521d2e8902754db93a2b5a3ca68ecb28e9
-
 ANDROID13_TV_IMG_HASH=0c6cb5f3ccc7edab105d800363c2fe6b457f77f793f04e3fddc6175c0665a2d4
+
+# custom Android 13 builds
+ANDROID13_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13-PvZ2/lineage-20-20251210-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
+
+# custom Android 13 hash
+ANDROID13_IMG_HASH=2ac5d660c3e32b8298f5c12c93b1821bc7ccefbd7cfbf5fee862e169aa744f4c
 
 echo script version: $SCRIPT_VERSION_SHA
 
@@ -259,6 +263,7 @@ else
 		--column="Description - Read this carefully!"\
 		TRUE A13_GAPPS "Download official Android 13 image with Google Play Store."\
 		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
+		FALSE A13_CUSTOM "Download unofficial Android 13 that has new implementation of fake wifi."\
 		FALSE TV13_GAPPS "Download unofficial Android 13 TV image with Google Play Store - thanks SupeChicken666 for the image!" \
 		FALSE EXIT "***** Exit this script *****")
 
@@ -290,7 +295,12 @@ else
 			echo Initializing Waydroid.
  			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-			
+
+		elif [ "$Choice" == "A13_CUSTOM" ]	
+		then
+			echo This is a place holder
+			exit
+					
 		fi
 	# store android install selection
 	ANDROID_INSTALL_CHOICE=$Choice
