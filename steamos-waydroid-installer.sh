@@ -25,12 +25,7 @@ PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 ANDROID_INSTALL_CHOICE=''
 
 # android TV builds
-#ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250913/lineage-20.0-20250913-UNOFFICIAL-WayDroidATV_x86_64.zip
-ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250811/lineage-20.0-20250811-UNOFFICIAL-WayDroidATV_x86_64.zip
-
-# android TV hash
-#ANDROID13_TV_IMG_HASH=309e0692fed0ea5d6b130858553138521d2e8902754db93a2b5a3ca68ecb28e9
-ANDROID13_TV_IMG_HASH=0c6cb5f3ccc7edab105d800363c2fe6b457f77f793f04e3fddc6175c0665a2d4
+ANDROID13_TV_OTA=https://ota.supechicken666.dev
 
 # custom Android 13 builds
 ANDROID13_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13-PvZ2/lineage-20-20251210-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
@@ -265,6 +260,7 @@ else
 		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
 		FALSE A13_CUSTOM "Download unofficial Android 13 that has new implementation of fake wifi."\
 		FALSE TV13_GAPPS "Download unofficial Android 13 TV image with Google Play Store - thanks SupeChicken666 for the image!" \
+		FALSE TV13_NO_GAPPS "Download unofficial Android 13 TV image without Google Play Store - thanks SupeChicken666 for the image!" \
 		FALSE EXIT "***** Exit this script *****")
 
 		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
@@ -286,21 +282,21 @@ else
 
 		elif [ "$Choice" == "TV13_GAPPS" ]
 		then
-			prepare_custom_image_location
-			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH $HOME/.waydroid/custom/android13tv "Android 13 TV"
-
-			echo Applying fix for Leanback Keyboard.
-			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
-
 			echo Initializing Waydroid.
- 			echo -e "$current_password\n" | sudo -S waydroid init
+ 			echo -e "$current_password\n" | sudo -S waydroid init -c ${ANDROID13_TV_OTA}/system -v ${ANDROID13_TV_OTA}/vendor -s GAPPS
 			check_waydroid_init
 
-		elif [ "$Choice" == "A13_CUSTOM" ]	
+		elif [ "$Choice" == "TV13_NO_GAPPS" ]
+		then
+			echo Initializing Waydroid.
+ 			echo -e "$current_password\n" | sudo -S waydroid init -c ${ANDROID13_TV_OTA}/system -v ${ANDROID13_TV_OTA}/vendor
+			check_waydroid_init
+
+		elif [ "$Choice" == "A13_CUSTOM" ]
 		then
 			echo This is a place holder
 			exit
-					
+
 		fi
 	# store android install selection
 	ANDROID_INSTALL_CHOICE=$Choice
@@ -360,10 +356,10 @@ EOF
 	sleep 3
 	rm -f "$TMP_DESKTOP"
 	echo Waydroid shortcut has been added to Game Mode.
-	
+
 	# create icon for the Waydroid shortcut
 	python3 extras/icon.py
-	
+
 	# add steamos-nested-desktop to Game Mode. This can be used when doing Waydroid maintenance.
 	steamos-add-to-steam /usr/bin/steamos-nested-desktop  &> /dev/null
 	sleep 3
