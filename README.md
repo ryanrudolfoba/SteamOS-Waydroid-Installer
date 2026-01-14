@@ -45,7 +45,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
    ```
    
 2. Wait for Waydroid to finish the boot sequence.
-3. Launch Dolphin File Manager. In the address bar go to `/home/deck/.loca/share/waydroid`
+3. Launch Dolphin File Manager. In the address bar go to `/home/deck/.local/share/waydroid`
 	<img width="750" height="349" alt="image" src="https://github.com/user-attachments/assets/97589bc7-7849-4d2f-91ce-ab100d710a9c" />
 
 4. Right-click empty spot on the right pane and select `Open Dolphin File Manager as Root`
@@ -147,7 +147,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 5. enhancement - disable root detection (some apps might still detect root)
 6. enhancement - disable first time setup wizard
 7. enhancement - Waydroid Toolbox - added NETWORK option
-8. enhanceement - Waydroid Toolbox - updated ADBLOCK option
+8. enhancement - Waydroid Toolbox - updated ADBLOCK option
 
 **What's New (as of Oct 10 2024)**
 1. add support for latest SteamOS Beta 3.6.16 / 3.6.17
@@ -167,7 +167,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 1. support for SteamOS 3.6.9
 2. waydroid bump from 1.4.2 to 1.4.3
 3. lxc bump from 0.2 to 0.3
-4. binder kernel môdule re-built using latest May26 commits
+4. binder kernel module re-built using latest May26 commits
 5. cleanup the binder kernel folder names so its easier to read
 6. remove libndk-fixer (not needed anymore for Roblox)
 7. Add sanity check on the waydroid launcher
@@ -187,7 +187,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 1. Roblox now works thanks to slappy826! [demo guide here how to configure Roblox](https://youtu.be/-czisFuKoTM?si=8EPXyzasi3no70Tl)
 2. Updated the Waydroid Toolbox script
 3. code cleanup / additional logic
-4. switch from gbm to minigm_gbm_mesa
+4. switch from gbm to minigbm_gbm_mesa
 
 **What's New (as of April 25 2024)**
 1. This works with latest stable SteamOS 3.5.19. There is no kernel change for SteamOS - it still uses 6.1.52-valve16-1 so this works right away no need for new kernel modules.\
@@ -276,7 +276,7 @@ SteamOS has been stuck on 6.1.52-valve16-1 for several releases now so I think t
 
 # Additional Considerations
 <details>
-<summary><b>Click here - Read the sections below carefully. This are purely OPTIONAL.</b></summary>
+<summary><b>Click here - Read the sections below carefully. These are purely OPTIONAL.</b></summary>
 
 **Steam Deck Controller Layout**
 [Thanks to DanielLester83!](https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/issues/134)
@@ -325,7 +325,7 @@ Re-run the script again but if the SteamOS update contains a new kernel version 
 Please file an issue report when this happens so I can compile a binder kernel module to match the SteamOS update.
 
 # Mini-guides for Steam Deck Android Waydroid
-This mini guides are tailor-fitted for the Steam Deck that uses the script provided in this repo.
+These mini guides are tailor-fitted for the Steam Deck that uses the script provided in this repo.
 
 | [How to Sideload APKs](https://youtu.be/LglEbSdRc0M) | [How to Upgrade the Android Image](https://youtu.be/lfwoZZxXh7I) |
 | ------------- | ------------- |
