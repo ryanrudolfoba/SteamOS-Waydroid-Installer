@@ -1,21 +1,23 @@
 ##########################################################################
 ### start of custom build prop - you can safely delete if this causes issue
+### This sets the device fingerprint to Google Pixel 10 Pro
+
 
 ro.product.brand=google
-ro.product.manufacturer=google
-ro.system.build.product=redfin
-ro.product.name=redfin
-ro.product.device=redfin
-ro.product.model=Pixel 5
-ro.system.build.flavor=redfin-user
-ro.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.system.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
-ro.bootimage.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.build.display.id=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
+ro.product.manufacturer=Google
+ro.system.build.product=blazer
+ro.product.name=blazer
+ro.product.device=blazer
+ro.product.model=Pixel 10 Pro
+ro.system.build.flavor=blazer-user
+ro.build.fingerprint=google/blazer/blazer:13/BP4A.251205.006/14401865:user/release-keys
+ro.system.build.description=blazer-user 13 BP4A.251205.006 14401865 release-keys
+ro.bootimage.build.fingerprint=google/blazer/blazer:13/BP4A.251205.006/14401865:user/release-keys
+ro.build.display.id=google/blazer/blazer:13/BP4A.251205.006/14401865:user/release-keys
 ro.build.tags=release-keys
-ro.build.description=redfin-user 11 RQ3A.211001.001 eng.electr.20230318.111310 release-keys
-ro.vendor.build.fingerprint=google/redfin/redfin:11/RQ3A.211001.001/eng.electr.20230318.111310:user/release-keys
-ro.vendor.build.id=RQ3A.211001.001
+ro.build.description=blazer-user 13 BP4A.251205.006 14401865 release-keys
+ro.vendor.build.fingerprint=google/blazer/blazer:13/BP4A.251205.006/14401865:user/release-keys
+ro.vendor.build.id=BP4A.251205.006
 ro.vendor.build.tags=release-keys
 ro.vendor.build.type=user
 ro.odm.build.tags=release-keys
