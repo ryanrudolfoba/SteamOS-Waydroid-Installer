@@ -201,6 +201,7 @@ cp extras/Android_Waydroid_Cage.sh \
 	extras/Waydroid-Toolbox.sh \
 	extras/Waydroid-Updater.sh \
 	functions.sh \
+	extras\fake_wifi \
 	~/Android_Waydroid
 
 # copy extras
