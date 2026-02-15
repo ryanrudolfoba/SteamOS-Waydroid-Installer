@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# fix for intermittent broken internet connection
+systemctl start firewalld.service
+firewall-cmd --zone=trusted --remove-interface=waydroid0
+firewall-cmd --zone=trusted --add-interface=waydroid0
+systemctl restart firewalld.service
+
+# start the waydroid container service
+systemctl start waydroid-container.service

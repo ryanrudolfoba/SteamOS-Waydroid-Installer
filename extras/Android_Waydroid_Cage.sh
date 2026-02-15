@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
+
+# mount /var/lib/waydroid
+sudo /usr/bin/waydroid-mount
+
 # Check if waydroid exists
 if [ ! -f /usr/bin/waydroid ]
 then
@@ -11,16 +16,10 @@ then
 	exit
 fi
 
-# fix for intermittent broken internet connection
-sudo /usr/bin/systemctl start firewalld.service
-sudo /usr/bin/firewall-cmd --zone=trusted --remove-interface=waydroid0
-sudo /usr/bin/firewall-cmd --zone=trusted --add-interface=waydroid0
+# fix for intermittent broken internet connection and start waydroid container service
+sudo /usr/bin/waydroid-firewall
 
-export RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
-
-# start the waydroid container
-sudo /usr/bin/systemctl start waydroid-container.service
-
+# check the status of waydroid container
 systemctl status waydroid-container.service | grep -i running
 if [ $? -ne 0 ]
 then
@@ -35,11 +34,19 @@ then
 	cage -- bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
 		/usr/bin/waydroid show-full-ui $@ & \
 
+		sleep 10 ; \
+		waydroid prop set persist.waydroid.fake_wifi $(cat fake_wifi) ; \
+		waydroid prop set persist.waydroid.fake_touch $(cat fake_touch) ; \
+
 		sudo /usr/bin/waydroid-startup-scripts'
 else
 	# launch option provided. launch Waydroid via cage but do not show full ui, launch the app from the arguments, then launch the full ui so it doesnt crash when exiting the app provided
 	cage -- env PACKAGE="$1" bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
 		/usr/bin/waydroid session start $@ & \
+		
+		sleep 10 ; \
+		waydroid prop set persist.waydroid.fake_wifi $(cat fake_wifi) ; \
+		waydroid prop set persist.waydroid.fake_touch $(cat fake_touch) ; \
 
 		sudo /usr/bin/waydroid-startup-scripts ; \
 

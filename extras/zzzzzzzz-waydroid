@@ -1,7 +1,4 @@
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-startup-scripts
 deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-shutdown-scripts
-deck ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop waydroid-container.service
-deck ALL=(ALL) NOPASSWD: /usr/bin/systemctl start waydroid-container.service
-deck ALL=(ALL) NOPASSWD: /usr/bin/systemctl start firewalld.service
-deck ALL=(ALL) NOPASSWD: /usr/bin/firewall-cmd --zone=trusted --remove-interface=waydroid0
-deck ALL=(ALL) NOPASSWD: /usr/bin/firewall-cmd --zone=trusted --add-interface=waydroid0
+deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-mount
+deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-firewall

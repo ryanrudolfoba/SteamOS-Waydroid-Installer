@@ -8,5 +8,9 @@ rm -f /home/deck/Android_Waydroid/orig_kernel.pid_max
 cage -- bash -c 'wlr-randr'
 
 # stop the waydroid container
-sudo /usr/bin/systemctl stop waydroid-container.service
-sudo /usr/bin/systemctl stop firewalld.service
+systemctl stop waydroid-container.service
+systemctl stop firewalld.service
+
+# unmount the custom var directory for waydroid
+umount /var/lib/waydroid
+losetup -d $(losetup | grep waydroid.img | cut -d " " -f1)

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# first make sure /var/lib/waydroid is not mounted
+systemctl stop waydroid-container.service && umount /var/lib/waydroid && losetup -d $(losetup | grep waydroid.img | cut -d " " -f1)
+
+# this will create custom mount for /var/lib/waydroid
+ROOTDEV=$(losetup --find --show /home/deck/Android_Waydroid/waydroid.img) && mount $ROOTDEV /var/lib/waydroid
