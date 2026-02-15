@@ -20,17 +20,17 @@ BINDER_DIR=$(mktemp -d)/aur_binder
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
-FREE_VAR=$(df /var --output=avail | tail -n1)
+PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
+ARM_Choice=libhoudini
 
 # android TV builds
-#ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250913/lineage-20.0-20250913-UNOFFICIAL-WayDroidATV_x86_64.zip
+ANDROID13_TV_OTA=https://ota.supechicken666.dev
 
-ANDROID13_TV_IMG=https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250811/lineage-20.0-20250811-UNOFFICIAL-WayDroidATV_x86_64.zip
+# custom Android 13 builds
+ANDROID13_IMG=https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13-PvZ2/lineage-20-20251210-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
 
-# android TV hash
-#ANDROID13_TV_IMG_HASH=309e0692fed0ea5d6b130858553138521d2e8902754db93a2b5a3ca68ecb28e9
-
-ANDROID13_TV_IMG_HASH=0c6cb5f3ccc7edab105d800363c2fe6b457f77f793f04e3fddc6175c0665a2d4
+# custom Android 13 hash
+ANDROID13_IMG_HASH=aafdd4ef69e8a11d64ba02e881c1697d6a3ee4fa4c1fb97e33abc6da5f4bb6d4
 
 echo script version: $SCRIPT_VERSION_SHA
 
@@ -41,28 +41,40 @@ source functions.sh
 source sanity-checks.sh
 
 # sanity checks are all good. lets go!
-# create AUR directory where casualsnek script will be saved
-mkdir -p ~/AUR/waydroid &> /dev/null
 
 # perform git clone of waydroid_script and binder kernel module source
 echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
-git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null && \
-git clone $BINDER_AUR $BINDER_DIR &> /dev/null
-if [[ $? -ne 0 ]]; then
-	echo "AUR repo failed, falling back to GitHub mirror."
-	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
-fi
-
-if [[ $? -eq 0 ]]
+git clone --depth=1 $WAYDROID_SCRIPT $WAYDROID_SCRIPT_DIR &> /dev/null
+if [ $? -eq 0 ]
 then
 	echo Repo has been successfully cloned! Proceed to the next step.
 else
-	echo Error cloning the repo!
+	echo Error cloning the casualsnek / aleasto waydroid_script repo!
 	rm -rf $WAYDROID_SCRIPT_DIR
 	cleanup_exit
+fi
+
+# Clone binder
+git clone $BINDER_AUR $BINDER_DIR &> /dev/null
+if [ $? -eq 0 ]
+then
+	echo Binder AUR has been successfully cloned! Proceed to the next step.
+else
+	echo Error cloning the binder repo! Trying the binder github mirror.
+	rm -rf $BINDER_DIR
+	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
+
+	if [ $? -eq 0 ]
+	then
+		echo Binder has been successfully cloned! Proceed to the next step.
+	else
+		echo Error cloning the binder repo. Both AUR and github mirror failed!
+		rm -rf $BINDER_DIR
+		cleanup_exit
+	fi
 fi
 
 # unlock the readonly and initialize keyring using the devmode method
@@ -171,19 +183,33 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 
 # lets install the custom config files
-mkdir ~/Android_Waydroid &> /dev/null
+mkdir -p ~/Android_Waydroid/extras &> /dev/null
 
 # waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
 echo -e "$current_password\n" | sudo -S cp extras/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-mount /usr/bin/waydroid-mount
+echo -e "$current_password\n" | sudo -S cp extras/waydroid-firewall /usr/bin/waydroid-firewall
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts /usr/bin/waydroid-mount /usr/bin/waydroid-firewall
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
+# waydroid launcher, functions ,toolbox and updater
+cp extras/Android_Waydroid_Cage.sh \
+	extras/Waydroid-Toolbox.sh \
+	extras/Waydroid-Updater.sh \
+	functions.sh \
+	~/Android_Waydroid
+
+# copy extras
+cp extras/android_spoof.prop \
+	extras/androidtv_spoof.prop \
+	extras/waydroid_base.prop \
+	~/Android_Waydroid/extras
+
 # waydroid launcher, toolbox and updater
-cp extras/Android_Waydroid_Cage.sh extras/Waydroid-Toolbox.sh extras/Waydroid-Updater.sh ~/Android_Waydroid
 chmod +x ~/Android_Waydroid/*.sh
 
 # Dolphin File Manager extension for root access
@@ -195,15 +221,29 @@ chmod +x ~/.local/share/kio/servicemenus/open_as_root.desktop
 ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
 ln -s ~/Android_Waydroid/Waydroid-Updater.sh ~/Desktop/Waydroid-Updater &> /dev/null
 
+# prepare and mount custom /var/lib/waydroid
+echo Creating custom /var/lib/waydroid this can take a while.
+echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid
+mount_waydroid_var
+
+if [ $? -eq 0 ]
+then
+	echo Custom /var/lib/waydroid has been created and mounted!
+else
+	echo Error creating /var/lib/waydroid. Exiting immediately.
+	cleanup_exit
+fi
+
 # lets check if this is a reinstall
-grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
+echo Checking if this is a reinstall.
+grep blazer /var/lib/waydroid/waydroid_base.prop &> /dev/null || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
 then
 	echo This seems to be a reinstall. Lets just make sure the symlinks are in place!
 	if [ ! -d /etc/waydroid-extra ]
 	then
 		echo -e "$current_password\n" | sudo -S mkdir /etc/waydroid-extra
-		echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/custom /etc/waydroid-extra/images &> /dev/null
+		echo -e "$current_password\n" | sudo -S ln -s /var/lib/waydroid/custom /etc/waydroid-extra/images &> /dev/null
 	fi
 
 	# all done lets re-enable the readonly
@@ -214,12 +254,6 @@ else
 	echo This can take a few seconds to a few minutes depending on the internet connection and the speed of the sourceforge mirror.
 	echo Sometimes it connects to a slow sourceforge mirror and the downloads are slow -. This is beyond my control!
 	echo If the downloads are slow due to a slow sourceforge mirror - cancel the script \(CTL-C\) and run it again.
-
-	# lets initialize waydroid
-	mkdir -p ~/waydroid/{images,custom,cache_http,host-permissions,lxc,overlay,overlay_rw,rootfs}
-	echo -e "$current_password\n" | sudo mkdir /var/lib/waydroid &> /dev/null
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/images /var/lib/waydroid/images &> /dev/null
-	echo -e "$current_password\n" | sudo -S ln -s ~/waydroid/cache_http /var/lib/waydroid/cache_http &> /dev/null
 
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
 	# copy fixed key layout for Steam Controller
@@ -234,53 +268,71 @@ else
 	echo -e "$current_password\n" | sudo -S wget https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts \
 		       -O /var/lib/waydroid/overlay/system/etc/hosts
 
-	Choice=$(zenity --width 1040 --height 320 --list --radiolist --multiple \
+	Android_Choice=$(zenity --width 1040 --height 320 --list --radiolist --multiple \
 		--title "SteamOS Waydroid Installer  - https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer"\
 		--column "Select One" \
 		--column "Option" \
 		--column="Description - Read this carefully!"\
 		TRUE A13_GAPPS "Download official Android 13 image with Google Play Store."\
 		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
+		FALSE A13_CUSTOM "Download unofficial Android 13 that has new implementation of fake wifi."\
 		FALSE TV13_GAPPS "Download unofficial Android 13 TV image with Google Play Store - thanks SupeChicken666 for the image!" \
+		FALSE TV13_NO_GAPPS "Download unofficial Android 13 TV image without Google Play Store - thanks SupeChicken666 for the image!" \
 		FALSE EXIT "***** Exit this script *****")
 
-		if [ $? -eq 1 ] || [ "$Choice" == "EXIT" ]
+		if [ $? -eq 1 ] || [ "$Android_Choice" == "EXIT" ]
 		then
 			echo User pressed CANCEL / EXIT. Goodbye!
 			cleanup_exit
 
-		elif [ "$Choice" == "A13_GAPPS" ]
+		elif [ "$Android_Choice" == "A13_GAPPS" ]
 		then
 			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init -s GAPPS
 			check_waydroid_init
 
-		elif [ "$Choice" == "A13_NO_GAPPS" ]
+		elif [ "$Android_Choice" == "A13_NO_GAPPS" ]
 		then
 			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
 
-		elif [ "$Choice" == "TV13_GAPPS" ]
+		elif [ "$Android_Choice" == "TV13_GAPPS" ]
+		then
+			echo Initializing Waydroid.
+ 			echo -e "$current_password\n" | sudo -S waydroid init -c ${ANDROID13_TV_OTA}/system -v ${ANDROID13_TV_OTA}/vendor -s GAPPS
+			check_waydroid_init
+
+		elif [ "$Android_Choice" == "TV13_NO_GAPPS" ]
+		then
+			echo Initializing Waydroid.
+ 			echo -e "$current_password\n" | sudo -S waydroid init -c ${ANDROID13_TV_OTA}/system -v ${ANDROID13_TV_OTA}/vendor
+			check_waydroid_init
+
+		elif [ "$Android_Choice" == "A13_CUSTOM" ]
 		then
 			prepare_custom_image_location
-			download_image $ANDROID13_TV_IMG $ANDROID13_TV_IMG_HASH ~/waydroid/custom/android13tv "Android 13 TV"
-
-			echo Applying fix for Leanback Keyboard.
-			echo -e "$current_password\n" | sudo -S cp extras/ATV-Generic.kl /var/lib/waydroid/overlay/system/usr/keylayout/Generic.kl
-
+			download_image $ANDROID13_IMG $ANDROID13_IMG_HASH /var/lib/waydroid/custom "Android 13 Custom Image"
 			echo Initializing Waydroid.
- 			echo -e "$current_password\n" | sudo -S waydroid init
+			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-			
+
 		fi
-	
+
 	# run casualsnek / aleasto waydroid_script
-	echo Install libndk, widevine and fingerprint spoof.
-	install_android_extras
+	echo Install $ARM_Choice widevine and fingerprint spoof.
+	if [ "$Android_Choice" == "A13_CUSTOM" ]
+	then
+		install_android_extras_custom
+	else
+		install_android_extras
+	fi
+
+	# copy custom config for root and spoof
+	copy_android_custom_config
 
 	# change GPU rendering to use minigbm_gbm_mesa
-	echo -e $PASSWORD\n | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
+	echo -e "$current_password\n" | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop
 
 	echo "Adding shortcuts to Game Mode. Please wait..."
 
@@ -311,10 +363,10 @@ EOF
 	sleep 3
 	rm -f "$TMP_DESKTOP"
 	echo Waydroid shortcut has been added to Game Mode.
-	
+
 	# create icon for the Waydroid shortcut
 	python3 extras/icon.py
-	
+
 	# add steamos-nested-desktop to Game Mode. This can be used when doing Waydroid maintenance.
 	steamos-add-to-steam /usr/bin/steamos-nested-desktop  &> /dev/null
 	sleep 3
@@ -323,6 +375,12 @@ EOF
 	# all done lets re-enable the readonly
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable
 	echo Waydroid has been successfully installed!
+
+	# unmount the custom /var/lib/waydroid
+	echo Unmounting the custom /var/lib/waydroid
+	echo -e "$current_password\n" | sudo systemctl stop waydroid-container.service
+	unmount_waydroid_var
+	mv extras/waydroid.img ~/Android_Waydroid/waydroid.img
 fi
 
 # all done! Display dialog box for Gaming Mode

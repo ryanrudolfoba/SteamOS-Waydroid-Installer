@@ -43,36 +43,16 @@ then
 	fi
 fi
 
-# sanity check - make sure there is enough free space in the home partition (at least 5GB)
+# sanity check - make sure there is enough free space in the home partition (at least 10GB)
 echo Checking if home partition has enough free space
 echo home partition has $FREE_HOME free space.
-if [ $FREE_HOME -ge 5000000 ]
+if [ $FREE_HOME -ge 10000000 ]
 then
 	echo home partition has enough free space.
 else
 	echo Not enough space on the home partition!
-	echo Make sure that there is at least 5GB free space on the home partition!
+	echo Make sure that there is at least 10GB free space on the home partition!
 	exit
-fi
-
-# sanity check - is this a reinstall?
-# this sanity check will go away once the var trick is completed
-grep redfin /var/lib/waydroid/waydroid_base.prop &> /dev/null || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
-if [ $? -eq 0 ]
-then
-	echo This seems to be a reinstall. var sanity check not needed.
-else
-	# sanity check - make sure there is enough free space in the var partition (at least 100MB)
-	echo Checking if var partition has enough free space
-	echo var partition has $FREE_VAR free space.
-	if [ $FREE_VAR -ge 100000 ]
-	then
-		echo var partition has enough free space.
-	else
-		echo Not enough space on the var partition!
-		echo Make sure that there is at least 100MB free space on the var partition!
-		exit
-	fi
 fi
 
 # sanity check - make sure sudo password is already set
