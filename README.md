@@ -21,7 +21,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 
 | [SteamOS Waydroid Android Install Guide](https://www.youtube.com/watch?v=06T-h-jPVx8) | [SteamOS Waydroid Android Upgrade Guide](https://youtu.be/CJAMwIb_oI0) |
 | ------------- | ------------- |
-| [![image](https://github.com/user-attachments/assets/2f531480-2786-4ca7-9505-51a5b7443ff3)](https://youtu.be/06T-h-jPVx8)  | [![image](https://github.com/user-attachments/assets/88bb1e93-2f80-4ed0-82f1-1cbe78e04a2f)](https://youtu.be/CJAMwIb_oI0)  |
+| [![image](https://github.com/user-attachments/assets/514beb00-766e-4e3e-8d2b-64b13b6a6ef0)](https://youtu.be/uZz9jdPBsb4)  | [![image](https://github.com/user-attachments/assets/88bb1e93-2f80-4ed0-82f1-1cbe78e04a2f)](https://youtu.be/CJAMwIb_oI0)  |
 
 | [Android TV demo](https://youtu.be/gNFxrojouiM) | [Android 13 demo](https://youtu.be/5BZz8YynaUA) |
 | ------------- | ------------- |
