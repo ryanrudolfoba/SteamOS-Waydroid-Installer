@@ -200,15 +200,9 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 cp extras/Android_Waydroid_Cage.sh \
 	extras/Waydroid-Toolbox.sh \
 	extras/Waydroid-Updater.sh \
-	functions.sh \
 	extras/fake_wifi \
+	extras/fake_touch \
 	~/Android_Waydroid
-
-# copy extras
-cp extras/android_spoof.prop \
-	extras/androidtv_spoof.prop \
-	extras/waydroid_base.prop \
-	~/Android_Waydroid/extras
 
 # waydroid launcher, toolbox and updater
 chmod +x ~/Android_Waydroid/*.sh
@@ -317,20 +311,24 @@ else
 			echo Initializing Waydroid.
 			echo -e "$current_password\n" | sudo -S waydroid init
 			check_waydroid_init
-
 		fi
 
 	# run casualsnek / aleasto waydroid_script
 	echo Install $ARM_Choice widevine and fingerprint spoof.
-	if [ "$Android_Choice" == "A13_CUSTOM" ]
+	if [ "$Android_Choice" == "TV13_GAPPS" ] || [ "$Android_Choice" == "TV13_NO_GAPPS" ]
+	then
+		echo No need for casualsnek / aleasto waydroid_script for TV13 images.
+		echo TV13 images already contains libhoudini arm translation layer and widevine.
+
+	elif [ "$Android_Choice" == "A13_CUSTOM" ]
 	then
 		install_android_extras_custom
 	else
 		install_android_extras
 	fi
 
-	# copy custom config for root and spoof
-	copy_android_custom_config
+	# apply custom config for controller detection, root and fingerprint spoof
+	apply_android_custom_config
 
 	# change GPU rendering to use minigbm_gbm_mesa
 	echo -e "$current_password\n" | sudo -S sed -i "s/ro.hardware.gralloc=.*/ro.hardware.gralloc=minigbm_gbm_mesa/g" /var/lib/waydroid/waydroid_base.prop

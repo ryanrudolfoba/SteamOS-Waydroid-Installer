@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# script for check path
-SCRIPT_PATH="$(readlink -f "$0")"
-SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-INSTALLATION_METHOD=true
-CLEAR_PREVIOUS_ARM=false
-
 # define functions here
 mount_waydroid_var () {
 	# this will initialize and configure custom /var/lib/waydroid
@@ -95,27 +89,23 @@ download_image () {
 	echo -e "$current_password\n" | sudo -S rm $dest_zip
 }
 
-# copy custom config for controller and such
-copy_android_custom_config () {
+# apply custom config for controller detection, root and fingerprint spoof
+apply_android_custom_config () {
 
-	# Controller support
-	{ echo ""; sed -n '/^#CONTROLLER_CONFIG_START/,/^#CONTROLLER_CONFIG_END/p' $SCRIPT_DIR/extras/waydroid_base.prop; } | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-	
-	# ROOT waydroid disabled config
-	{ echo "";sed -n '/^#DISABLED_ROOT_START/,/^#DISABLED_ROOT_END/p' $SCRIPT_DIR/extras/waydroid_base.prop; } | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-		
-	# waydroid_base.prop - controller config and disable root NOT USED ANYMORE
-	# cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+	# waydroid_base.prop - controller config and disable root
+	echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
 	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
 	if [ "$Android_Choice" == "A13_NO_GAPPS" ] || [ "$Android_Choice" == "A13_GAPPS" ] || [ "$Android_Choice" == "A13_CUSTOM" ]
 	then
-		# sed -n '/^#DISABLED_ROOT_START/,/^#DISABLED_ROOT_END/p' xtras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-		cat $SCRIPT_DIR/extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
 	elif [ "$Android_Choice" == "TV13_NO_GAPPS" ] || [ "$Android_Choce" == "TV13_GAPPS" ]
 	then
-		cat $SCRIPT_DIR/extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 	fi
 }
 
@@ -142,7 +132,7 @@ install_android_extras_custom () {
 
 	echo "$ARM_Choice installation started:"
 	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$ARM_Choice,widevine,gapps}
-
+	
 	echo casualsnek / aleasto waydroid_script done. $ARM_Choice installed.
 	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
 }
