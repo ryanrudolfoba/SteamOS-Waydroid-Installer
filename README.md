@@ -19,7 +19,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 
 **Script has gone through several updates - this now allows you to install Android 11 / Android 13 and their TV counterparts - Android 11 TV / Android 13 TV!**
 
-| [SteamOS Waydroid Android Install Guide](https://www.youtube.com/watch?v=06T-h-jPVx8) | [SteamOS Waydroid Android Upgrade Guide](https://youtu.be/CJAMwIb_oI0) |
+| [2026 SteamOS Waydroid Android Install Guide](https://www.youtube.com/watch?v=06T-h-jPVx8) | [SteamOS Waydroid Android Upgrade Guide](https://youtu.be/CJAMwIb_oI0) |
 | ------------- | ------------- |
 | [![image](https://github.com/user-attachments/assets/514beb00-766e-4e3e-8d2b-64b13b6a6ef0)](https://youtu.be/uZz9jdPBsb4)  | [![image](https://github.com/user-attachments/assets/88bb1e93-2f80-4ed0-82f1-1cbe78e04a2f)](https://youtu.be/CJAMwIb_oI0)  |
 
@@ -27,6 +27,8 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 | ------------- | ------------- |
 | [![image](https://github.com/user-attachments/assets/093bf362-10da-4ff6-ab3d-a3e50ea3c9f7)](https://youtu.be/gNFxrojouiM)  | [![image](https://github.com/user-attachments/assets/cdb47289-4ac6-4625-9fed-0903d624958a)](https://youtu.be/5BZz8YynaUA)  |
 
+<details>
+<summary><b>SCREENSHOTS! SCREENSHOTS! SCREENSHOTS!</b></summary>
 
 ![image](https://github.com/user-attachments/assets/a9bc05cc-87ea-43f3-a628-56b0250ae88d)
 
@@ -36,15 +38,17 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 
 **Android 13 TV**
 ![image](https://github.com/user-attachments/assets/141c2ec6-9918-40e8-bf87-2e199fbbb3f9)
+</details>
 
-## How to Access the Waydroid Folder in Dolphin File Manager
+<details>
+<summary><b>How to Access the Waydroid Folder in Dolphin File Manager</b></summary>
+
 1. Launch Waydroid in Desktop Mode via konsole -
-   ```
    cd ~/Android_Waydroid
    ./Android_Waydroid_Cage.sh
-   ```
-   
+	
 2. Wait for Waydroid to finish the boot sequence.
+
 3. Launch Dolphin File Manager. In the address bar go to `/home/deck/.local/share/waydroid`
 	<img width="750" height="349" alt="image" src="https://github.com/user-attachments/assets/97589bc7-7849-4d2f-91ce-ab100d710a9c" />
 
@@ -59,7 +63,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 
 7. From here you can now access the Waydroid folders
 	<img width="779" height="585" alt="image" src="https://github.com/user-attachments/assets/fc51f1b2-20f0-4720-b474-b4a50bfa72e3" />
-
+</details>
 
 > [!NOTE]
 > If you are going to use this script for a video tutorial, PLEASE reference on your video where you got the script! This will make the support process easier!
@@ -83,14 +87,29 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 1. Do this at your own risk!
 2. This is for educational and research purposes only!
 
-# [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/8S1RNSqFDu4?si=oCfwYNbs8u9sMKGr)
-[Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38)
+# [Video Tutorial - SteamOS Android Waydroid Installer](https://youtu.be/uZz9jdPBsb4)
+[Click the image below for a video tutorial and to see the functionalities of the script!](https://youtu.be/uZz9jdPBsb4)
 </b>
 <p align="center">
-<a href="https://youtu.be/06T-h-jPVx8?si=pTWAlmcYyk9fHa38"> <img src="https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/blob/main/android.webp"/> </a>
+<a href="https://youtu.be/uZz9jdPBsb4"> <img src="https://github.com/user-attachments/assets/2a46ceae-2d18-4625-bf97-6c000dbc34f7" /> </a>
 </p>
+# What's New (as of Feb 20 2026)
+* change from Pixel 5 spoof to Pixel 10 Pro spoof
+* ability to install custom LineageOS build that contains new fake wifi implementation (thanks ayesa)
+* fake wifi config automatically enabled for PvZ 2
+* latest ATV13 builds (thanks supechicken)
+* workaround for small var partition in SteamOS - ability to use libhoudini
+* libhoudini as default translation layer instead of libndk for greater compatibility (pokemon, arknights, fire emblem etc are working) (thanks gagantous for the initial testing)
+* fix for intermittent broken internet
+* k2er, mantis, shizuku automatic activation
+* CoD Mobile controller support (thanks Wudi-ZhanShen)
+* maybe something else i forgot to write!
 
-# What's New (as of Nov 15 2025)
+thanks to waydroid devs, ayesa, supechicken, Wudi-ZhanShen, gagantous and casualsnek!
+
+<details>
+<summary><b>Old Changelog - Click here for more details</b></summary>
+**What's New (as of Nov 15 2025)**
 1. Xbox Wireless Controller spoofing so that Call of Duty CoD Mobile works with the Steam Deck controller
 2. Fixed low audio on fresh install
 3. Latest StevenBlack adblock host file automatically downloaded during install
@@ -100,40 +119,37 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 7. Refactored the python script that adds the waydroid icon for easy readability of the script
 8. Updated uninstall
 
-# What's New (as of July 28 2025)
+**What's New (as of July 28 2025)**
 1. Sanity check updated - instead of kernel version check it will check if running on SteamOS stable / SteamOS beta
 2. Auto build the binder kernel module
 3. Cleanup and remove traces of A11. Available options to choose - A13 GAPPS, A13 NO_GAPPS, ATV13 NO_GAPPS
 
-# What's New (as of July 02 2025)
+**What's New (as of July 02 2025)**
 1. Support for SteamOS stable 3.7.13 (this is same kernel used as 3.7.10 so really nothing changed here)
 
-# What's New (as of June 19 2025)
+**What's New (as of June 19 2025)**
 1. Support for SteamOS beta 3.7.10
 
-# What's New (as of June 03 2025)
+**What's New (as of June 03 2025)**
 1. `testing` branch works on latest SteamOS stable 3.7.8 and latest SteamOS beta 3.7.9.
 2. Updated waydroid from 1.4.3 to 1.5.1
 3. Updated official Android 13 GAPPS / NOGAPPS image. This uses latest build as of May 31 2025
 
-# What's New (as of May 16 2025)
+**What's New (as of May 16 2025)**
 1. Official Android 13 images (GAPPS and NOGAPPS)
 2. Working LIBNDK ARM translation layer for Android 13
 
-# What's New (as of Feb 28 2025)
+**What's New (as of Feb 28 2025)**
 1. Spoof Android TV to Philips TV
 
-# What's New (as of Jan 21 2025)
+**What's New (as of Jan 21 2025)**
 1. Initial support for Android 13 - NOGAPPS
 
-# What's New (as of Jan 20 2025)
+**What's New (as of Jan 20 2025)**
 1. Initial support for Android 13 TV
 
-# What's New (as of Jan 16 2025)
+**What's New (as of Jan 16 2025)**
 1. Initial support for Android 11 TV
-
-<details>
-<summary><b>Old Changelog - Click here for more details</b></summary>
 
 **What's New (as of Dec 27 2024)**
 1. Support for SteamOS Beta 3.6.21
