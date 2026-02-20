@@ -93,6 +93,7 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 <p align="center">
 <a href="https://youtu.be/uZz9jdPBsb4"> <img src="https://github.com/user-attachments/assets/2a46ceae-2d18-4625-bf97-6c000dbc34f7" /> </a>
 </p>
+
 # What's New (as of Feb 20 2026)
 * change from Pixel 5 spoof to Pixel 10 Pro spoof
 * ability to install custom LineageOS build that contains new fake wifi implementation (thanks ayesa)
