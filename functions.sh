@@ -102,10 +102,10 @@ apply_android_custom_config () {
 		echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
-	elif [ "$Android_Choice" == "TV13_NO_GAPPS" ] || [ "$Android_Choce" == "TV13_GAPPS" ]
-	then
+	else [ "$Android_Choice" == "TV13_NO_GAPPS" ] || [ "$Android_Choce" == "TV13_GAPPS" ]
+		echo TV13.
 		echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop
 	fi
 }
 
