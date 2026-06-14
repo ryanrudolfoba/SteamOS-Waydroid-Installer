@@ -7,6 +7,9 @@ echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
+echo Due to AUR malware insecurities temporarily disabling this script.
+exit
+
 # define variables here
 SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
 STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2 | cut -d "." -f1-2)
