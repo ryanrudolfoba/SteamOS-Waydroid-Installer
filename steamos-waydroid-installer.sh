@@ -2,7 +2,7 @@
 
 clear
 
-echo SteamOS Waydroid Installer Script by ryanrudolfoba
+echo SteamOS Waydroid Installer Script by ryanrudolf
 echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 echo YT - 10MinuteSteamDeckGamer
 sleep 2
