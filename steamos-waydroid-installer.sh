@@ -7,10 +7,15 @@ echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
-echo "Due to AUR malware insecurities the script is temporarily disabled."
-echo "You can try: $0 --skip-aur"
-echo "This will use GitHub mirror instead of AUR for the binder module."
-exit
+if [[ "$1" != "--skip-aur" ]]; then
+    echo "Due to AUR malware insecurities the script is temporarily disabled."
+    echo "You can try: $0 --skip-aur"
+    echo "This will use GitHub mirror instead of AUR for the binder module."
+    exit
+fi
+
+SKIP_AUR=true
+echo "AUR will be skipped - using GitHub mirror only"
 
 # define variables here
 SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
