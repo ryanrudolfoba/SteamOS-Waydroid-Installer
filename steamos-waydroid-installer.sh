@@ -2,12 +2,14 @@
 
 clear
 
-echo SteamOS Waydroid Installer Script by ryanrudolf
+echo SteamOS Waydroid Installer Script by ryanrudolfoba
 echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
-echo Due to AUR malware insecurities temporarily disabling this script.
+echo "Due to AUR malware insecurities the script is temporarily disabled."
+echo "You can try: $0 --skip-aur"
+echo "This will use GitHub mirror instead of AUR for the binder module."
 exit
 
 # define variables here
@@ -61,22 +63,32 @@ else
 fi
 
 # Clone binder
-git clone $BINDER_AUR $BINDER_DIR &> /dev/null
-if [ $? -eq 0 ]
-then
-	echo Binder AUR has been successfully cloned! Proceed to the next step.
-else
-	echo Error cloning the binder repo! Trying the binder github mirror.
-	rm -rf $BINDER_DIR
+if [ "$SKIP_AUR" == "true" ]; then
+	echo Skipping AUR - using GitHub mirror for binder.
 	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
-
-	if [ $? -eq 0 ]
-	then
-		echo Binder has been successfully cloned! Proceed to the next step.
+	if [ $? -eq 0 ]; then
+		echo Binder has been successfully cloned from GitHub! Proceed to the next step.
 	else
-		echo Error cloning the binder repo. Both AUR and github mirror failed!
+		echo Error cloning the binder repo from GitHub mirror!
 		rm -rf $BINDER_DIR
 		cleanup_exit
+	fi
+else
+	git clone $BINDER_AUR $BINDER_DIR &> /dev/null
+	if [ $? -eq 0 ]; then
+		echo Binder AUR has been successfully cloned! Proceed to the next step.
+	else
+		echo Error cloning the binder repo! Trying the binder github mirror.
+		rm -rf $BINDER_DIR
+		git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
+
+		if [ $? -eq 0 ]; then
+			echo Binder has been successfully cloned! Proceed to the next step.
+		else
+			echo Error cloning the binder repo. Both AUR and github mirror failed!
+			rm -rf $BINDER_DIR
+			cleanup_exit
+		fi
 	fi
 fi
 
