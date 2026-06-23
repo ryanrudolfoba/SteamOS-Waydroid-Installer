@@ -7,7 +7,12 @@ echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
-echo Due to AUR malware insecurities temporarily disabling this script.
+echo Due to AUR malware insecurities, the author has decided to temporarily disable this script.
+echo If you still want to run this script - delete line 16 and run the script again!
+echo Take note that if you are on SteamOS 3.8.x this will break Desktop Mode.
+echo Please wait for the author to update the script to fully work in SteamOS 3.8.x.
+echo Thank you and happy gaming!
+echo ~10MinuteSteamDeckGamer
 exit
 
 # define variables here
