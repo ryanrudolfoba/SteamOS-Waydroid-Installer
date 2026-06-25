@@ -1,4 +1,0 @@
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-startup-scripts
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-shutdown-scripts
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-mount
-deck ALL=(ALL) NOPASSWD: /usr/bin/waydroid-firewall
