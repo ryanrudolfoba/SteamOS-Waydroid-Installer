@@ -1,0 +1,13 @@
+name: Lint and format shell scripts
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  sh-checker:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run sh-checker
+        uses: luizm/action-sh-checker@17bd25a6ee188d2b91f677060038f4ba37ba14b2
