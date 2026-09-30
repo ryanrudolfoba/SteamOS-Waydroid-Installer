@@ -201,7 +201,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 	
 		# delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf \
-			/usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
+			/usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts /usr/bin/waydroid-firewall /usr/bin/waydroid-mount /usr/bin/load-kernelsu
 	
 		# delete Waydroid Toolbox symlink
 		rm ~/Desktop/Waydroid-Toolbox
@@ -229,7 +229,7 @@ UNINSTALL_Choice=$(zenity --width 600 --height 220 --list --radiolist --multiple
 	
 		# delete waydroid config and scripts
 		echo -e "$PASSWORD\n" | sudo -S rm /etc/sudoers.d/zzzzzzzz-waydroid /etc/modules-load.d/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf \
-			/usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts
+			/usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts /usr/bin/waydroid-firewall /usr/bin/waydroid-mount /usr/bin/load-kernelsu
 	
 		# delete Waydroid Toolbox and Waydroid Updatersymlink
 		rm ~/Desktop/Waydroid-Toolbox
