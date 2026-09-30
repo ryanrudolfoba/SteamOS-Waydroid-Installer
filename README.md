@@ -1,5 +1,3 @@
-# DONT USE THIS ON SEAMOS 3.8 IT WILL BREAK DESKTOP MODE!
-
 # SteamOS Android Waydroid Installer
 
 A collection of tools that is packaged into an easy to use script that is streamlined and tested to work with the Steam Deck running on SteamOS.
@@ -95,6 +93,15 @@ git clone --depth=1 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 <p align="center">
 <a href="https://youtu.be/uZz9jdPBsb4"> <img src="https://github.com/user-attachments/assets/2a46ceae-2d18-4625-bf97-6c000dbc34f7" /> </a>
 </p>
+
+# What's New (as of Sep 30 2026)
+* updated for SteamOS 3.8.28
+* Desktop Mode doesn't break
+* binder kernel module needed for waydroid (Valve removed binder support in the kernel)
+* kernelsu kernel module for waydroid root
+* updated waydroid launcher to have the option to choose between regular waydroid and waydroid with root
+* updated waydroid updater to have the option to clone and install the MAIN branch or TESTING branch of my github repo
+* other changes I may have forgotten
 
 # What's New (as of Feb 20 2026)
 * change from Pixel 5 spoof to Pixel 10 Pro spoof
