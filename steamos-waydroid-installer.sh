@@ -155,10 +155,6 @@ cp extras/scripts/Android_Waydroid_Cage.sh extras/scripts/Waydroid-Toolbox.sh ex
 cp -R extras/cage ~/Android_Waydroid
 cp -R extras/config ~/Android_Waydroid
 
-# create symlink for the shared library
-ln -s ~/Android_Waydroid/cage/libliftoff.so.0.5.0 ~/Android_Waydroid/cage/libliftoff.so.0
-ln -s ~/Android_Waydroid/cage/libliftoff.so.0.5.0 ~/Android_Waydroid/cage/libliftoff.so
-
 # waydroid launcher, toolbox and updater
 chmod +x ~/Android_Waydroid/*.sh
 
