@@ -7,28 +7,16 @@ echo https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer
 echo YT - 10MinuteSteamDeckGamer
 sleep 2
 
-echo Due to AUR malware insecurities, the author has decided to temporarily disable this script.
-echo If you still want to run this script - delete line 16 and run the script again!
-echo Take note that if you are on SteamOS 3.8.x this will break Desktop Mode.
-echo Please wait for the author to update the script to fully work in SteamOS 3.8.x.
-echo Thank you and happy gaming!
-echo ~10MinuteSteamDeckGamer
-exit
-
 # define variables here
 SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
-STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2 | cut -d "." -f1-2)
-BASE_VERSION=3.7
-STEAMOS_BRANCH=$(steamos-select-branch -c)
+STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2 | cut -d "." -f1-3)
+KERNEL_VERSION=$(uname -r | cut -d "-" -f 1-5 )
+COMPAT_KERNEL=6.18.50-valve2-1-neptune-618
 WORKING_DIR=$(pwd)
 LOGFILE=$WORKING_DIR/logfile
-BINDER_AUR=https://aur.archlinux.org/binder_linux-dkms.git
-BINDER_GITHUB=https://github.com/archlinux/aur.git
-BINDER_DIR=$(mktemp -d)/aur_binder
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
 WAYDROID_SCRIPT_DIR=$(mktemp -d)/waydroid_script
 FREE_HOME=$(df /home --output=avail | tail -n1)
-PLUGIN_LOADER=/home/deck/homebrew/services/PluginLoader
 ARM_Choice=libhoudini
 
 # android TV builds
@@ -50,7 +38,7 @@ source sanity-checks.sh
 
 # sanity checks are all good. lets go!
 
-# perform git clone of waydroid_script and binder kernel module source
+# perform git clone of waydroid_script
 echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
@@ -63,26 +51,6 @@ else
 	echo Error cloning the casualsnek / aleasto waydroid_script repo!
 	rm -rf $WAYDROID_SCRIPT_DIR
 	cleanup_exit
-fi
-
-# Clone binder
-git clone $BINDER_AUR $BINDER_DIR &> /dev/null
-if [ $? -eq 0 ]
-then
-	echo Binder AUR has been successfully cloned! Proceed to the next step.
-else
-	echo Error cloning the binder repo! Trying the binder github mirror.
-	rm -rf $BINDER_DIR
-	git clone --branch binder_linux-dkms --single-branch $BINDER_GITHUB $BINDER_DIR &> /dev/null
-
-	if [ $? -eq 0 ]
-	then
-		echo Binder has been successfully cloned! Proceed to the next step.
-	else
-		echo Error cloning the binder repo. Both AUR and github mirror failed!
-		rm -rf $BINDER_DIR
-		cleanup_exit
-	fi
 fi
 
 # unlock the readonly and initialize keyring using the devmode method
@@ -98,83 +66,57 @@ else
 	cleanup_exit
 fi
 
-if awk "BEGIN {exit ! ($STEAMOS_VERSION == $BASE_VERSION)}"
+# lets install and enable the binder module so we can start waydroid right away
+binder_loaded=$(lsmod | grep -q binder; echo $?)
+binder_differs=$(cmp -s extras/kmod/$KERNEL_VERSION/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
+kernelsu_differs=$(cmp -s extras/kmod/$KERNEL_VERSION/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
+if [ "$binder_loaded" -ne 0 ] || [ "$binder_differs" -ne 0 ]
 then
-
-	# lets install the packages needed to build binder
-	echo Installing packages needed to build binder module from source. This can take a while.
-	echo "*** pacman install dependencies for binder ***" &>> $LOGFILE
-	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm fakeroot debugedit dkms plymouth \
-	linux-neptune-$(uname -r | cut -d "-" -f5)-headers --overwrite "*" &>> $LOGFILE
-
-	if [ $? -eq 0 ]
-	then
-		echo No errors encountered installing packages needed to build binder module.
-	else
-		echo Errors were encountered.
-		echo Performing clean up. Good bye!
-		cleanup_exit
-		exit
-	fi
-
-	# finally lets build and install binder from source!
-	echo Building and installing binder module from source. This can take a while.
-	echo "*** build and install binder from source ***" &>> $LOGFILE
-	cd $BINDER_DIR && makepkg -f &>> $LOGFILE && \
-		echo -e "$current_password\n" | sudo -S pacman -U --noconfirm binder_linux-dkms*.zst &>> $LOGFILE && \
-		echo -e "$current_password\n" | sudo -S mkdir -p /usr/lib/modules/$(uname -r)/updates/dkms &>> $LOGFILE && \
-		echo -e "$current_password\n" | sudo -S cp /var/lib/dkms/binder/1/$(uname -r)/x86_64/module/binder_linux.ko.zst \
-			/usr/lib/modules/$(uname -r)/updates/dkms/ &>> $LOGFILE && \
-		echo -e "$current_password\n" | sudo -S depmod -a &>> $LOGFILE && \
-		echo -e "$current_password\n" | sudo -S modprobe binder_linux device=binder,hwbinder,vndbinder &>> $LOGFILE
-
-	if [ $? -eq 0 ]	
-	then
-		echo No errors encountered building the binder module. Binder module has been loaded.
-	else
-		echo Errors were encountered.
-		echo Performing clean up. Good bye!
-		cleanup_exit
-		exit
-	fi
-
-	# ok lets install additional packages from pacman repo
-	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlroots cage wlr-randr &>> $LOGFILE
+	echo Binder kernel module not found or not up to date! Installing binder!
+	echo -e "$current_password\n" | sudo -S cp extras/kmod/$KERNEL_VERSION/binder_linux.ko.zst /lib/modules/$(uname -r) && \
+	echo -e "$current_password\n" | sudo -S depmod -a && \
+	echo -e "$current_password\n" | sudo -S modprobe binder-linux device=binder,hwbinder,vndbinder && \
+	echo -e "$current_password\n" | sudo -S cp extras/waydroid.conf /etc/modules-load.d/waydroid.conf && \
+	echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
 
 	if [ $? -eq 0 ]
 	then
-		echo cage has been installed!
+		echo Binder kernel module has been installed!
 	else
-		echo Error installing cage. Run the script again to install waydroid.
+		echo Error installing binder kernel module. Run the script again to install waydroid.
 		cleanup_exit
 	fi
+else
+	echo Binder kernel module already loaded and up to date! No need to install binder!
+fi
 
-	# waydroid binder configuration file
-	cd $WORKING_DIR
-	echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modules-load.d/waydroid_binder.conf
-	echo -e "$current_password\n" | sudo -S cp extras/options-waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
-
-elif awk "BEGIN {exit ! ($STEAMOS_VERSION > $BASE_VERSION)}"
+# lets install KernelSU kernel module for root
+kernelsu_differs=$(cmp -s extras/kmod/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r)/kernelsu.ko.zst; echo $?)
+if [ "$kernelsu_differs" -ne 0 ]
 then
-
-	# ok lets install additional packages from pacman repo
-	echo -e "$current_password\n" | sudo -S pacman -S --noconfirm cage wlr-randr &>> $LOGFILE
+	echo KernelSU kernel module not found or not up to date! Installing KernelSU!
+	echo -e "$current_password\n" | sudo -S cp extras/kmod/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r) && \
+	echo -e "$current_password\n" | sudo -S cp extras/scripts/load-kernelsu /usr/bin/load-kernelsu && \
+	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/pacman/modloader-2.0.0-1-x86_64.pkg.tar.zst && \
+	echo -e "$current_password\n" | sudo -S depmod -a
 
 	if [ $? -eq 0 ]
 	then
-		echo cage has been installed!
+		echo KernelSU kernel module has been installed!
 	else
-		echo Error installing cage. Run the script again to install waydroid.
+		echo Error installing KernelSU kernel module.
 		cleanup_exit
 	fi
+else
+	echo KernelSU kernel module already loaded and up to date! No need to install KernelSU!
 fi
 
 # ok lets install precompiled waydroid
 echo Installing waydroid packages. This can take a while.
 echo "*** pacman install waydroid packages ***" &>> $LOGFILE
 cd $WORKING_DIR
-echo -e "$current_password\n" | sudo -S pacman -U --noconfirm waydroid/libgbinder*.zst waydroid/libglibutil*.zst \
-	waydroid/python-gbinder*.zst waydroid/waydroid*.zst &>> $LOGFILE && \
+echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/pacman/libgbinder*.zst extras/pacman/libglibutil*.zst \
+	extras/pacman/python-gbinder*.zst extras/pacman/waydroid*.zst &>> $LOGFILE && echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlr-randr &>> $LOGFILE 
 
 if [ $? -eq 0 ]
 then
@@ -195,26 +137,27 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 
 # lets install the custom config files
-mkdir -p ~/Android_Waydroid/extras &> /dev/null
+mkdir -p ~/Android_Waydroid/{config,cage} &> /dev/null
 
 # waydroid startup and shutdown scripts
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-mount /usr/bin/waydroid-mount
-echo -e "$current_password\n" | sudo -S cp extras/waydroid-firewall /usr/bin/waydroid-firewall
+echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
+echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
+echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-mount /usr/bin/waydroid-mount
+echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-firewall /usr/bin/waydroid-firewall
 echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts /usr/bin/waydroid-mount /usr/bin/waydroid-firewall
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
 echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-waydroid
 
-# waydroid launcher, functions ,toolbox and updater
-cp extras/Android_Waydroid_Cage.sh \
-	extras/Waydroid-Toolbox.sh \
-	extras/Waydroid-Updater.sh \
-	extras/fake_wifi \
-	extras/fake_touch \
-	~/Android_Waydroid
+# copy waydroid launcher dependencies
+cp extras/scripts/Android_Waydroid_Cage.sh extras/scripts/Waydroid-Toolbox.sh extras/scripts/Waydroid-Updater.sh ~/Android_Waydroid
+cp -R extras/cage ~/Android_Waydroid
+cp -R extras/config ~/Android_Waydroid
+
+# create symlink for the shared library
+ln -s ~/Android_Waydroid/cage/libliftoff.so.0.5.0 ~/Android_Waydroid/cage/libliftoff.so.0
+ln -s ~/Android_Waydroid/cage/libliftoff.so.0.5.0 ~/Android_Waydroid/cage/libliftoff.so
 
 # waydroid launcher, toolbox and updater
 chmod +x ~/Android_Waydroid/*.sh
@@ -228,21 +171,47 @@ chmod +x ~/.local/share/kio/servicemenus/open_as_root.desktop
 ln -s ~/Android_Waydroid/Waydroid-Toolbox.sh ~/Desktop/Waydroid-Toolbox &> /dev/null
 ln -s ~/Android_Waydroid/Waydroid-Updater.sh ~/Desktop/Waydroid-Updater &> /dev/null
 
-# prepare and mount custom /var/lib/waydroid
-echo Creating custom /var/lib/waydroid this can take a while.
-echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid
-mount_waydroid_var
-
-if [ $? -eq 0 ]
-then
-	echo Custom /var/lib/waydroid has been created and mounted!
-else
-	echo Error creating /var/lib/waydroid. Exiting immediately.
-	cleanup_exit
-fi
 
 # lets check if this is a reinstall
-echo Checking if this is a reinstall.
+echo Checking if this is a reinstall - step1.
+if [ -d /var/lib/waydroid ]
+then
+	echo /var/lib/waydroid exists! 
+else
+	sudo -S mkdir /var/lib/waydroid
+fi
+
+echo Checking if this is a reinstall - step2.
+if [ -f $HOME/Android_Waydroid/waydroid.img ]
+then
+	echo Most probably this is a reinstall!
+	echo Mounting waydroid.img to /var/lib/waydroid
+	ROOTDEV=$(sudo losetup --find --show $HOME/Android_Waydroid/waydroid.img) && sudo mount $ROOTDEV /var/lib/waydroid
+
+	if [ $? -eq 0 ]
+	then
+		echo waydroid.img successfully mounted to /var/lib/waydroid
+	else
+		echo Error mounting waydroid.img
+		echo Exiting immediately.
+		cleanup_exit
+	fi
+
+else
+	echo waydroid.img not found!
+	echo Preparing to mount waydroid.img
+	mount_waydroid_var
+
+	if [ $? -eq 0 ]
+	then
+		echo Custom /var/lib/waydroid has been created and mounted!
+	else
+		echo Error creating /var/lib/waydroid. Exiting immediately.
+		cleanup_exit
+	fi
+fi
+
+echo Checking if this is a reinstall - step3.
 grep blazer /var/lib/waydroid/waydroid_base.prop &> /dev/null || grep PH7M_EU_5596 /var/lib/waydroid/waydroid_base.prop &> /dev/null
 if [ $? -eq 0 ]
 then
@@ -265,11 +234,11 @@ else
 	# place custom overlay files here - key layout, hosts, audio.rc etc etc
 	# copy fixed key layout for Steam Controller
 	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/usr/keylayout
-	echo -e "$current_password\n" | sudo -S cp extras/Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
+	echo -e "$current_password\n" | sudo -S cp extras/fixes/Vendor_28de_Product_11ff.kl /var/lib/waydroid/overlay/system/usr/keylayout/
 
 	# copy custom audio.rc patch to lower the audio latency
 	echo -e "$current_password\n" | sudo -S mkdir -p /var/lib/waydroid/overlay/system/etc/init
-	echo -e "$current_password\n" | sudo -S cp extras/audio.rc /var/lib/waydroid/overlay/system/etc/init/
+	echo -e "$current_password\n" | sudo -S cp extras/fixes/audio.rc /var/lib/waydroid/overlay/system/etc/init/
 
 	# download custom hosts file from StevenBlack to block ads (adware + malware + fakenews + gambling + pr0n)
 	echo -e "$current_password\n" | sudo -S wget https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts \
@@ -282,7 +251,6 @@ else
 		--column="Description - Read this carefully!"\
 		TRUE A13_GAPPS "Download official Android 13 image with Google Play Store."\
 		FALSE A13_NO_GAPPS "Download official Android 13 image without Google Play Store."\
-		FALSE A13_CUSTOM "Download unofficial Android 13 that has new implementation of fake wifi."\
 		FALSE TV13_GAPPS "Download unofficial Android 13 TV image with Google Play Store - thanks SupeChicken666 for the image!" \
 		FALSE TV13_NO_GAPPS "Download unofficial Android 13 TV image without Google Play Store - thanks SupeChicken666 for the image!" \
 		FALSE EXIT "***** Exit this script *****")
@@ -315,14 +283,6 @@ else
 			echo Initializing Waydroid.
  			echo -e "$current_password\n" | sudo -S waydroid init -c ${ANDROID13_TV_OTA}/system -v ${ANDROID13_TV_OTA}/vendor
 			check_waydroid_init
-
-		elif [ "$Android_Choice" == "A13_CUSTOM" ]
-		then
-			prepare_custom_image_location
-			download_image $ANDROID13_IMG $ANDROID13_IMG_HASH /var/lib/waydroid/custom "Android 13 Custom Image"
-			echo Initializing Waydroid.
-			echo -e "$current_password\n" | sudo -S waydroid init
-			check_waydroid_init
 		fi
 
 	# run casualsnek / aleasto waydroid_script
@@ -331,10 +291,6 @@ else
 	then
 		echo No need for casualsnek / aleasto waydroid_script for TV13 images.
 		echo TV13 images already contains libhoudini arm translation layer and widevine.
-
-	elif [ "$Android_Choice" == "A13_CUSTOM" ]
-	then
-		install_android_extras_custom
 	else
 		install_android_extras
 	fi
@@ -392,13 +348,6 @@ EOF
 	echo -e "$current_password\n" | sudo systemctl stop waydroid-container.service
 	unmount_waydroid_var
 	mv extras/waydroid.img ~/Android_Waydroid/waydroid.img
-fi
-
-# restart Decky Loader if we stopped it at the beginning
-if [ "$DECKY_LOADER_STOPPED" == "true" ]
-then
-	echo Re-enabling Decky Loader Plugin Loader service.
-	echo -e "$current_password\n" | sudo -S systemctl start plugin_loader.service &> /dev/null
 fi
 
 # all done! Display dialog box for Gaming Mode

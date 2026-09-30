@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+Icon=system-file-manager
+Actions=OpenDolphinFileManagerAsRoot
+ServiceTypes=KonqPopupMenu/Plugin,inode/directory,inode/directory-locked
+
+[Desktop Action OpenDolphinFileManagerAsRoot]
+Exec=if [ "$XDG_SESSION_TYPE" = "wayland" ]; then xhost +si:localuser:root && pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY KDE_SESSION_VERSION=5 KDE_FULL_SESSION=true dbus-launch dolphin %U && xhost -si:localuser:root ; else pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY KDE_SESSION_VERSION=5 KDE_FULL_SESSION=true dolphin %U; fi;
+Icon=system-file-manager
+Name=Open Dolphin File Manager as Root / Elevated Credentials

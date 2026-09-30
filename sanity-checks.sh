@@ -11,37 +11,17 @@ else
 	exit
 fi
 
-# sanity check - make sure this is running on at least SteamOS 3.7.x
-# if awk "BEGIN {exit ! ($STEAMOS_VERSION >= $BASE_VERSION)}" - comment this out as there are issues with 3.8 onwards
-if awk "BEGIN {exit ! ($STEAMOS_VERSION >= $BASE_VERSION && $STEAMOS_VERSION <= 3.8)}"
+# sanity check - make sure this is running on supported kernel 6.18.50-valve2-1-neptune-618. This is SteamOS 3.8.28
+# Valve removed binder support in kernel so we need to rely on kmods again :(
+if [ $KERNEL_VERSION = $COMPAT_KERNEL ]
 then
-	echo SteamOS $STEAMOS_VERSION $STEAMOS_BRANCH detected. Proceed to the next step.
+	echo SteamOS $STEAMOS_VERSION detected running on kernel version $KERNEL_VERSION.
+	echo This configuration is SUPPORTED! Proceed to the next step.
 else
-	echo SteamOS $STEAMOS_VERSION $STEAMOS_BRANCH detected. This is unsupported version.
-	echo Update SteamOS and make sure it is at least on SteamOS 3.7.x.
+	echo SteamOS $STEAMOS_VERSION detected running on kernel version $KERNEL_VERSION.
+	echo The script needs the kernel version $COMPAT_KERNEL for the binder kernel module and root kernel module.
+	echo This configuration is NOT SUPPORTED. Exit immediately.
 	exit
-fi
-
-# sanity check - make sure the update channel is rel (stable) or beta
-if [ "$STEAMOS_BRANCH" == "rel" ] || [ "$STEAMOS_BRANCH" == "beta" ]
-then
-	echo SteamOS $STEAMOS_BRANCH branch detected. Proceed to the next step.
-elif [ "$STEAMOS_BRANCH" == "main" ]
-then
-	zenity --question --title "SteamOS Waydroid Installer" --text \
-		"WARNING! SteamOS $STEAMOS_BRANCH branch detected. \
-		\n\nThe script has been tested to work with the STABLE or BETA branch of SteamOS. \
-		\nHowever the script may also work with the MAIN branch of SteamOS. \
-		\n\n\nDo you want to continue with the install?" --width 650 --height 75 &> /dev/null
-
-	if [ $? -eq 1 ]
-	then
-		echo User pressed NO. Exit immediately.
-		exit
-	else
-		echo User pressed YES. Continue with the script.
-		echo SteamOS $STEAMOS_BRANCH detected.
-	fi
 fi
 
 # sanity check - make sure there is enough free space in the home partition (at least 10GB)
@@ -94,5 +74,14 @@ then
 		echo Exiting immediately.
 		exit
 	fi
+fi
+
+#  santy check - is there pacman lock file?
+if [ -f /usr/lib/holo/pacmandb/db.lck ]
+then
+	echo pacman lock file exists!
+	echo Script will be unable to perform pacman operations because the lock file exists!
+	echo Exiting immediately.
+	exit
 fi
 
