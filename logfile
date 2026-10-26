@@ -1,0 +1,165 @@
+*** steamos-devmode ***
+[sudo] password for deck: 
+SteamOS Developer Mode
+
+Important: This will allow potentially breaking changes to the root filesystem.
+  This is meant for developers and technical users who know what they are doing.
+  Changes to the root filesystem will be overwritten by the next SteamOS update.
+
+Developers:
+  - Consider packaging your application with flatpak, rather than
+    invoking/requiring this script.  This is a much better (and safer) experience
+    for users
+  - Consider building your package in the Holo container images with
+    distrobox/toolbox
+
+
+:: Disabling read-only mode
+;; Deleting existing pacman keyring
++ rm -rf --one-file-system /etc/pacman.d/gnupg/
+:: Initializing pacman keyring
++ pacman-key --init
+gpg: /etc/pacman.d/gnupg/trustdb.gpg: trustdb created
+gpg: no ultimately trusted keys found
+gpg: starting migration from earlier GnuPG versions
+gpg: porting secret keys from '/etc/pacman.d/gnupg/secring.gpg' to gpg-agent
+gpg: migration succeeded
+==> Generating pacman master key. This may take some time.
+gpg: Generating pacman keyring master key...
+gpg: directory '/etc/pacman.d/gnupg/openpgp-revocs.d' created
+gpg: revocation certificate stored as '/etc/pacman.d/gnupg/openpgp-revocs.d/7F3E36848DE5D710CC4BD36A94FE53752155E64C.rev'
+gpg: Done
+==> Updating trust database...
+gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
++ pacman-key --populate
+==> Appending keys from archlinux.gpg...
+==> Appending keys from holo.gpg...
+==> Locally signing trusted keys in keyring...
+  -> Locally signed 10 keys.
+==> Importing owner trust values...
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+gpg: inserting ownertrust of 4
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+gpg: setting ownertrust to 4
+==> Disabling revoked keys in keyring...
+  -> Disabled 50 keys.
+==> Updating trust database...
+gpg: Note: third-party key signatures using the SHA1 algorithm are rejected
+gpg: (use option "--allow-weak-key-signatures" to override)
+gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+gpg: depth: 0  valid:   1  signed:  10  trust: 0-, 0q, 0n, 0m, 0f, 1u
+gpg: depth: 1  valid:  10  signed:  90  trust: 0-, 0q, 0n, 10m, 0f, 0u
+gpg: depth: 2  valid:  64  signed:  15  trust: 64-, 0q, 0n, 0m, 0f, 0u
+gpg: next trustdb check due at 2026-10-21
+
+:: Developer mode enabled
+::   See also `steamos-unminimize --dev` to recover package files pruned
+::   from the image and install development packages.
+*** pacman install waydroid packages ***
+loading packages...
+resolving dependencies...
+looking for conflicting packages...
+
+Packages (6) dnsmasq-2.91-1  lxc-1:6.0.4-2  libgbinder-1.1.42-2  libglibutil-1.0.80-1  python-gbinder-1.1.2-3  waydroid-1.5.4-1
+
+Total Download Size:   1.21 MiB
+Total Installed Size:  4.70 MiB
+
+:: Proceed with installation? [Y/n] 
+:: Retrieving packages...
+ lxc-1:6.0.4-2-x86_64 downloading...
+ dnsmasq-2.91-1-x86_64 downloading...
+checking keyring...
+checking package integrity...
+loading package files...
+checking for file conflicts...
+checking available disk space...
+:: Processing package changes...
+installing libglibutil...
+installing libgbinder...
+installing python-gbinder...
+installing lxc...
+Optional dependencies for lxc
+    dnsmasq: lxc-net.service [pending]
+    lua [installed]
+    lua-filesystem: lxc-top
+    lua-alt-getopt: lxc-top
+installing dnsmasq...
+installing waydroid...
+:: Running post-transaction hooks...
+(1/7) Creating system user accounts...
+/usr/lib/sysusers.d/alpm.conf:1: Conflict with earlier configuration for user 'alpm' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:111, ignoring line.
+/usr/lib/sysusers.d/avahi.conf:1: Conflict with earlier configuration for user 'avahi' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:5, ignoring line.
+/usr/lib/sysusers.d/basic.conf:17: Conflict with earlier configuration for group 'adm' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:9, ignoring line.
+/usr/lib/sysusers.d/basic.conf:20: Conflict with earlier configuration for group 'wheel' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:10, ignoring line.
+/usr/lib/sysusers.d/basic.conf:23: Conflict with earlier configuration for group 'utmp' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:11, ignoring line.
+/usr/lib/sysusers.d/basic.conf:26: Conflict with earlier configuration for group 'audio' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:12, ignoring line.
+/usr/lib/sysusers.d/basic.conf:27: Conflict with earlier configuration for group 'disk' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:13, ignoring line.
+/usr/lib/sysusers.d/basic.conf:28: Conflict with earlier configuration for group 'input' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:14, ignoring line.
+/usr/lib/sysusers.d/basic.conf:29: Conflict with earlier configuration for group 'kmem' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:15, ignoring line.
+/usr/lib/sysusers.d/basic.conf:30: Conflict with earlier configuration for group 'kvm' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:16, ignoring line.
+/usr/lib/sysusers.d/basic.conf:31: Conflict with earlier configuration for group 'lp' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:17, ignoring line.
+/usr/lib/sysusers.d/basic.conf:32: Conflict with earlier configuration for group 'optical' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:18, ignoring line.
+/usr/lib/sysusers.d/basic.conf:33: Conflict with earlier configuration for group 'render' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:19, ignoring line.
+/usr/lib/sysusers.d/basic.conf:34: Conflict with earlier configuration for group 'sgx' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:20, ignoring line.
+/usr/lib/sysusers.d/basic.conf:35: Conflict with earlier configuration for group 'storage' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:21, ignoring line.
+/usr/lib/sysusers.d/basic.conf:37: Conflict with earlier configuration for group 'uucp' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:22, ignoring line.
+/usr/lib/sysusers.d/basic.conf:38: Conflict with earlier configuration for group 'video' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:23, ignoring line.
+/usr/lib/sysusers.d/basic.conf:41: Conflict with earlier configuration for group 'users' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:24, ignoring line.
+/usr/lib/sysusers.d/brltty.conf:23: Conflict with earlier configuration for user 'brltty' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:114, ignoring line.
+/usr/lib/sysusers.d/flatpak.conf:1: Conflict with earlier configuration for user 'flatpak' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:28, ignoring line.
+/usr/lib/sysusers.d/fwupd.conf:1: Conflict with earlier configuration for user 'fwupd' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:108, ignoring line.
+/usr/lib/sysusers.d/gamemode.conf:1: Conflict with earlier configuration for group 'gamemode' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:32, ignoring line.
+/usr/lib/sysusers.d/git.conf:1: Conflict with earlier configuration for user 'git' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:40, ignoring line.
+/usr/lib/sysusers.d/i2c-tools.conf:1: Conflict with earlier configuration for group 'i2c' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:105, ignoring line.
+/usr/lib/sysusers.d/networkmanager-openvpn.conf:1: Conflict with earlier configuration for user 'nm-openvpn' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:44, ignoring line.
+/usr/lib/sysusers.d/openvpn.conf:1: Conflict with earlier configuration for user 'openvpn' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:48, ignoring line.
+/usr/lib/sysusers.d/rtkit.conf:2: Conflict with earlier configuration for user 'rtkit' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:117, ignoring line.
+/usr/lib/sysusers.d/sddm.conf:2: Conflict with earlier configuration for user 'sddm' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:52, ignoring line.
+/usr/lib/sysusers.d/seatd.conf:1: Conflict with earlier configuration for group 'seat' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:56, ignoring line.
+/usr/lib/sysusers.d/shadow.conf:1: Conflict with earlier configuration for group 'groups' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:101, ignoring line.
+/usr/lib/sysusers.d/steamos-log-submitter.conf:6: Conflict with earlier configuration for user 'steamos-log-submitter' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:60, ignoring line.
+/usr/lib/sysusers.d/steamos-log-submitter.conf:7: Conflict with earlier configuration for group 'steamos-log-submitter' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:61, ignoring line.
+/usr/lib/sysusers.d/steamos-users.conf:13: Conflict with earlier configuration for group 'gamemode' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:32, ignoring line.
+/usr/lib/sysusers.d/systemd-coredump.conf:8: Conflict with earlier configuration for user 'systemd-coredump' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:65, ignoring line.
+/usr/lib/sysusers.d/systemd-journal.conf:8: Conflict with earlier configuration for group 'systemd-journal' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:69, ignoring line.
+/usr/lib/sysusers.d/systemd-network.conf:8: Conflict with earlier configuration for user 'systemd-network' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:73, ignoring line.
+/usr/lib/sysusers.d/systemd-oom.conf:8: Conflict with earlier configuration for user 'systemd-oom' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:77, ignoring line.
+/usr/lib/sysusers.d/systemd-remote.conf:8: Conflict with earlier configuration for user 'systemd-journal-remote' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:81, ignoring line.
+/usr/lib/sysusers.d/systemd-resolve.conf:8: Conflict with earlier configuration for user 'systemd-resolve' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:85, ignoring line.
+/usr/lib/sysusers.d/systemd-timesync.conf:8: Conflict with earlier configuration for user 'systemd-timesync' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:89, ignoring line.
+/usr/lib/sysusers.d/tpm2-tss.conf:2: Conflict with earlier configuration for user 'tss' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:93, ignoring line.
+/usr/lib/sysusers.d/util-linux.conf:1: Conflict with earlier configuration for group 'rfkill' in /usr/lib/sysusers.d/01-steamos-enforce-UID-GID.conf:97, ignoring line.
+(2/7) Reloading system manager configuration...
+(3/7) Creating temporary files...
+(4/7) Arming ConditionNeedsUpdate...
+(5/7) Reloading system bus configuration...
+(6/7) Updating icon theme caches...
+(7/7) Updating the desktop file MIME type cache...
+resolving dependencies...
+looking for conflicting packages...
+
+Packages (1) wlr-randr-0.5.0-1
+
+Total Download Size:   0.01 MiB
+Total Installed Size:  0.03 MiB
+
+:: Proceed with installation? [Y/n] 
+:: Retrieving packages...
+ wlr-randr-0.5.0-1-x86_64 downloading...
+checking keyring...
+checking package integrity...
+loading package files...
+checking for file conflicts...
+checking available disk space...
+:: Processing package changes...
+installing wlr-randr...
+:: Running post-transaction hooks...
+(1/1) Arming ConditionNeedsUpdate...

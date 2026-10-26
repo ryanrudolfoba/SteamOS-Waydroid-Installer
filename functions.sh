@@ -45,7 +45,7 @@ cleanup_exit () {
 	rm ~/Desktop/Waydroid-Toolbox &> /dev/null
 
 	# delete Android_Waydroid folder and enable the readonly
-	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid &> /dev/null
+	echo -e "$current_password\n" | sudo -S rm -rf ~/Android_Waydroid/*.sh ~/Android_Waydroid{config,pacman} &> /dev/null
 	echo -e "$current_password\n" | sudo -S steamos-readonly enable &> /dev/null
 	
 	# re-enable Decky Loader Plugin Loader service
@@ -94,18 +94,18 @@ apply_android_custom_config () {
 
 	# waydroid_base.prop - controller config and disable root
 	echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-	cat extras/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+	cat extras/props/waydroid_base.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
 	# waydroid_base.prop fingerprint spoof - check if A11 or A13 and apply the spoof accordingly
-	if [ "$Android_Choice" == "A13_NO_GAPPS" ] || [ "$Android_Choice" == "A13_GAPPS" ] || [ "$Android_Choice" == "A13_CUSTOM" ]
+	if [ "$Android_Choice" == "A13_NO_GAPPS" ] || [ "$Android_Choice" == "A13_GAPPS" ]
 	then
 		echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-		cat extras/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
+		cat extras/props/android_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
 
 	else [ "$Android_Choice" == "TV13_NO_GAPPS" ] || [ "$Android_Choce" == "TV13_GAPPS" ]
 		echo TV13.
 		echo "" | sudo tee -a /var/lib/waydroid/waydroid_base.prop > /dev/null
-		cat extras/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop
+		cat extras/props/androidtv_spoof.prop | sudo tee -a /var/lib/waydroid/waydroid_base.prop
 	fi
 }
 
@@ -117,7 +117,7 @@ install_android_extras () {
 	$WAYDROID_SCRIPT_DIR/venv/bin/pip install -r $WAYDROID_SCRIPT_DIR/requirements.txt &> /dev/null
 
 	echo "$ARM_Choice installation started:"
-	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$ARM_Choice,widevine}
+	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$ARM_Choice,widevine} 2> /dev/null
 
 	echo casualsnek / aleasto waydroid_script done. $ARM_Choice installed.
 	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
@@ -131,7 +131,7 @@ install_android_extras_custom () {
 	$WAYDROID_SCRIPT_DIR/venv/bin/pip install -r $WAYDROID_SCRIPT_DIR/requirements.txt &> /dev/null
 
 	echo "$ARM_Choice installation started:"
-	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$ARM_Choice,widevine,gapps}
+	echo -e "$current_password\n" | sudo -S $WAYDROID_SCRIPT_DIR/venv/bin/python3 $WAYDROID_SCRIPT_DIR/main.py -a13 install {$ARM_Choice,widevine,gapps} 2> /dev/null
 	
 	echo casualsnek / aleasto waydroid_script done. $ARM_Choice installed.
 	echo -e "$current_password\n" | sudo -S rm -rf $WAYDROID_SCRIPT_DIR
