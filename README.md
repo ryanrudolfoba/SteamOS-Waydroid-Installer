@@ -5,19 +5,19 @@ A collection of tools that is packaged into an easy to use script that is stream
 * Waydroid Toolbox to easily toggle some configuration settings for Waydroid.
 * [waydroid_script](https://github.com/casualsnek/waydroid_script) to easily add the libndk ARM translation layer and widevine.
 
-**NOTE - this repository uses `testing` and specific SteamOS branches like `.3.8.28` and `3.9.5`.**
+**NOTE - this repository uses `testing` and specific SteamOS branches like `3.8.28` and `3.9.5`.**
 
-**`testing`** - this is where new updates / features are pushed and sits for 1-2 weeks to make sure that bugs are squashed and eliminated. You can access it via this git command -
+**`testing branch`** - this is where new updates / features are pushed and sits for 1-2 weeks to make sure that bugs are squashed and eliminated. You can access it via this git command -
 ```
 git clone --depth=1 -b testing https://github.com/ryanrudolfoba/steamos-waydroid-installer
 ```
 
-**`3.8.28`** - this is specific for SteamOS 3.8.28. You can access it via this git command -
+**`3.8.28 branch`** - this is specific for SteamOS 3.8.28. You can access it via this git command -
 ```
 git clone --depth=1 -b 3.8.28 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 ```
 
-**`3.9.5`** - this is specific for SteamOS 3.9.5. You can access it via this git command -
+**`3.9.5 branch`** - this is specific for SteamOS 3.9.5. You can access it via this git command -
 ```
 git clone --depth=1 -b 3.9.5 https://github.com/ryanrudolfoba/steamos-waydroid-installer
 ```
