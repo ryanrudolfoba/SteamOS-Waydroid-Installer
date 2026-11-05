@@ -1,8 +1,0 @@
-# controller config for udev events
-persist.waydroid.udev=true
-persist.waydroid.uevent=true
-
-# disable root
-ro.adb.secure=1
-ro.debuggable=0
-ro.build.selinux=1
