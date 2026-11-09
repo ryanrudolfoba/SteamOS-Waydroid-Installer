@@ -14,6 +14,9 @@ fi
 run_waydroid () {
 local APP=$1
 
+# setup rust binder
+sudo /usr/bin/waydroid-binder
+
 # mount /var/lib/waydroid
 sudo /usr/bin/waydroid-mount
 
@@ -32,7 +35,7 @@ fi
 if [ -z "$APP" ]
 then
 	# launch option not provided. launch Waydroid via cage and show the full ui right away
-	LD_LIBRARY_PATH=$HOME/Android_Waydroid/cage $HOME/Android_Waydroid/cage/cage -- env RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}') \
+	cage -- env RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}') \
 		bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
 		/usr/bin/waydroid show-full-ui $@ & \
 
@@ -43,7 +46,7 @@ then
 		sudo /usr/bin/waydroid-startup-scripts'
 else
 	# launch option provided. launch the app from the arguments, then launch the Waydroid full ui so it doesnt crash when exiting the app provided
-	LD_LIBRARY_PATH=$HOME/Android_Waydroid/cage $HOME/Android_Waydroid/cage/cage -- env APP="$1" RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}') \
+	cage -- env APP="$1" RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}') \
 		bash -c 'wlr-randr --output X11-1 --custom-mode $RESOLUTION ; \
 		/usr/bin/waydroid session start $@ & \
 		

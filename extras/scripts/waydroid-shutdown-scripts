@@ -5,7 +5,7 @@ sysctl -w kernel.pid_max=$(cat /home/deck/Android_Waydroid/orig_kernel.pid_max)
 rm -f /home/deck/Android_Waydroid/orig_kernel.pid_max
 
 # stop the waydroid container
-# sleep 5
+sleep 5
 systemctl stop waydroid-container.service
 systemctl stop firewalld.service
 

@@ -11,7 +11,7 @@ sleep 2
 SCRIPT_VERSION_SHA=$(git rev-parse --short HEAD)
 STEAMOS_VERSION=$(cat /etc/os-release | grep -i version_id | cut -d "=" -f2 | cut -d "." -f1-3)
 KERNEL_VERSION=$(uname -r | cut -d "-" -f 1-5 )
-COMPAT_KERNEL=6.18.50-valve2-1-neptune-618
+COMPAT_KERNEL=7.2.7-valve2-2-neptune-72
 WORKING_DIR=$(pwd)
 LOGFILE=$WORKING_DIR/logfile
 WAYDROID_SCRIPT=https://github.com/casualsnek/waydroid_script.git
@@ -39,7 +39,7 @@ source sanity-checks.sh
 # sanity checks are all good. lets go!
 
 # perform git clone of waydroid_script
-echo Cloning casualsnek / aleasto waydroid_script repo and binder kernel module source repo.
+echo Cloning casualsnek / aleasto waydroid_script repo.
 echo This can take a few minutes depending on the speed of the internet connection and if github is having issues.
 echo If the git clone is slow - cancel the script \(CTL-C\) and run it again.
 
@@ -66,38 +66,15 @@ else
 	cleanup_exit
 fi
 
-# lets install and enable the binder module so we can start waydroid right away
-binder_loaded=$(lsmod | grep -q binder; echo $?)
-binder_differs=$(cmp -s extras/kmod/$KERNEL_VERSION/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
-kernelsu_differs=$(cmp -s extras/kmod/$KERNEL_VERSION/binder_linux.ko.zst /lib/modules/$(uname -r)/binder_linux.ko.zst; echo $?)
-if [ "$binder_loaded" -ne 0 ] || [ "$binder_differs" -ne 0 ]
-then
-	echo Binder kernel module not found or not up to date! Installing binder!
-	echo -e "$current_password\n" | sudo -S cp extras/kmod/$KERNEL_VERSION/binder_linux.ko.zst /lib/modules/$(uname -r) && \
-	echo -e "$current_password\n" | sudo -S depmod -a && \
-	echo -e "$current_password\n" | sudo -S modprobe binder-linux device=binder,hwbinder,vndbinder && \
-	echo -e "$current_password\n" | sudo -S cp extras/waydroid.conf /etc/modules-load.d/waydroid.conf && \
-	echo -e "$current_password\n" | sudo -S cp extras/waydroid_binder.conf /etc/modprobe.d/waydroid_binder.conf
-
-	if [ $? -eq 0 ]
-	then
-		echo Binder kernel module has been installed!
-	else
-		echo Error installing binder kernel module. Run the script again to install waydroid.
-		cleanup_exit
-	fi
-else
-	echo Binder kernel module already loaded and up to date! No need to install binder!
-fi
-
 # lets install KernelSU kernel module for root
-kernelsu_differs=$(cmp -s extras/kmod/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r)/kernelsu.ko.zst; echo $?)
+kernelsu_differs=$(cmp -s extras/kernelsu/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r)/kernelsu.ko.zst; echo $?)
 if [ "$kernelsu_differs" -ne 0 ]
 then
 	echo KernelSU kernel module not found or not up to date! Installing KernelSU!
-	echo -e "$current_password\n" | sudo -S cp extras/kmod/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r) && \
-	echo -e "$current_password\n" | sudo -S cp extras/scripts/load-kernelsu /usr/bin/load-kernelsu && \
-	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/pacman/modloader-2.0.0-1-x86_64.pkg.tar.zst && \
+	echo -e "$current_password\n" | sudo -S cp extras/kernelsu/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r) && \
+	echo -e "$current_password\n" | sudo -S cp extras/kernelsu/$KERNEL_VERSION/load-kernelsu /usr/bin/load-kernelsu && \
+	echo -e "$current_password\n" | sudo -S cp extras/kernelsu/$KERNEL_VERSION/kernelsu-loader /usr/bin/kernelsu-loader && \
+	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/kernelsu/$KERNEL_VERSION/modloader-2.0.0-1-x86_64.pkg.tar.zst && \
 	echo -e "$current_password\n" | sudo -S depmod -a
 
 	if [ $? -eq 0 ]
@@ -111,16 +88,16 @@ else
 	echo KernelSU kernel module already loaded and up to date! No need to install KernelSU!
 fi
 
-# ok lets install precompiled waydroid
+# ok lets install waydroid
+# starting SteamOS3.9.5 waydroid and its dependencies are in the repos
+# no need for precompiled binaries anymore!
 echo Installing waydroid packages. This can take a while.
 echo "*** pacman install waydroid packages ***" &>> $LOGFILE
-cd $WORKING_DIR
-echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/pacman/libgbinder*.zst extras/pacman/libglibutil*.zst \
-	extras/pacman/python-gbinder*.zst extras/pacman/waydroid*.zst &>> $LOGFILE && echo -e "$current_password\n" | sudo -S pacman -S --noconfirm wlr-randr &>> $LOGFILE 
+echo -e "$current_password\n" | sudo -S pacman -S --noconfirm waydroid cage wlr-randr &>> $LOGFILE 
 
 if [ $? -eq 0 ]
 then
-	echo Waydroid has been installed!
+	echo Waydroid and its dependencies has been installed!
 	echo -e "$current_password\n" | sudo -S systemctl disable waydroid-container.service
 else
 	echo Error installing waydroid. Run the script again to install waydroid.
@@ -137,14 +114,15 @@ echo -e "$current_password\n" | sudo -S firewall-cmd --runtime-to-permanent &> /
 echo -e "$current_password\n" | sudo -S systemctl stop firewalld
 
 # lets install the custom config files
-mkdir -p ~/Android_Waydroid/{config,cage} &> /dev/null
+mkdir -p ~/Android_Waydroid/config &> /dev/null
 
 # waydroid startup and shutdown scripts
 echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-startup-scripts /usr/bin/waydroid-startup-scripts
 echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-shutdown-scripts /usr/bin/waydroid-shutdown-scripts
 echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-mount /usr/bin/waydroid-mount
+echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-binder /usr/bin/waydroid-binder
 echo -e "$current_password\n" | sudo -S cp extras/scripts/waydroid-firewall /usr/bin/waydroid-firewall
-echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts /usr/bin/waydroid-mount /usr/bin/waydroid-firewall
+echo -e "$current_password\n" | sudo -S chmod +x /usr/bin/waydroid-startup-scripts /usr/bin/waydroid-shutdown-scripts /usr/bin/waydroid-mount /usr/bin/waydroid-firewall /usr/bin/waydroid-binder
 
 # custom sudoers file do not ask for sudo for the custom waydroid scripts
 echo -e "$current_password\n" | sudo -S cp extras/zzzzzzzz-waydroid /etc/sudoers.d/zzzzzzzz-waydroid
@@ -152,7 +130,6 @@ echo -e "$current_password\n" | sudo -S chown root:root /etc/sudoers.d/zzzzzzzz-
 
 # copy waydroid launcher dependencies
 cp extras/scripts/Android_Waydroid_Cage.sh extras/scripts/Waydroid-Toolbox.sh extras/scripts/Waydroid-Updater.sh ~/Android_Waydroid
-cp -R extras/cage ~/Android_Waydroid
 cp -R extras/config ~/Android_Waydroid
 
 # waydroid launcher, toolbox and updater
@@ -192,7 +169,6 @@ then
 		echo Exiting immediately.
 		cleanup_exit
 	fi
-
 else
 	echo waydroid.img not found!
 	echo Preparing to mount waydroid.img
