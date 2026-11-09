@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# restore the kernel.pid_max to the default value and then delete the temp file created
+sysctl -w kernel.pid_max=$(cat /home/deck/Android_Waydroid/orig_kernel.pid_max)
+rm -f /home/deck/Android_Waydroid/orig_kernel.pid_max
+
+# stop the waydroid container
+sleep 5
+systemctl stop waydroid-container.service
+systemctl stop firewalld.service
+
+# unmount the custom var directory for waydroid
+umount /var/lib/waydroid
+losetup -d $(losetup | grep waydroid.img | cut -d " " -f1)
+
+# disable the readonly
+steamos-readonly disable
