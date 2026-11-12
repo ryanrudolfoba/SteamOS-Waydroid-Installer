@@ -74,7 +74,7 @@ then
 	echo -e "$current_password\n" | sudo -S cp extras/kernelsu/$KERNEL_VERSION/kernelsu.ko.zst /lib/modules/$(uname -r) && \
 	echo -e "$current_password\n" | sudo -S cp extras/kernelsu/$KERNEL_VERSION/load-kernelsu /usr/bin/load-kernelsu && \
 	echo -e "$current_password\n" | sudo -S cp extras/kernelsu/$KERNEL_VERSION/kernelsu-loader /usr/bin/kernelsu-loader && \
-	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/kernelsu/$KERNEL_VERSION/modloader-2.0.0-1-x86_64.pkg.tar.zst && \
+	echo -e "$current_password\n" | sudo -S pacman -U --noconfirm extras/kernelsu/$KERNEL_VERSION/modloader-2.0.0-1-x86_64.pkg.tar.zst --overwrite "*" && \
 	echo -e "$current_password\n" | sudo -S depmod -a
 
 	if [ $? -eq 0 ]
@@ -93,7 +93,7 @@ fi
 # no need for precompiled binaries anymore!
 echo Installing waydroid packages. This can take a while.
 echo "*** pacman install waydroid packages ***" &>> $LOGFILE
-echo -e "$current_password\n" | sudo -S pacman -S --noconfirm waydroid cage wlr-randr &>> $LOGFILE 
+echo -e "$current_password\n" | sudo -S pacman -S --noconfirm waydroid cage wlr-randr --overwrite "*" &>> $LOGFILE 
 
 if [ $? -eq 0 ]
 then
